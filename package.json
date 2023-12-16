@@ -1,0 +1,19 @@
+{
+  "name": "@paneron/site-builder",
+  "version": "0.0.1",
+  "packageManager": "yarn@3.6.1",
+  "type": "module",
+  "bin": {
+    "build-site": "./build-site.mjs"
+  },
+  "scripts": {
+    "compile": "tsc --outdir compiled",
+    "build": "sh -c 'yarn esbuild package.mts --external:esbuild --platform=node --target=node18 --minify=false --bundle --format=esm --outfile=package.mjs | yarn node package.mjs' ''"
+  },
+  "devDependencies": {
+    "@types/node": "18",
+    "esbuild": "^0.19.9",
+    "typescript": "~5.0",
+    "typescript-language-server": "~3.3.2"
+  }
+}

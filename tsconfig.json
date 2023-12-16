@@ -1,0 +1,33 @@
+{
+  "include": ["*.mts"],
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "node16",
+
+    "lib": ["es2022", "dom"],
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noFallthroughCasesInSwitch": true,
+    "verbatimModuleSyntax": true,
+    "noImplicitReturns": true,
+
+    "allowImportingTsExtensions": true, // XXX
+    "noEmit": true, // XXX
+
+    "isolatedModules": true,
+    "esModuleInterop": true,
+
+    "sourceMap": true,
+    "inlineSources": true,
+
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "noUncheckedIndexedAccess": true,
+
+    "newLine": "lf",
+
+    "declaration": true,
+    "jsx": "react"
+  }
+}
