@@ -167,6 +167,8 @@ __metadata:
     esbuild: ^0.19.9
     typescript: ~5.0
     typescript-language-server: ~3.3.2
+  bin:
+    build-site: ./build-site.mjs
   languageName: unknown
   linkType: soft
 
