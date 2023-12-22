@@ -1,3 +1,11 @@
+/**
+ * Packages itself (site-builder).
+ *
+ * Used in development/release flow, used by package.json scripts.
+ *
+ * Depends on Node.
+ */
+
 import { resolve, join } from 'node:path';
 import { parseArgs } from 'node:util';
 
@@ -77,6 +85,7 @@ async function main() {
 }
 
 
+/** Builds the entry point for site build CLI command. */
 async function buildSiteBuilder(opts: BaseBuildOptions) {
   const { logLevel } = opts;
   return await esbuild({

@@ -1,5 +1,14 @@
 #!/usr/bin/env node
 
+/**
+ * Handles building a site.
+ *
+ * Is a `bin` entry point and one of the primary APIs,
+ * if not *the* primary API of this entire package.
+ *
+ * Depends on Node, currently.
+ */
+
 import { resolve, join, isAbsolute } from 'node:path';
 import { mkdir, access, constants, cp } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
@@ -21,9 +30,9 @@ console.info("HEY");
 
 
 interface BuildOptions extends BaseBuildOptions {
-  /** Dataset root. */
+  /** Dataset root. Absolute path. */
   datadir: string;
-  /** Where to output the site. */
+  /** Where to output the site. Absolute or relative to cwd. */
   outdir: string;
 }
 
