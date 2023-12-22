@@ -124,7 +124,7 @@ async function main() {
     }
   } else {
     if (values.port) {
-      throw new Error("--port requires --serve");
+      throw new Error("Option --port <N> can only be given with --serve set");
     }
     await _build();
   }
