@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { resolve, join } from 'node:path';
+import { resolve, join, isAbsolute } from 'node:path';
 import { mkdir, access, constants, cp } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
 
@@ -61,8 +61,14 @@ async function main() {
     throw new Error("Please provide outdir");
   }
 
+  const datadir = values.datadir
+    ? isAbsolute(values.datadir)
+        ? values.datadir
+        : join(process.cwd(), values.datadir)
+    : process.cwd();
+
   const buildOpts: BuildOptions = {
-    datadir: values.datadir ?? process.cwd(),
+    datadir,
     outdir: values.outdir,
     logLevel:
       values.debug
