@@ -18,6 +18,8 @@ export interface BaseBuildOptions {
 /**
  * Returns true if we are in CLI mode,
  * either via pipe or normal invocation as `node build.js`.
+ *
+ * XXX: flawed? Check on Node 20.
  */
 export function isCLI(): boolean {
   console.debug("utils import.meta.url", import.meta.url);
