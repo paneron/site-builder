@@ -28,12 +28,217 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {\
           "packageLocation": "./",\
           "packageDependencies": [\
+            ["@effect/cli", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.27.0"],\
+            ["@effect/platform", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
+            ["@effect/platform-node", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
+            ["@effect/printer", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.29.0"],\
+            ["@effect/printer-ansi", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.30.0"],\
+            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.0"],\
+            ["@effect/typeclass", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.21.0"],\
             ["@types/node", "npm:18.19.3"],\
+            ["effect", "npm:2.0.0-next.62"],\
             ["esbuild", "npm:0.19.9"],\
+            ["fast-check", "npm:3.15.0"],\
             ["typescript", "patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"],\
             ["typescript-language-server", "npm:3.3.2"]\
           ],\
           "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@effect/cli", [\
+        ["npm:0.27.0", {\
+          "packageLocation": "./.yarn/cache/@effect-cli-npm-0.27.0-ebafb7e64b-792d204fa4.zip/node_modules/@effect/cli/",\
+          "packageDependencies": [\
+            ["@effect/cli", "npm:0.27.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.27.0", {\
+          "packageLocation": "./.yarn/__virtual__/@effect-cli-virtual-8b6ccaa812/0/cache/@effect-cli-npm-0.27.0-ebafb7e64b-792d204fa4.zip/node_modules/@effect/cli/",\
+          "packageDependencies": [\
+            ["@effect/cli", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.27.0"],\
+            ["@effect/platform", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
+            ["@effect/printer", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.29.0"],\
+            ["@effect/printer-ansi", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.30.0"],\
+            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.0"],\
+            ["@types/effect", null],\
+            ["@types/effect__platform", null],\
+            ["@types/effect__printer", null],\
+            ["@types/effect__printer-ansi", null],\
+            ["@types/effect__schema", null],\
+            ["effect", "npm:2.0.0-next.62"]\
+          ],\
+          "packagePeers": [\
+            "@effect/platform",\
+            "@effect/printer-ansi",\
+            "@effect/printer",\
+            "@effect/schema",\
+            "@types/effect",\
+            "@types/effect__platform",\
+            "@types/effect__printer-ansi",\
+            "@types/effect__printer",\
+            "@types/effect__schema",\
+            "effect"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@effect/platform", [\
+        ["npm:0.39.0", {\
+          "packageLocation": "./.yarn/cache/@effect-platform-npm-0.39.0-aa8dd425b4-e2e4e17828.zip/node_modules/@effect/platform/",\
+          "packageDependencies": [\
+            ["@effect/platform", "npm:0.39.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0", {\
+          "packageLocation": "./.yarn/__virtual__/@effect-platform-virtual-2781b45a0b/0/cache/@effect-platform-npm-0.39.0-aa8dd425b4-e2e4e17828.zip/node_modules/@effect/platform/",\
+          "packageDependencies": [\
+            ["@effect/platform", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
+            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.0"],\
+            ["@types/effect", null],\
+            ["@types/effect__schema", null],\
+            ["effect", "npm:2.0.0-next.62"],\
+            ["find-my-way-ts", "npm:0.1.1"],\
+            ["multipasta", "npm:0.1.21"],\
+            ["path-browserify", "npm:1.0.1"]\
+          ],\
+          "packagePeers": [\
+            "@effect/schema",\
+            "@types/effect",\
+            "@types/effect__schema",\
+            "effect"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@effect/platform-node", [\
+        ["npm:0.39.0", {\
+          "packageLocation": "./.yarn/cache/@effect-platform-node-npm-0.39.0-7f5696fed2-148d1a8f3a.zip/node_modules/@effect/platform-node/",\
+          "packageDependencies": [\
+            ["@effect/platform-node", "npm:0.39.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0", {\
+          "packageLocation": "./.yarn/__virtual__/@effect-platform-node-virtual-c1b6a8b191/0/cache/@effect-platform-node-npm-0.39.0-7f5696fed2-148d1a8f3a.zip/node_modules/@effect/platform-node/",\
+          "packageDependencies": [\
+            ["@effect/platform-node", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
+            ["@effect/platform", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
+            ["@types/effect", null],\
+            ["@types/effect__platform", null],\
+            ["effect", "npm:2.0.0-next.62"],\
+            ["mime", "npm:3.0.0"],\
+            ["multipasta", "npm:0.1.21"]\
+          ],\
+          "packagePeers": [\
+            "@effect/platform",\
+            "@types/effect",\
+            "@types/effect__platform",\
+            "effect"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@effect/printer", [\
+        ["npm:0.29.0", {\
+          "packageLocation": "./.yarn/cache/@effect-printer-npm-0.29.0-50d2f347da-35a8738fd0.zip/node_modules/@effect/printer/",\
+          "packageDependencies": [\
+            ["@effect/printer", "npm:0.29.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.29.0", {\
+          "packageLocation": "./.yarn/__virtual__/@effect-printer-virtual-2dc78203c7/0/cache/@effect-printer-npm-0.29.0-50d2f347da-35a8738fd0.zip/node_modules/@effect/printer/",\
+          "packageDependencies": [\
+            ["@effect/printer", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.29.0"],\
+            ["@effect/typeclass", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.21.0"],\
+            ["@types/effect", null],\
+            ["@types/effect__typeclass", null],\
+            ["effect", "npm:2.0.0-next.62"]\
+          ],\
+          "packagePeers": [\
+            "@effect/typeclass",\
+            "@types/effect",\
+            "@types/effect__typeclass",\
+            "effect"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@effect/printer-ansi", [\
+        ["npm:0.30.0", {\
+          "packageLocation": "./.yarn/cache/@effect-printer-ansi-npm-0.30.0-b31e03ece8-1e44ff0678.zip/node_modules/@effect/printer-ansi/",\
+          "packageDependencies": [\
+            ["@effect/printer-ansi", "npm:0.30.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.30.0", {\
+          "packageLocation": "./.yarn/__virtual__/@effect-printer-ansi-virtual-739c1fc0c7/0/cache/@effect-printer-ansi-npm-0.30.0-b31e03ece8-1e44ff0678.zip/node_modules/@effect/printer-ansi/",\
+          "packageDependencies": [\
+            ["@effect/printer-ansi", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.30.0"],\
+            ["@effect/printer", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.29.0"],\
+            ["@effect/typeclass", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.21.0"],\
+            ["@types/effect", null],\
+            ["@types/effect__typeclass", null],\
+            ["effect", "npm:2.0.0-next.62"]\
+          ],\
+          "packagePeers": [\
+            "@effect/typeclass",\
+            "@types/effect",\
+            "@types/effect__typeclass",\
+            "effect"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@effect/schema", [\
+        ["npm:0.56.0", {\
+          "packageLocation": "./.yarn/cache/@effect-schema-npm-0.56.0-55d4d746b6-add2d0ea4d.zip/node_modules/@effect/schema/",\
+          "packageDependencies": [\
+            ["@effect/schema", "npm:0.56.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.0", {\
+          "packageLocation": "./.yarn/__virtual__/@effect-schema-virtual-75339b953c/0/cache/@effect-schema-npm-0.56.0-55d4d746b6-add2d0ea4d.zip/node_modules/@effect/schema/",\
+          "packageDependencies": [\
+            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.0"],\
+            ["@types/effect", null],\
+            ["@types/fast-check", null],\
+            ["effect", "npm:2.0.0-next.62"],\
+            ["fast-check", "npm:3.15.0"]\
+          ],\
+          "packagePeers": [\
+            "@types/effect",\
+            "@types/fast-check",\
+            "effect",\
+            "fast-check"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@effect/typeclass", [\
+        ["npm:0.21.0", {\
+          "packageLocation": "./.yarn/cache/@effect-typeclass-npm-0.21.0-44c823cb88-485d341806.zip/node_modules/@effect/typeclass/",\
+          "packageDependencies": [\
+            ["@effect/typeclass", "npm:0.21.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.21.0", {\
+          "packageLocation": "./.yarn/__virtual__/@effect-typeclass-virtual-2cde3db774/0/cache/@effect-typeclass-npm-0.21.0-44c823cb88-485d341806.zip/node_modules/@effect/typeclass/",\
+          "packageDependencies": [\
+            ["@effect/typeclass", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.21.0"],\
+            ["@types/effect", null],\
+            ["effect", "npm:2.0.0-next.62"]\
+          ],\
+          "packagePeers": [\
+            "@types/effect",\
+            "effect"\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["@esbuild/android-arm", [\
@@ -239,8 +444,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["@paneron/site-builder", "workspace:."],\
+            ["@effect/cli", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.27.0"],\
+            ["@effect/platform", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
+            ["@effect/platform-node", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
+            ["@effect/printer", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.29.0"],\
+            ["@effect/printer-ansi", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.30.0"],\
+            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.0"],\
+            ["@effect/typeclass", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.21.0"],\
             ["@types/node", "npm:18.19.3"],\
+            ["effect", "npm:2.0.0-next.62"],\
             ["esbuild", "npm:0.19.9"],\
+            ["fast-check", "npm:3.15.0"],\
             ["typescript", "patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"],\
             ["typescript-language-server", "npm:3.3.2"]\
           ],\
@@ -253,6 +467,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@types/node", "npm:18.19.3"],\
             ["undici-types", "npm:5.26.5"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["effect", [\
+        ["npm:2.0.0-next.62", {\
+          "packageLocation": "./.yarn/cache/effect-npm-2.0.0-next.62-cddb36287c-e917517243.zip/node_modules/effect/",\
+          "packageDependencies": [\
+            ["effect", "npm:2.0.0-next.62"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -284,6 +507,81 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@esbuild/win32-arm64", "npm:0.19.9"],\
             ["@esbuild/win32-ia32", "npm:0.19.9"],\
             ["@esbuild/win32-x64", "npm:0.19.9"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["fast-check", [\
+        ["npm:3.15.0", {\
+          "packageLocation": "./.yarn/cache/fast-check-npm-3.15.0-5e1d76e115-c0b989ac22.zip/node_modules/fast-check/",\
+          "packageDependencies": [\
+            ["fast-check", "npm:3.15.0"],\
+            ["pure-rand", "npm:6.0.4"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["fast-decode-uri-component", [\
+        ["npm:1.0.1", {\
+          "packageLocation": "./.yarn/cache/fast-decode-uri-component-npm-1.0.1-578ba9fecf-427a48fe09.zip/node_modules/fast-decode-uri-component/",\
+          "packageDependencies": [\
+            ["fast-decode-uri-component", "npm:1.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["fast-querystring", [\
+        ["npm:1.1.2", {\
+          "packageLocation": "./.yarn/cache/fast-querystring-npm-1.1.2-81dfb4019b-7149f82ee9.zip/node_modules/fast-querystring/",\
+          "packageDependencies": [\
+            ["fast-querystring", "npm:1.1.2"],\
+            ["fast-decode-uri-component", "npm:1.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["find-my-way-ts", [\
+        ["npm:0.1.1", {\
+          "packageLocation": "./.yarn/cache/find-my-way-ts-npm-0.1.1-86df809f4d-fd993908f6.zip/node_modules/find-my-way-ts/",\
+          "packageDependencies": [\
+            ["find-my-way-ts", "npm:0.1.1"],\
+            ["fast-querystring", "npm:1.1.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["mime", [\
+        ["npm:3.0.0", {\
+          "packageLocation": "./.yarn/cache/mime-npm-3.0.0-8d911e4c06-f43f9b7bfa.zip/node_modules/mime/",\
+          "packageDependencies": [\
+            ["mime", "npm:3.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["multipasta", [\
+        ["npm:0.1.21", {\
+          "packageLocation": "./.yarn/cache/multipasta-npm-0.1.21-2c9b9d48e8-dee3ba746b.zip/node_modules/multipasta/",\
+          "packageDependencies": [\
+            ["multipasta", "npm:0.1.21"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["path-browserify", [\
+        ["npm:1.0.1", {\
+          "packageLocation": "./.yarn/cache/path-browserify-npm-1.0.1-f975d99a99-c6d7fa3764.zip/node_modules/path-browserify/",\
+          "packageDependencies": [\
+            ["path-browserify", "npm:1.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["pure-rand", [\
+        ["npm:6.0.4", {\
+          "packageLocation": "./.yarn/cache/pure-rand-npm-6.0.4-0821a97867-e1c4e69f8b.zip/node_modules/pure-rand/",\
+          "packageDependencies": [\
+            ["pure-rand", "npm:6.0.4"]\
           ],\
           "linkType": "HARD"\
         }]\

@@ -5,6 +5,87 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@effect/cli@npm:^0.27.0":
+  version: 0.27.0
+  resolution: "@effect/cli@npm:0.27.0"
+  peerDependencies:
+    "@effect/platform": ^0.39.0
+    "@effect/printer": ^0.29.0
+    "@effect/printer-ansi": ^0.30.0
+    "@effect/schema": ^0.56.0
+    effect: 2.0.0-next.62
+  checksum: 792d204fa43f69eaadf807e9dd845a8c5cd4ed373923abd8b123480be93c91dad2d668affa124ccd17247215e616f6d4c8e0d982971d5a30a7328d48dd88467d
+  languageName: node
+  linkType: hard
+
+"@effect/platform-node@npm:^0.39.0":
+  version: 0.39.0
+  resolution: "@effect/platform-node@npm:0.39.0"
+  dependencies:
+    mime: ^3.0.0
+    multipasta: ^0.1.21
+  peerDependencies:
+    "@effect/platform": ^0.39.0
+    effect: 2.0.0-next.62
+  checksum: 148d1a8f3ada7f9d555d20d85861e2f8973ce3913fa1c5655415c7ba19997ca813ffccaa8680a0502161a8d9cf20ea64bfbb6f5dbf636cd1c9bfb745a826e0a1
+  languageName: node
+  linkType: hard
+
+"@effect/platform@npm:^0.39.0":
+  version: 0.39.0
+  resolution: "@effect/platform@npm:0.39.0"
+  dependencies:
+    find-my-way-ts: ^0.1.1
+    multipasta: ^0.1.21
+    path-browserify: ^1.0.1
+  peerDependencies:
+    "@effect/schema": ^0.56.0
+    effect: 2.0.0-next.62
+  checksum: e2e4e17828e29ebc8b45417a5699e51c96899cde579704972fbe94bcb00dae61c2318f968da1211cec11dfe81cc840b57062e513c6963c96b098b8b02df26cde
+  languageName: node
+  linkType: hard
+
+"@effect/printer-ansi@npm:^0.30.0":
+  version: 0.30.0
+  resolution: "@effect/printer-ansi@npm:0.30.0"
+  dependencies:
+    "@effect/printer": ^0.29.0
+  peerDependencies:
+    "@effect/typeclass": ^0.21.0
+    effect: 2.0.0-next.62
+  checksum: 1e44ff0678d3eb3bb69b32907fe25ca76abee3979fbd315d42e588228a33cf2c6006cee66867127e7aa58f2297b1f308802613adc5146e536c0f2ff0c95f8dd7
+  languageName: node
+  linkType: hard
+
+"@effect/printer@npm:^0.29.0":
+  version: 0.29.0
+  resolution: "@effect/printer@npm:0.29.0"
+  peerDependencies:
+    "@effect/typeclass": ^0.21.0
+    effect: 2.0.0-next.62
+  checksum: 35a8738fd0e1bc0cf55aae8994b31b621809e88e68bacbbcacb4121207cd0e0f33451c94fbe098e66ccd4b5c0f8ae7aa6fd777b37a779dd21cf92b5c7e178df6
+  languageName: node
+  linkType: hard
+
+"@effect/schema@npm:^0.56.0":
+  version: 0.56.0
+  resolution: "@effect/schema@npm:0.56.0"
+  peerDependencies:
+    effect: 2.0.0-next.62
+    fast-check: ^3.13.2
+  checksum: add2d0ea4d38d81505648b9779d8ce184514181b456ca533719e30071a9cf661b24d4517ee94d7d9d0bfada089946b80dbc8c087e6a11c57e596cd6321f8fa0d
+  languageName: node
+  linkType: hard
+
+"@effect/typeclass@npm:^0.21.0":
+  version: 0.21.0
+  resolution: "@effect/typeclass@npm:0.21.0"
+  peerDependencies:
+    effect: 2.0.0-next.62
+  checksum: 485d34180609555a3faedad1f731ec766cc6ee1a0dc60633c190b85019c1bf7274f3f58e40dc70a24509b259a79b4092e4ca0d5cc11c39decb8ef4194c4fdcce
+  languageName: node
+  linkType: hard
+
 "@esbuild/android-arm64@npm:0.19.9":
   version: 0.19.9
   resolution: "@esbuild/android-arm64@npm:0.19.9"
@@ -163,8 +244,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@paneron/site-builder@workspace:."
   dependencies:
+    "@effect/cli": ^0.27.0
+    "@effect/platform": ^0.39.0
+    "@effect/platform-node": ^0.39.0
+    "@effect/printer": ^0.29.0
+    "@effect/printer-ansi": ^0.30.0
+    "@effect/schema": ^0.56.0
+    "@effect/typeclass": ^0.21.0
     "@types/node": 18
+    effect: ^2.0.0-next.62
     esbuild: ^0.19.9
+    fast-check: ^3.15.0
     typescript: ~5.0
     typescript-language-server: ~3.3.2
   bin:
@@ -178,6 +268,13 @@ __metadata:
   dependencies:
     undici-types: ~5.26.4
   checksum: 58c4fa45a78fcec75c78182a4b266395905957633654eb0311c5f9c30ac15c179ea2287ab1af034e46c2db7bb0589ef0000ee64c1de8f568a0aad29eaadb100c
+  languageName: node
+  linkType: hard
+
+"effect@npm:^2.0.0-next.62":
+  version: 2.0.0-next.62
+  resolution: "effect@npm:2.0.0-next.62"
+  checksum: e91751724304ce8e0cc7b90c4719da1f210990f1c3273b517b6996174246c1c4f0b23c1240f9d0954a8819f0fc66c8997864a8cd07867ceb76500d78756a3e2d
   languageName: node
   linkType: hard
 
@@ -255,6 +352,70 @@ __metadata:
   bin:
     esbuild: bin/esbuild
   checksum: 30a510de26068515693f2238d7e9697c68eb7ea3431fb31e6b5797dff576663c79e7c5076a8a227b4011c8050967655af2ab5775c2bffc554a62641bbb742e91
+  languageName: node
+  linkType: hard
+
+"fast-check@npm:^3.15.0":
+  version: 3.15.0
+  resolution: "fast-check@npm:3.15.0"
+  dependencies:
+    pure-rand: ^6.0.0
+  checksum: c0b989ac220ec6655a9468ed4d166a3a3c24753994c5082625c084418de3aa523f0d3facfcdd199423d6180844956650a662ddc0b4b17502178fa1db55945f98
+  languageName: node
+  linkType: hard
+
+"fast-decode-uri-component@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "fast-decode-uri-component@npm:1.0.1"
+  checksum: 427a48fe0907e76f0e9a2c228e253b4d8a8ab21d130ee9e4bb8339c5ba4086235cf9576831f7b20955a752eae4b525a177ff9d5825dd8d416e7726939194fbee
+  languageName: node
+  linkType: hard
+
+"fast-querystring@npm:^1.0.0":
+  version: 1.1.2
+  resolution: "fast-querystring@npm:1.1.2"
+  dependencies:
+    fast-decode-uri-component: ^1.0.1
+  checksum: 7149f82ee9ac39a9c08c7ffe435b9f6deade76ae5e3675fe1835720513e8c4bc541e666b4b7b1c0c07e08f369dcf4828d00f2bee39889a90a168e1439cf27b0b
+  languageName: node
+  linkType: hard
+
+"find-my-way-ts@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "find-my-way-ts@npm:0.1.1"
+  dependencies:
+    fast-querystring: ^1.0.0
+  checksum: fd993908f6f7f3ae1ed4912fbeaf268d6360392d5f9a5e7f641a074859f45da985a3c817aa83561c68e7dcc57c5e4d7fa918113d83b3c376eac22ae76f420596
+  languageName: node
+  linkType: hard
+
+"mime@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "mime@npm:3.0.0"
+  bin:
+    mime: cli.js
+  checksum: f43f9b7bfa64534e6b05bd6062961681aeb406a5b53673b53b683f27fcc4e739989941836a355eef831f4478923651ecc739f4a5f6e20a76487b432bfd4db928
+  languageName: node
+  linkType: hard
+
+"multipasta@npm:^0.1.21":
+  version: 0.1.21
+  resolution: "multipasta@npm:0.1.21"
+  checksum: dee3ba746b0c6d90f33e42f17727d0aaeebf6fb2bd5a131f9f973534854b7939947ffa72932f05d53e4e27848f829a4ab654ab0f45e7e49d83e4067edfb39883
+  languageName: node
+  linkType: hard
+
+"path-browserify@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "path-browserify@npm:1.0.1"
+  checksum: c6d7fa376423fe35b95b2d67990060c3ee304fc815ff0a2dc1c6c3cfaff2bd0d572ee67e18f19d0ea3bbe32e8add2a05021132ac40509416459fffee35200699
+  languageName: node
+  linkType: hard
+
+"pure-rand@npm:^6.0.0":
+  version: 6.0.4
+  resolution: "pure-rand@npm:6.0.4"
+  checksum: e1c4e69f8bf7303e5252756d67c3c7551385cd34d94a1f511fe099727ccbab74c898c03a06d4c4a24a89b51858781057b83ebbfe740d984240cdc04fead36068
   languageName: node
   linkType: hard
 
