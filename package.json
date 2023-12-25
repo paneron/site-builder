@@ -8,7 +8,8 @@
   },
   "scripts": {
     "compile": "tsc --outdir compiled",
-    "build": "sh -c 'yarn esbuild package.mts --external:esbuild --platform=node --target=node18 --minify=false --bundle --format=esm --outfile=package.mjs | yarn node package.mjs' ''"
+    "build-builder": "yarn esbuild package.mts --packages=external --platform=node --target=node18 --minify=false --bundle --format=esm --outfile=package.mjs",
+    "build": "yarn node package.mjs"
   },
   "devDependencies": {
     "@types/node": "18",
