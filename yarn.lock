@@ -5,7 +5,7 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@effect/cli@npm:^0.27.0":
+"@effect/cli@npm:~0.27.0":
   version: 0.27.0
   resolution: "@effect/cli@npm:0.27.0"
   peerDependencies:
@@ -18,7 +18,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@effect/platform-node@npm:^0.39.0":
+"@effect/platform-node@npm:~0.39.0":
   version: 0.39.0
   resolution: "@effect/platform-node@npm:0.39.0"
   dependencies:
@@ -31,7 +31,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@effect/platform@npm:^0.39.0":
+"@effect/platform@npm:~0.39.0":
   version: 0.39.0
   resolution: "@effect/platform@npm:0.39.0"
   dependencies:
@@ -45,7 +45,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@effect/printer-ansi@npm:^0.30.0":
+"@effect/printer-ansi@npm:~0.30.0":
   version: 0.30.0
   resolution: "@effect/printer-ansi@npm:0.30.0"
   dependencies:
@@ -57,7 +57,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@effect/printer@npm:^0.29.0":
+"@effect/printer@npm:^0.29.0, @effect/printer@npm:~0.29.0":
   version: 0.29.0
   resolution: "@effect/printer@npm:0.29.0"
   peerDependencies:
@@ -67,17 +67,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@effect/schema@npm:^0.56.0":
-  version: 0.56.0
-  resolution: "@effect/schema@npm:0.56.0"
+"@effect/schema@npm:~0.56.0":
+  version: 0.56.1
+  resolution: "@effect/schema@npm:0.56.1"
   peerDependencies:
     effect: 2.0.0-next.62
     fast-check: ^3.13.2
-  checksum: add2d0ea4d38d81505648b9779d8ce184514181b456ca533719e30071a9cf661b24d4517ee94d7d9d0bfada089946b80dbc8c087e6a11c57e596cd6321f8fa0d
+  checksum: 69e53ff98566e4fa0eb889daaed6a46265fa0d468d628c8003bec540e23432cff9a9148ac43a962b8e19387f1f2eee2a64b8f61c76f595d3ebec93a98b3755b7
   languageName: node
   linkType: hard
 
-"@effect/typeclass@npm:^0.21.0":
+"@effect/typeclass@npm:~0.21.0":
   version: 0.21.0
   resolution: "@effect/typeclass@npm:0.21.0"
   peerDependencies:
@@ -244,17 +244,17 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@paneron/site-builder@workspace:."
   dependencies:
-    "@effect/cli": ^0.27.0
-    "@effect/platform": ^0.39.0
-    "@effect/platform-node": ^0.39.0
-    "@effect/printer": ^0.29.0
-    "@effect/printer-ansi": ^0.30.0
-    "@effect/schema": ^0.56.0
-    "@effect/typeclass": ^0.21.0
+    "@effect/cli": ~0.27.0
+    "@effect/platform": ~0.39.0
+    "@effect/platform-node": ~0.39.0
+    "@effect/printer": ~0.29.0
+    "@effect/printer-ansi": ~0.30.0
+    "@effect/schema": ~0.56.0
+    "@effect/typeclass": ~0.21.0
     "@types/node": 18
-    effect: ^2.0.0-next.62
+    effect: ~2.0.0-next.62
     esbuild: ^0.19.9
-    fast-check: ^3.15.0
+    fast-check: ~3.15.0
     typescript: ~5.0
     typescript-language-server: ~3.3.2
   bin:
@@ -271,7 +271,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"effect@npm:^2.0.0-next.62":
+"effect@npm:~2.0.0-next.62":
   version: 2.0.0-next.62
   resolution: "effect@npm:2.0.0-next.62"
   checksum: e91751724304ce8e0cc7b90c4719da1f210990f1c3273b517b6996174246c1c4f0b23c1240f9d0954a8819f0fc66c8997864a8cd07867ceb76500d78756a3e2d
@@ -355,7 +355,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-check@npm:^3.15.0":
+"fast-check@npm:~3.15.0":
   version: 3.15.0
   resolution: "fast-check@npm:3.15.0"
   dependencies:

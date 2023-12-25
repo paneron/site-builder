@@ -17,10 +17,14 @@
     "typescript-language-server": "~3.3.2"
   },
   "dependencies": {
-    "@effect/cli": "^0.27.0",
-    "@effect/platform-node": "^0.39.0",
-    "@effect/schema": "^0.56.0",
-    "effect": "^2.0.0-next.62",
-    "fast-check": "^3.15.0"
+    "@effect/cli": "~0.27.0",
+    "@effect/platform": "~0.39.0",
+    "@effect/platform-node": "~0.39.0",
+    "@effect/printer": "~0.29.0",
+    "@effect/printer-ansi": "~0.30.0",
+    "@effect/schema": "~0.56.0",
+    "@effect/typeclass": "~0.21.0",
+    "effect": "~2.0.0-next.62",
+    "fast-check": "~3.15.0"
   }
 }

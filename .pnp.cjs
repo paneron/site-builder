@@ -33,7 +33,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@effect/platform-node", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
             ["@effect/printer", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.29.0"],\
             ["@effect/printer-ansi", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.30.0"],\
-            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.0"],\
+            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.1"],\
             ["@effect/typeclass", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.21.0"],\
             ["@types/node", "npm:18.19.3"],\
             ["effect", "npm:2.0.0-next.62"],\
@@ -60,7 +60,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@effect/platform", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
             ["@effect/printer", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.29.0"],\
             ["@effect/printer-ansi", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.30.0"],\
-            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.0"],\
+            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.1"],\
             ["@types/effect", null],\
             ["@types/effect__platform", null],\
             ["@types/effect__printer", null],\
@@ -95,7 +95,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/__virtual__/@effect-platform-virtual-2781b45a0b/0/cache/@effect-platform-npm-0.39.0-aa8dd425b4-e2e4e17828.zip/node_modules/@effect/platform/",\
           "packageDependencies": [\
             ["@effect/platform", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
-            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.0"],\
+            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.1"],\
             ["@types/effect", null],\
             ["@types/effect__schema", null],\
             ["effect", "npm:2.0.0-next.62"],\
@@ -194,17 +194,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@effect/schema", [\
-        ["npm:0.56.0", {\
-          "packageLocation": "./.yarn/cache/@effect-schema-npm-0.56.0-55d4d746b6-add2d0ea4d.zip/node_modules/@effect/schema/",\
+        ["npm:0.56.1", {\
+          "packageLocation": "./.yarn/cache/@effect-schema-npm-0.56.1-0075bae3cf-69e53ff985.zip/node_modules/@effect/schema/",\
           "packageDependencies": [\
-            ["@effect/schema", "npm:0.56.0"]\
+            ["@effect/schema", "npm:0.56.1"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.0", {\
-          "packageLocation": "./.yarn/__virtual__/@effect-schema-virtual-75339b953c/0/cache/@effect-schema-npm-0.56.0-55d4d746b6-add2d0ea4d.zip/node_modules/@effect/schema/",\
+        ["virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.1", {\
+          "packageLocation": "./.yarn/__virtual__/@effect-schema-virtual-1564220173/0/cache/@effect-schema-npm-0.56.1-0075bae3cf-69e53ff985.zip/node_modules/@effect/schema/",\
           "packageDependencies": [\
-            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.0"],\
+            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.1"],\
             ["@types/effect", null],\
             ["@types/fast-check", null],\
             ["effect", "npm:2.0.0-next.62"],\
@@ -449,7 +449,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@effect/platform-node", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
             ["@effect/printer", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.29.0"],\
             ["@effect/printer-ansi", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.30.0"],\
-            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.0"],\
+            ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.1"],\
             ["@effect/typeclass", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.21.0"],\
             ["@types/node", "npm:18.19.3"],\
             ["effect", "npm:2.0.0-next.62"],\
