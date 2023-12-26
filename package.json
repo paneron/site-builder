@@ -8,6 +8,7 @@
   },
   "scripts": {
     "compile": "tsc --outdir compiled",
+    "clean": "rm -f ./package.mjs ./build-site.mjs",
     "build-builder": "yarn esbuild package.mts --packages=external --platform=node --target=node18 --minify=false --bundle --format=esm --outfile=package.mjs",
     "build": "yarn node package.mjs"
   },
