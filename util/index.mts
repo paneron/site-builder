@@ -167,7 +167,7 @@ export async function watchAndCall(
 }
 
 
-export async function serve(
+export function serve(
   root: string,
   port: number,
   signal: AbortSignal,

@@ -262,7 +262,7 @@ export async function mainOld() {
     process.on('SIGINT', abortServe);
     try {
       await _build();
-      await serve(
+      serve(
         buildOpts.outdir,
         port,
         ac.signal);
