@@ -9,11 +9,9 @@
  * Depends on Node, currently.
  */
 
-import { resolve, join, isAbsolute } from 'node:path';
-import { mkdir, access, constants } from 'node:fs/promises';
-import { parseArgs } from 'node:util';
+import { resolve, join } from 'node:path';
 
-import { Console, Stream, Effect, Logger, LogLevel, Types, Option } from 'effect';
+import { Console, Stream, Effect, Layer, Logger, LogLevel, Types, Option } from 'effect';
 import * as S from '@effect/schema/Schema';
 import { FileSystem, NodeContext, Runtime } from '@effect/platform-node';
 import type { PlatformError } from '@effect/platform-node/Error';
@@ -21,25 +19,20 @@ import { Options, Command } from '@effect/cli';
 import type { Command as Command_ } from '@effect/cli/Command';
 
 import {
-  type BaseBuildOptions,
   BaseBuildConfigFromCLIArgs,
   type LogLevel as _LogLevel,
   outputOptions,
   BaseBuildConfigSchema,
-  makeSequential,
-  watchAndCall,
-  serve,
+  serve as simpleServe,
 } from './util/index.mjs';
 import { debouncedWatcher } from './util/watch2.mjs';
 import { CONTRIB_SITE_TEMPLATES, ContribSiteTemplateName } from './site/index.mjs';
 
 
-const EFFECT_LOG_LEVELS: { [key in _LogLevel]: LogLevel.LogLevel } = {
-  'debug': LogLevel.Debug,
-  'info': LogLevel.Info,
-  'error': LogLevel.Error,
-  'silent': LogLevel.None,
-} as const;
+// We will need to access this package’s source when building the site:
+const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
+
+console.debug("My source is at", PACKAGE_ROOT);
 
 
 const siteBuildOptions = {
@@ -179,6 +172,24 @@ const watch = Command.
             resolve(buildOpts.outdir),
             '.git',
           ];
+
+          if (serve) {
+            yield * _(
+              Effect.forkDaemon(
+                Layer.launch(Layer.scopedDiscard(
+                  Effect.gen(function * (_) {
+                    //const srv = yield * _(ServerContext);
+                    yield * _(
+                      Effect.acquireRelease(
+                        Effect.sync(() => simpleServe(buildOpts.outdir, port)),
+                        (srv) => Effect.sync(() => srv.close()),
+                      )
+                    );
+                  })
+                )),
+              )
+            );
+          }
           yield * _(
             Effect.
               gen(function * (_) {
@@ -213,13 +224,6 @@ Effect.
     Effect.provide(NodeContext.layer),
     Runtime.runMain,
   );
-
-
-// We will need to access this package’s source when building the site:
-const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
-
-
-console.debug("My source is at", PACKAGE_ROOT);
 
 
 const clearDirectoryContents =
@@ -267,108 +271,9 @@ function getPathToSiteTemplate(
 }
 
 
-
-interface BuildOptions extends BaseBuildOptions {
-  /** Dataset root. Absolute path. */
-  datadir: string;
-  /** Where to output the site. Absolute or relative to cwd. */
-  outdir: string;
-}
-
-
-//await main();
-
-
-/** Entry point when invoked as CLI script. */
-export async function mainOld() {
-
-  const { values } = parseArgs({
-    options: {
-      debug: { type: 'boolean' },
-      verbose: { type: 'boolean' },
-
-      datadir: { type: 'string', default: process.cwd() },
-      outdir: { type: 'string' },
-
-      // See serve() & watchAndCall()
-      serve: { type: 'boolean' },
-      port: { type: 'string' },
-      // Extra directories to watch, *relative to current package*
-      watch: { type: 'string', multiple: true },
-
-      // See BuildOptions.distdir
-    },
-  });
-
-  if (!values.outdir) {
-    throw new Error("Please provide outdir");
-  }
-
-  const datadir = values.datadir
-    ? isAbsolute(values.datadir)
-        ? values.datadir
-        : join(process.cwd(), values.datadir)
-    : process.cwd();
-
-  const buildOpts: BuildOptions = {
-    datadir,
-    outdir: values.outdir,
-    logLevel:
-      values.debug
-        ? 'debug'
-        : values.verbose
-            ? 'info'
-            : 'error',
-  };
-
-  // Monkey-patch console into desired log level :/
-  // if (!values.debug) {
-  //   console.debug = noop;
-  //   if (!values.verbose) {
-  //     console.log = noop;
-  //     // info is considered higher level than log, and will be output
-  //   }
-  // }
-
-  console.debug(`Using data from ${buildOpts.datadir}`)
-  console.debug(`Building to ${buildOpts.outdir}`)
-
-  const _build = makeSequential(async function buildCLI() {
-    return await build(buildOpts);
-  });
-
-  await mkdir(buildOpts.outdir, { recursive: true });
-
-  await Promise.all([
-    access(buildOpts.outdir, constants.W_OK),
-    access(buildOpts.datadir, constants.R_OK),
-  ]);
-
-  if (values.serve) {
-    const port = parseInt(values.port ?? '8080', 10);
-    const ac = new AbortController();
-    function abortServe() { ac.abort(); }
-    process.on('SIGINT', abortServe);
-    try {
-      await _build();
-      serve(
-        buildOpts.outdir,
-        port,
-        ac.signal);
-      await watchAndCall(
-        buildOpts.datadir,
-        [],
-        ['.git'],
-        _build,
-        ac.signal);
-    } catch (e) {
-      abortServe();
-      throw e;
-    }
-  } else {
-    if (values.port) {
-      throw new Error("Option --port <N> can only be given with --serve set");
-    }
-    await _build();
-  }
-}
+const EFFECT_LOG_LEVELS: { [key in _LogLevel]: LogLevel.LogLevel } = {
+  'debug': LogLevel.Debug,
+  'info': LogLevel.Info,
+  'error': LogLevel.Error,
+  'silent': LogLevel.None,
+} as const;
