@@ -7,82 +7,52 @@
  */
 
 import { resolve, join } from 'node:path';
-import { parseArgs } from 'node:util';
 
+import * as S from '@effect/schema/Schema';
+import { Command } from '@effect/cli';
+import { NodeContext, Runtime } from '@effect/platform-node';
+import { Effect, Console } from 'effect';
 import { build as esbuild } from 'esbuild';
 
-import { type BaseBuildOptions, noop, isCLI } from './util/index.mjs';
+import { type BaseBuildOptions, BaseBuildConfigFromCLIArgs, outputOptions } from './util/index.mjs';
+import { ContribSiteTemplateName, CONTRIB_SITE_TEMPLATES } from './site/index.mjs';
 
 
-// NOTE: this assumes the script is called via `yarn workspace webgui build`,
-// so that `.` corresponds to webgui package root.
 const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
-//const SITE_ROOT = join(PACKAGE_ROOT, 'site');
-
-console.debug("package root", PACKAGE_ROOT);
 
 
-/** Entry point when invoked as CLI script. */
-async function main() {
-  const { values } = parseArgs({
-    options: {
-      debug: { type: 'boolean' },
-      verbose: { type: 'boolean' },
-    },
+const preparePackage = Command.make('package', outputOptions, (rawOpts) => {
+  return Effect.gen(function * (_) {
+    yield * _(Console.debug("Using package root:", PACKAGE_ROOT));
+    yield * _(Console.warn(`Want to build using ${JSON.stringify(rawOpts)}`));
+    const opts = yield * _(S.parse(BaseBuildConfigFromCLIArgs)(rawOpts));
+    yield * _(Console.warn(`Decoded opts: ${JSON.stringify(opts)}`));
+    //yield * _(Effect.tryPromise(() => buildSiteBuilder(opts)));
+    yield * _(Effect.all([
+      Effect.tryPromise(() => buildSiteBuilder(opts)),
+      ...CONTRIB_SITE_TEMPLATES.map(templateName =>
+        Effect.tryPromise(() =>
+          buildSiteTemplate({ ...opts, templateName })
+        )
+      )
+    ], { concurrency: 'unbounded' }));
+    return Console.warn(`Done building`);
   });
+});
 
-  const buildOpts: BaseBuildOptions = {
-    logLevel:
-      values.debug
-        ? 'debug'
-        : values.verbose
-            ? 'info'
-            : 'error',
-  };
+const main = Command.run(
+  preparePackage,
+  {
+    name: "Site builder builder",
+    version: "N/A",
+  },
+);
 
-  // Monkey-patch console into desired log level :/
-  if (!values.debug) {
-    console.debug = noop;
-    if (!values.verbose) {
-      console.log = noop;
-      // info is considered higher level than log, and will be output
-    }
-  }
-
-  await buildSiteBuilder(buildOpts);
-
-  // const _build = makeSequential(async function buildCLI() {
-  //   return await build(buildOpts);
-  // });
-
-  // if (values.serve) {
-  //   const port = parseInt(values.port ?? '8080', 10);
-  //   const ac = new AbortController();
-  //   function abortServe() { ac.abort(); }
-  //   process.on('SIGINT', abortServe);
-  //   try {
-  //     await _build();
-  //     await serve(
-  //       buildOpts.distdir,
-  //       port,
-  //       ac.signal);
-  //     await watchAndCall(
-  //       REPO_ROOT,
-  //       [buildOpts.pubdir, buildOpts.srcdir, ...(values.watch ?? [])],
-  //       [],
-  //       _build,
-  //       ac.signal);
-  //   } catch (e) {
-  //     abortServe();
-  //     throw e;
-  //   }
-  // } else {
-  //   if (values.port) {
-  //     throw new Error("--port requires --serve");
-  //   }
-  //   await _build();
-  // }
-}
+Effect.
+  suspend(() => main(process.argv.slice(2))).
+  pipe(
+    Effect.provide(NodeContext.layer),
+    Runtime.runMain);
 
 
 /** Builds the entry point for site build CLI command. */
@@ -98,8 +68,14 @@ async function buildSiteBuilder(opts: BaseBuildOptions) {
     format: 'esm',
     target: ['esnext'],
     bundle: true,
-    //external: ['react', 'react-dom'],
+
+    // We cannot make dependencies external, because
+    // package’s bin scripts don’t seem to have access
+    // to package dependencies.
+    //external: ['react', 'react-dom', '@effect/*', 'effect'],
+
     minify: false,
+    treeShaking: true,
     sourcemap: false,
     platform: 'node',
     //publicPath: 'https://convertor.glossarist.org/',
@@ -116,6 +92,39 @@ async function buildSiteBuilder(opts: BaseBuildOptions) {
 }
 
 
-if (isCLI()) {
-  await main();
+/**
+ * Builds site template.
+ *
+ * Currently, that just involves running esbuild against JS.
+ */
+async function buildSiteTemplate(
+  opts: BaseBuildOptions & { templateName: S.Schema.To<typeof ContribSiteTemplateName> },
+) {
+  const siteRoot = join(PACKAGE_ROOT, 'site', opts.templateName);
+  return await esbuild({
+    entryPoints: [
+      join(siteRoot, 'index.tsx'),
+      //join(PACKAGE_ROOT, 'site', 'index.tsx'),
+    ],
+    entryNames: '[dir]/[name]',
+    assetNames: '[dir]/[name]',
+    format: 'esm',
+    target: ['esnext'],
+    bundle: true,
+    external: ['react', 'react-dom'],
+    minify: false,
+    treeShaking: true,
+    sourcemap: 'inline',
+    platform: 'node',
+    //publicPath: 'https://convertor.glossarist.org/',
+    outfile: join(siteRoot, 'app.js'),
+    write: true,
+    loader: {
+      '.css': 'local-css',
+      // '.jpg': 'file',
+      // '.png': 'file',
+    },
+    logLevel: opts.logLevel,
+    plugins: [],
+  });
 }

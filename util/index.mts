@@ -4,15 +4,50 @@ import { readFile, watch } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { fstatSync } from 'node:fs';
 
+import { Options } from '@effect/cli';
+import * as S from '@effect/schema/Schema';
+
 
 export function noop (..._: any[]) { void 0; }
 
 
-type LogLevel = 'debug' | 'info' | 'error' | 'silent';
+export const LogLevelSchema = S.literal('debug', 'info', 'error', 'silent');
+export type LogLevel = S.Schema.To<typeof LogLevelSchema>
 
-export interface BaseBuildOptions {
-  logLevel: LogLevel;
-}
+export const BaseBuildConfigSchema = S.struct({
+  logLevel: LogLevelSchema,
+});
+export interface BaseBuildOptions extends S.Schema.To<typeof BaseBuildConfigSchema> {}
+
+export const BaseBuildCLIArgSchema = S.struct({
+  debug: S.union(S.boolean, S.undefined),
+  verbose: S.union(S.boolean, S.undefined),
+});
+
+export const outputOptions = {
+  verbose: Options.boolean("verbose").pipe(Options.withAlias("v")),
+  debug: Options.boolean("debug"),
+} as const;
+
+export const BaseBuildConfigFromCLIArgs: S.Schema<
+  S.Schema.To<typeof BaseBuildCLIArgSchema>,
+  S.Schema.To<typeof BaseBuildConfigSchema>> =
+S.transform(
+  BaseBuildCLIArgSchema,
+  BaseBuildConfigSchema,
+  (values) => ({ logLevel: values.debug
+    ? 'debug'
+    : values.verbose
+      ? 'info'
+      : 'error'
+  } as const),
+  // We don’t want to support reverse transformation but we have to per typings.
+  // XXX: this does the wrong thing
+  ({ logLevel }) => ({ debug: logLevel === 'debug', verbose: logLevel === 'info' }),
+  //() => ParseResult.fail(ParseResult.ParseIssue),
+)
+
+export interface BaseBuildOptions extends S.Schema.To<typeof BaseBuildConfigSchema> {}
 
 
 /**
