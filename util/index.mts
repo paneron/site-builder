@@ -170,7 +170,7 @@ export async function watchAndCall(
 export function serve(
   root: string,
   port: number,
-  signal: AbortSignal,
+  signal?: AbortSignal,
 ) {
   console.log(`serve: starting server at port ${port}...`);
 
@@ -202,7 +202,7 @@ export function serve(
     }
   });
 
-  signal.addEventListener('abort', function abortServe() {
+  signal?.addEventListener('abort', function abortServe() {
     console.debug("serve: stopping server...");
     server.closeAllConnections?.();
     return new Promise((resolve, reject) =>
@@ -213,4 +213,6 @@ export function serve(
   server.listen(port);
 
   console.info(`serve: listening at port ${port}`);
+
+  return server;
 }
