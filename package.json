@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@types/node": "18",
-    "esbuild": "^0.19.9",
+    "esbuild": "0.19.9",
     "typescript": "~5.0",
     "typescript-language-server": "~3.3.2"
   },
