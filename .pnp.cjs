@@ -36,6 +36,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.1"],\
             ["@effect/typeclass", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.21.0"],\
             ["@types/node", "npm:18.19.3"],\
+            ["@types/react", "npm:18.2.45"],\
+            ["@types/react-dom", "npm:18.2.18"],\
             ["effect", "npm:2.0.0-next.62"],\
             ["esbuild", "npm:0.19.9"],\
             ["fast-check", "npm:3.15.0"],\
@@ -452,6 +454,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.1"],\
             ["@effect/typeclass", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.21.0"],\
             ["@types/node", "npm:18.19.3"],\
+            ["@types/react", "npm:18.2.45"],\
+            ["@types/react-dom", "npm:18.2.18"],\
             ["effect", "npm:2.0.0-next.62"],\
             ["esbuild", "npm:0.19.9"],\
             ["fast-check", "npm:3.15.0"],\
@@ -467,6 +471,55 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@types/node", "npm:18.19.3"],\
             ["undici-types", "npm:5.26.5"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/prop-types", [\
+        ["npm:15.7.11", {\
+          "packageLocation": "./.yarn/cache/@types-prop-types-npm-15.7.11-a0a5a0025c-7519ff11d0.zip/node_modules/@types/prop-types/",\
+          "packageDependencies": [\
+            ["@types/prop-types", "npm:15.7.11"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/react", [\
+        ["npm:18.2.45", {\
+          "packageLocation": "./.yarn/cache/@types-react-npm-18.2.45-fef6344d31-40b256bdce.zip/node_modules/@types/react/",\
+          "packageDependencies": [\
+            ["@types/react", "npm:18.2.45"],\
+            ["@types/prop-types", "npm:15.7.11"],\
+            ["@types/scheduler", "npm:0.16.8"],\
+            ["csstype", "npm:3.1.3"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/react-dom", [\
+        ["npm:18.2.18", {\
+          "packageLocation": "./.yarn/cache/@types-react-dom-npm-18.2.18-b316a8af22-8e3da404c9.zip/node_modules/@types/react-dom/",\
+          "packageDependencies": [\
+            ["@types/react-dom", "npm:18.2.18"],\
+            ["@types/react", "npm:18.2.45"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/scheduler", [\
+        ["npm:0.16.8", {\
+          "packageLocation": "./.yarn/cache/@types-scheduler-npm-0.16.8-303819b439-6c091b096d.zip/node_modules/@types/scheduler/",\
+          "packageDependencies": [\
+            ["@types/scheduler", "npm:0.16.8"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["csstype", [\
+        ["npm:3.1.3", {\
+          "packageLocation": "./.yarn/cache/csstype-npm-3.1.3-e9a1c85013-8db785cc92.zip/node_modules/csstype/",\
+          "packageDependencies": [\
+            ["csstype", "npm:3.1.3"]\
           ],\
           "linkType": "HARD"\
         }]\

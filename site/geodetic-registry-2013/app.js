@@ -1,0 +1,11 @@
+// site/geodetic-registry-2013/index.tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+var container = ReactDOM.createRoot(document.getElementById("app"));
+console.debug("hi");
+container.render(/* @__PURE__ */ React.createElement(App, null));
+function App() {
+  console.debug("rendering app");
+  return /* @__PURE__ */ React.createElement("div", null, "fo");
+}
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiaW5kZXgudHN4Il0sCiAgInNvdXJjZXNDb250ZW50IjogWyJpbXBvcnQgUmVhY3QgZnJvbSAncmVhY3QnO1xuaW1wb3J0IFJlYWN0RE9NIGZyb20gJ3JlYWN0LWRvbS9jbGllbnQnO1xuXG5jb25zdCBjb250YWluZXIgPSBSZWFjdERPTS5jcmVhdGVSb290KGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdhcHAnKSEpO1xuXG5jb25zb2xlLmRlYnVnKFwiaGlcIik7XG5cbmNvbnRhaW5lci5yZW5kZXIoPEFwcCAvPik7XG5cbmZ1bmN0aW9uIEFwcCgpIHtcbiAgY29uc29sZS5kZWJ1ZyhcInJlbmRlcmluZyBhcHBcIik7XG4gIHJldHVybiA8ZGl2PmZvPC9kaXY+O1xufVxuIl0sCiAgIm1hcHBpbmdzIjogIjtBQUFBLE9BQU8sV0FBVztBQUNsQixPQUFPLGNBQWM7QUFFckIsSUFBTSxZQUFZLFNBQVMsV0FBVyxTQUFTLGVBQWUsS0FBSyxDQUFFO0FBRXJFLFFBQVEsTUFBTSxJQUFJO0FBRWxCLFVBQVUsT0FBTyxvQ0FBQyxTQUFJLENBQUU7QUFFeEIsU0FBUyxNQUFNO0FBQ2IsVUFBUSxNQUFNLGVBQWU7QUFDN0IsU0FBTyxvQ0FBQyxhQUFJLElBQUU7QUFDaEI7IiwKICAibmFtZXMiOiBbXQp9Cg==
