@@ -114,25 +114,19 @@ const main = Command.
     }),
   );
 
-console.debug(process.argv.slice(2));
-
 Effect.
-  suspend(() => main(process.argv.slice(2)).pipe(Effect.timeout('3 seconds'))).
+  suspend(() => main(process.argv.slice(2))).
   pipe(
-    Effect.timeout('3 seconds'),
     Effect.provide(NodeContext.layer),
     Runtime.runMain,
   );
-
-
-console.debug("HI");
 
 
 // We will need to access this package’s source when building the site:
 const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
 
 
-console.debug("My source is at (f)", PACKAGE_ROOT);
+console.debug("My source is at", PACKAGE_ROOT);
 
 
 const clearDirectoryContents =
@@ -175,7 +169,9 @@ function parseOptionsSync(
 }
 
 
-function getPathToSiteTemplate(templateName: S.Schema.To<typeof ContribSiteTemplateName>) {
+function getPathToSiteTemplate(
+  templateName: S.Schema.To<typeof ContribSiteTemplateName>,
+) {
   return join(PACKAGE_ROOT, 'site', templateName);
 }
 
