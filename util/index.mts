@@ -8,6 +8,7 @@ import { Options } from '@effect/cli';
 import * as S from '@effect/schema/Schema';
 
 
+/** @deprecated */
 export function noop (..._: any[]) { void 0; }
 
 
@@ -55,6 +56,8 @@ export interface BaseBuildOptions extends S.Schema.To<typeof BaseBuildConfigSche
  * either via pipe or normal invocation as `node build.js`.
  *
  * XXX: flawed? Check on Node 20.
+ *
+ * @deprecated use @effect/cli instead.
  */
 export function isCLI(): boolean {
   console.debug("utils import.meta.url", import.meta.url);
@@ -83,7 +86,11 @@ export function isCLI(): boolean {
 }
 
 
-/** A helper to avoid given async function executing in parallel. */
+/**
+ * A helper to avoid given async function executing in parallel.
+ *
+ * @deprecated use effect instead.
+ */
 export function makeSequential
 <T, A extends unknown[]>
 (fn: (...args: A) => Promise<T>): (...args: A) => Promise<T> {
@@ -97,6 +104,7 @@ export function makeSequential
 }
 
 
+/** @deprecated use util/watch2 instead (to be refactored). */
 export async function watchAndCall(
   root: string,
 
