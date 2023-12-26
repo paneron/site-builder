@@ -70,44 +70,6 @@ const SiteBuildConfigSchema = S.struct({
   S.extend(BaseBuildConfigSchema),
 );
 
-function parseOptionsSync(
-  rawOpts: Types.Simplify<Command_.ParseConfig<typeof siteBuildOptions>>,
-): S.Schema.To<typeof SiteBuildConfigSchema> {
-  const { serve, port, outdir, siteTemplateName, datadir, watch, ...baseOpts } = rawOpts;
-  return {
-    outdir,
-    datadir: Option.isNone(datadir) ? process.cwd() : datadir.value,
-    siteTemplatePath: getPathToSiteTemplate(siteTemplateName),
-
-    // XXX: https://github.com/Effect-TS/cli/issues/435
-    watch: Option.isNone(watch) ? undefined : [watch.value],
-
-    ...(serve ? { serve, port } : { serve: false }),
-    ...S.parseSync(BaseBuildConfigFromCLIArgs)(baseOpts),
-  };
-}
-
-
-const clearDirectoryContents =
-(directoryPath: string): Effect.Effect<FileSystem.FileSystem, PlatformError, void> =>
-Effect.gen(function * (_) {
-  const fs = yield * _(FileSystem.FileSystem);
-  const dirContents = yield * _(fs.readDirectory(directoryPath));
-
-  yield * _(Effect.all(
-    dirContents.map(path => Effect.gen(function * (_) {
-      const pathRelative = join(directoryPath, path);
-      const maybeStat = yield * _(fs.stat(pathRelative));
-      if (maybeStat.type === 'Directory') {
-        yield * _(Effect.suspend(() => clearDirectoryContents(pathRelative)));
-      } else {
-        yield * _(fs.remove(pathRelative));
-      }
-    })),
-    { concurrency: 10 },
-  ));
-});
-
 
 const main = Command.
   make(
@@ -171,6 +133,46 @@ const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
 
 
 console.debug("My source is at (f)", PACKAGE_ROOT);
+
+
+const clearDirectoryContents =
+(directoryPath: string):
+Effect.Effect<FileSystem.FileSystem, PlatformError, void> =>
+Effect.gen(function * (_) {
+  const fs = yield * _(FileSystem.FileSystem);
+  const dirContents = yield * _(fs.readDirectory(directoryPath));
+
+  yield * _(Effect.all(
+    dirContents.map(path => Effect.gen(function * (_) {
+      const pathRelative = join(directoryPath, path);
+      const maybeStat = yield * _(fs.stat(pathRelative));
+      if (maybeStat.type === 'Directory') {
+        yield * _(Effect.suspend(() => clearDirectoryContents(pathRelative)));
+      } else {
+        yield * _(fs.remove(pathRelative));
+      }
+    })),
+    { concurrency: 10 },
+  ));
+});
+
+
+function parseOptionsSync(
+  rawOpts: Types.Simplify<Command_.ParseConfig<typeof siteBuildOptions>>,
+): S.Schema.To<typeof SiteBuildConfigSchema> {
+  const { serve, port, outdir, siteTemplateName, datadir, watch, ...baseOpts } = rawOpts;
+  return {
+    outdir,
+    datadir: Option.isNone(datadir) ? process.cwd() : datadir.value,
+    siteTemplatePath: getPathToSiteTemplate(siteTemplateName),
+
+    // XXX: https://github.com/Effect-TS/cli/issues/435
+    watch: Option.isNone(watch) ? undefined : [watch.value],
+
+    ...(serve ? { serve, port } : { serve: false }),
+    ...S.parseSync(BaseBuildConfigFromCLIArgs)(baseOpts),
+  };
+}
 
 
 function getPathToSiteTemplate(templateName: S.Schema.To<typeof ContribSiteTemplateName>) {
