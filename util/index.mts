@@ -178,9 +178,13 @@ export async function watchAndCall(
 export function serve(
   root: string,
   port: number,
-  signal?: AbortSignal,
+  { signal, onDebug, onError }: {
+    signal?: AbortSignal,
+    onDebug?: (...args: unknown[]) => void,
+    onError?: (...args: unknown[]) => void,
+  },
 ) {
-  console.log(`serve: starting server at port ${port}...`);
+  onDebug?.(`serve: starting server at port ${port}...`);
 
   const ctypes = new Map([
     ['.html', 'text/html'],
@@ -197,21 +201,21 @@ export function serve(
       ? 'index.html'
       : requestedPath;
     const ctype = ctypes.get(extname(filename)) ?? 'application/octet-stream';
-    console.info(`serve: serving ${filename} as ${ctype}...`);
+    onDebug?.(`serve: serving ${filename} as ${ctype}...`);
     try {
       const blob = await readFile(join(root, filename));
       resp.writeHead(200, {'Content-Type': ctype});
       resp.write(blob, 'binary');
       resp.end();
     } catch (e) {
-      console.error("Failed to handle response", req.url, e);
+      onError?.("Failed to handle response", req.url, e);
       resp.writeHead(500);
       resp.end();
     }
   });
 
   signal?.addEventListener('abort', function abortServe() {
-    console.debug("serve: stopping server...");
+    onDebug?.("serve: stopping server because of signal...");
     server.closeAllConnections?.();
     return new Promise((resolve, reject) =>
       server.close((err) => err ? reject(err) : resolve(void 0)));
@@ -220,7 +224,7 @@ export function serve(
   server.setTimeout(500);
   server.listen(port);
 
-  console.info(`serve: listening at port ${port}`);
+  onDebug?.(`serve: listening at port ${port}`);
 
   return server;
 }
