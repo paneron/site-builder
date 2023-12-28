@@ -54,27 +54,6 @@ const SiteBuildConfigSchema = S.struct({
 );
 
 
-// const ServeConfig = S.struct({
-//   serve: S.literal(true),
-//   port: S.optional(
-//     S.number.pipe(S.int(), S.positive(), S.lessThan(10000)),
-//     { default: () => 8080 },
-//   ),
-// });
-// 
-// const NoServeConfig = S.struct({
-//   serve: S.literal(false),
-// });
-
-// const SiteWatchConfigSchema = S.struct({
-//   watch: S.array(S.string.pipe(S.nonEmpty())),
-//   ignorePrefixWhenWatching: S.union(S.string.pipe(S.nonEmpty()), S.undefined),
-// }).pipe(
-//   S.extend(S.union(ServeConfig, NoServeConfig)),
-//   S.extend(BaseBuildConfigSchema),
-// );
-
-
 const doBuild = ({
   outdir,
   datadir,
