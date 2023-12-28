@@ -126,7 +126,7 @@ const build = Command.
     (rawOpts) =>
       Effect.
         gen(function * (_) {
-          const opts = yield * _(Effect.try(() => Object.freeze(parseOptionsSync(rawOpts))));
+          const opts = yield * _(Effect.try(() => parseOptionsSync(rawOpts)));
           yield * _(
             doBuild(opts),
             Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
