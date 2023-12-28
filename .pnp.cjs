@@ -42,7 +42,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["esbuild", "npm:0.19.9"],\
             ["fast-check", "npm:3.15.0"],\
             ["typescript", "patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"],\
-            ["typescript-language-server", "npm:3.3.2"]\
+            ["typescript-language-server", "npm:3.3.2"],\
+            ["yaml", "npm:2.3.4"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -460,7 +461,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["esbuild", "npm:0.19.9"],\
             ["fast-check", "npm:3.15.0"],\
             ["typescript", "patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"],\
-            ["typescript-language-server", "npm:3.3.2"]\
+            ["typescript-language-server", "npm:3.3.2"],\
+            ["yaml", "npm:2.3.4"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -700,6 +702,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/vscode-languageserver-types-npm-3.17.5-aca3b71a5a-79b420e757.zip/node_modules/vscode-languageserver-types/",\
           "packageDependencies": [\
             ["vscode-languageserver-types", "npm:3.17.5"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["yaml", [\
+        ["npm:2.3.4", {\
+          "packageLocation": "./.yarn/cache/yaml-npm-2.3.4-8bb6dc2c0d-e6d1dae1c6.zip/node_modules/yaml/",\
+          "packageDependencies": [\
+            ["yaml", "npm:2.3.4"]\
           ],\
           "linkType": "HARD"\
         }]\

@@ -259,6 +259,7 @@ __metadata:
     fast-check: ~3.15.0
     typescript: ~5.0
     typescript-language-server: ~3.3.2
+    yaml: ^2.3.4
   bin:
     build-site: ./build-site.mjs
   languageName: unknown
@@ -526,5 +527,12 @@ __metadata:
   version: 3.17.5
   resolution: "vscode-languageserver-types@npm:3.17.5"
   checksum: 79b420e7576398d396579ca3a461c9ed70e78db4403cd28bbdf4d3ed2b66a2b4114031172e51fad49f0baa60a2180132d7cb2ea35aa3157d7af3c325528210ac
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.3.4":
+  version: 2.3.4
+  resolution: "yaml@npm:2.3.4"
+  checksum: e6d1dae1c6383bcc8ba11796eef3b8c02d5082911c6723efeeb5ba50fc8e881df18d645e64de68e421b577296000bea9c75d6d9097c2f6699da3ae0406c030d8
   languageName: node
   linkType: hard
