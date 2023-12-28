@@ -9,11 +9,17 @@
  * Depends on Node, currently.
  */
 
-import { resolve, join } from 'node:path';
+import { resolve, relative, join } from 'node:path';
 
-import { Console, Stream, Effect, Layer, Logger, LogLevel, Types, Option } from 'effect';
+import { parse as parseYAML } from 'yaml';
+
+import { build as esbuild } from 'esbuild';
+import { skypackResolver } from 'esbuild-skypack-resolver';
+
+
+import { pipe, Runtime, Console, Stream, Effect, Layer, Logger, Types, Option } from 'effect';
 import * as S from '@effect/schema/Schema';
-import { FileSystem, NodeContext, Runtime } from '@effect/platform-node';
+import { FileSystem, NodeContext, Runtime as PlatformRuntime } from '@effect/platform-node';
 import type { PlatformError } from '@effect/platform-node/Error';
 import { Options, Command } from '@effect/cli';
 import type { Command as Command_ } from '@effect/cli/Command';
@@ -24,15 +30,23 @@ import {
   outputOptions,
   BaseBuildConfigSchema,
   serve as simpleServe,
+  EFFECT_LOG_LEVELS,
 } from './util/index.mjs';
 import { debouncedWatcher } from './util/watch2.mjs';
+import { getExtensionURL, PaneronDataset } from './model.mjs';
 import { CONTRIB_SITE_TEMPLATES, ContribSiteTemplateName } from './site/index.mjs';
 
 
-// We will need to access this package’s source when building the site:
+// We will need to access this package’s
+// actual, unpacked source file location when building the site.
 const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
 
-console.debug("My source is at", PACKAGE_ROOT);
+/** Returns absolute path to given contrib site template. */
+function getPathToSiteTemplate(
+  templateName: S.Schema.To<typeof ContribSiteTemplateName>,
+) {
+  return join(PACKAGE_ROOT, 'site', templateName);
+}
 
 
 const siteBuildOptions = {
@@ -54,48 +68,182 @@ const SiteBuildConfigSchema = S.struct({
 );
 
 
-const doBuild = ({
+/**
+ * Prepares the outdir with site template.
+ * If outdir already exists, clears it first.
+ */
+const scaffoldOutdir = ({
   outdir,
   datadir,
   siteTemplatePath,
 }: S.Schema.To<typeof SiteBuildConfigSchema>) =>
-  Effect.
-    gen(function * (_) {
-      const fs = yield * _(FileSystem.FileSystem);
+Effect.gen(function * (_) {
+  const fs = yield * _(FileSystem.FileSystem);
 
-      // Prepare outdir
-      const maybeStat = yield * _(Effect.either(fs.stat(outdir)));
-      yield * _(Effect.matchEffect(maybeStat, {
-        onSuccess: (stat) => Effect.gen(function * (_) {
-          if (stat.type === 'Directory') {
-            // If outdir already exists and is a directory, clean it before building.
-            yield * _(Console.warn(`Cleaning preexisting ‘outdir’`));
-            yield * _(Console.withTime(`Removing contents of ${outdir}`)(
-              clearDirectoryContents(outdir)
-            ));
-          } else {
-            // This should not be possible thanks to option typing
-            yield * _(Effect.fail(`‘outdir’ exists at ${outdir}, and is not a directory.`));
-          }
-        }),
-        // If stat failed, assume directory doesn’t exist (we can create it)
-        onFailure: Effect.succeed,
-      }));
-      yield * _(fs.makeDirectory(outdir, { recursive: true }));
+  // Make sure outdir is available
+  const maybeStat = yield * _(Effect.either(fs.stat(outdir)));
+  yield * _(Effect.matchEffect(maybeStat, {
+    onSuccess: (stat) => Effect.gen(function * (_) {
+      if (stat.type === 'Directory') {
+        // If outdir already exists and is a directory, clean it before building.
+        yield * _(Console.withTime(`Cleaning ${outdir}`)(
+          clearDirectoryContents(outdir)
+        ));
+      } else {
+        // This should not be possible thanks to option typing,
+        // but there could be a race
+        yield * _(Effect.fail(`‘outdir’ at ${outdir} is not a directory`));
+      }
+    }),
+    // If stat failed, assume directory doesn’t exist (we can create it)
+    onFailure: Effect.succeed,
+  }));
+  yield * _(fs.makeDirectory(outdir, { recursive: true }));
 
-      // Copy site template
-      yield * _(Console.withTime(`Copy site template from ${siteTemplatePath} to ${outdir}`)(
-        fs.copy(siteTemplatePath, outdir)
-      ));
+  yield * _(Effect.all([
+    scaffoldTemplate(siteTemplatePath, outdir),
+    Console.withTime(`Fetch extension JS ${outdir}`)(
+      fetchExtension(datadir, outdir)
+    ),
+  ], { concurrency: 4 }));
+});
 
-      //if (opts.serve) {
-      //  //yield * _(Effect.scoped(serveUntilAborted(opts.port, opts.outdir, controller.signal)));
-      //  yield * _(Effect.forkDaemon(Effect.scoped(Effect.acquireRelease(
-      //    Effect.sync(() => serve(opts.outdir, opts.port)),
-      //    server => Effect.sync(() => server.close()),
-      //  ))));
-      //}
+
+const scaffoldTemplate = (siteTemplatePath: string, outdir: string) =>
+Effect.gen(function * (_) {
+  const fs = yield * _(FileSystem.FileSystem);
+  yield * _(Console.withTime(`Scaffold site template from ${siteTemplatePath} into ${outdir}`)(
+    fs.copy(siteTemplatePath, outdir, { overwrite: true })
+  ));
+});
+
+
+const fetchExtension = (datadir: string, outdir: string) =>
+Effect.gen(function * (_) {
+  const fs = yield * _(FileSystem.FileSystem);
+
+  const datasetMetaPath = join(datadir, 'panerondataset.yaml');
+  yield * _(fs.access(datasetMetaPath, { readable: true }));
+  const data = yield * _(
+    fs.readFileString(datasetMetaPath),
+    Effect.map(parseYAML),
+    Effect.flatMap(S.parse(PaneronDataset)),
+  );
+
+  const extensionURL = getExtensionURL(data.type.id);
+  const extensionPathInOutdir = join(outdir, 'extension.js');
+
+  const extensionCode = yield * _(
+    Console.withTime(`Fetch extension code for ${extensionURL} to ${extensionPathInOutdir}`)(pipe(
+      Effect.tryPromise(() => fetch(extensionURL)),
+      Effect.flatMap(resp => Effect.tryPromise(() => resp.text())),
+      Effect.flatMap(S.parse(S.string)),
+    )),
+  );
+
+  yield * _(fs.writeFileString(extensionPathInOutdir, extensionCode));
+
+  yield * _(Effect.tryPromise(() =>
+    esbuild({
+      entryPoints: [extensionPathInOutdir],
+      entryNames: '[dir]/[name]',
+      assetNames: '[dir]/[name]',
+      format: 'esm',
+      target: ['esnext'],
+      bundle: true,
+      plugins: [skypackResolver()],
     })
+  ));
+});
+
+
+const readdirRecursive = (
+  /** Directory to list. */
+  dir: string,
+  /** Directory to output paths relative to. */
+  relativeTo?: string,
+):
+Effect.Effect<FileSystem.FileSystem, PlatformError, readonly string[]> =>
+Effect.gen(function * (_) {
+  const fs = yield * _(FileSystem.FileSystem);
+  const dirEntries = yield * _(fs.readDirectory(dir));
+  const dirEntriesFull = dirEntries.map(path => join(dir, path));
+
+  const stats: Record<string, FileSystem.File.Info> = yield * _(Effect.reduceEffect(
+    dirEntriesFull.map(path => pipe(
+      fs.stat(path),
+      Effect.map(stat => ({ [path]: stat })),
+    )),
+    Effect.succeed({}),
+    (accum, item) => ({ ...accum, ...item }),
+    { concurrency: 10 },
+  ));
+
+  const mapEffects = dirEntriesFull.map(path =>
+    stats[path]?.type === 'Directory'
+      ? readdirRecursive(path, relativeTo ?? dir)
+      : Effect.succeed([relative(relativeTo ?? dir, path)])
+    );
+
+  const list = yield * _(
+    Effect.all(mapEffects, { concurrency: 10 }),
+    Effect.map(pathBunch => pathBunch.flat()),
+  );
+
+  return list;
+});
+
+
+//const listRecursive = (path: string) => Effect.gen(function * (_) {
+//  const fs = yield * _(FileSystem.FileSystem);
+//  yield * _(
+//});
+
+
+/** */
+const generateData = (datadir: string, outdir: string) =>
+Effect.gen(function * (_) {
+  const fs = yield * _(FileSystem.FileSystem);
+
+  // `recursive` flag is broken at least on Node 18.
+  // const objectPaths = yield * _(fs.readDirectory(datadir, { recursive: true }));
+  const objectPaths = yield * _(readdirRecursive(datadir));
+
+  const out: Record<string, unknown> = yield * _(Effect.reduceEffect(
+    objectPaths.
+    // TODO: Parse non-YAML files as well.
+    filter(p => p.endsWith('.yaml') || p.endsWith('.yml')).
+    filter(p => !p.startsWith('proposals')).
+    map(path => join(datadir, path)).
+    map(path => pipe(
+      fs.readFileString(path),
+      Effect.map(parseYAML),
+      Effect.flatMap(S.parse(S.record(S.string, S.unknown))),
+      //Effect.flatMap(S.parse(RegisterItem)),
+      // Catches Schema.parse failures. We do nothing with non register items.
+      Effect.catchTag(
+        "ParseError",
+        err => Effect.logDebug(`skipping non-object YAML at ${path} due to ${String(err)}`),
+      ),
+      Effect.map((out) => out ? ({ [path]: out }) : ({})),
+    )),
+    Effect.succeed({}),
+    (accum, item) => ({ ...accum, ...item }),
+    { concurrency: 10 },
+  ));
+
+  yield * _(fs.writeFileString(join(outdir, 'data.json'), JSON.stringify(out, undefined, 4)));
+});
+
+
+const buildFull = (opts: S.Schema.To<typeof SiteBuildConfigSchema>) =>
+Effect.gen(function * (_) {
+  yield * _(scaffoldOutdir(opts));
+  yield * _(Effect.all([
+    fetchExtension(opts.datadir, opts.outdir),
+    generateData(opts.datadir, opts.outdir),
+  ], { concurrency: 2 }));
+});
 
 
 const build = Command.
@@ -107,7 +255,7 @@ const build = Command.
         gen(function * (_) {
           const opts = yield * _(Effect.try(() => parseOptionsSync(rawOpts)));
           yield * _(
-            doBuild(opts),
+            buildFull(opts),
             Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
           );
         })
@@ -120,10 +268,14 @@ const watch = Command.
   make(
     'watch',
     {
-      // TODO: Watch other directories, in addition to the datadir
+      // TODO: Watch arbitrary directories, in addition to the datadir/template dir?
       // alsoWatch: Options.directory('also-watch', { exists: 'yes' }).pipe(
       //   //Options.repeated,  // XXX https://github.com/Effect-TS/cli/issues/435
       //   Options.optional),
+
+      // Watches site template
+      watchTemplate: Options.boolean('watch-template').pipe(
+        Options.optional),
 
       // What to ignore when watching
       // TODO: Regexp for watch ignore?
@@ -136,12 +288,45 @@ const watch = Command.
       port: Options.integer('port').pipe(
         Options.withDefault(8080)),
     },
-    ({ ignorePrefix, serve, port }) =>
+    ({ watchTemplate, ignorePrefix, serve, port }) =>
       Effect.
         gen(function * (_) {
           const rawBuildOpts = yield * _(build);
           const buildOpts =
             yield * _(Effect.try(() => parseOptionsSync(rawBuildOpts)));
+
+          yield * _(
+            buildFull(buildOpts),
+            Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[buildOpts.logLevel]),
+          );
+
+          if (serve) {
+            yield * _(
+              Effect.fork(
+                Layer.launch(Layer.scopedDiscard(
+                  Effect.gen(function * (_) {
+                    //const srv = yield * _(ServerContext);
+                    const runtime = yield * _(Effect.runtime<never>());
+                    const runFork = Runtime.runFork(runtime);
+                    yield * _(
+                      Effect.acquireRelease(
+                        Effect.sync(() => simpleServe(
+                          buildOpts.outdir,
+                          port,
+                          {
+                            onDebug: (msg) => runFork(Effect.logDebug(msg)),
+                            onError: (msg) => runFork(Effect.logError(msg)),
+                          },
+                        )),
+                        (srv) => Effect.sync(() => srv.close()),
+                      ),
+                    );
+                  })
+                )),
+              ),
+              Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[buildOpts.logLevel]),
+            );
+          }
 
           const ignorePrefixes = [
             ...(Option.isNone(ignorePrefix) ? [] : [ignorePrefix.value]),
@@ -152,34 +337,21 @@ const watch = Command.
             '.git',
           ];
 
-          if (serve) {
-            yield * _(
-              Effect.forkDaemon(
-                Layer.launch(Layer.scopedDiscard(
-                  Effect.gen(function * (_) {
-                    //const srv = yield * _(ServerContext);
-                    yield * _(
-                      Effect.acquireRelease(
-                        Effect.sync(() => simpleServe(buildOpts.outdir, port)),
-                        (srv) => Effect.sync(() => srv.close()),
-                      )
-                    );
-                  })
-                )),
-              )
-            );
-          }
+          const watchedDirs = [
+            buildOpts.datadir,
+            ...(watchTemplate ? [buildOpts.siteTemplatePath] : []),
+          ];
+
           yield * _(
-            Effect.
-              gen(function * (_) {
-                yield * _(
-                  debouncedWatcher(buildOpts.datadir, ignorePrefixes, 1000),
-                  Stream.runForEach(path => Effect.gen(function * (_) {
-                    yield * _(Console.debug(`Path changed: ${path}`));
-                    yield * _(doBuild(buildOpts));
-                  })),
-                );
-              }),
+            debouncedWatcher(watchedDirs, ignorePrefixes, 1000),
+            Stream.runForEach(path => Effect.gen(function * (_) {
+              yield * _(Console.debug(`Path changed: ${path}`));
+              if (path.startsWith(buildOpts.datadir)) {
+                yield * _(generateData(buildOpts.datadir, buildOpts.outdir));
+              } else {
+                yield * _(scaffoldTemplate(buildOpts.siteTemplatePath, buildOpts.outdir));
+              }
+            })),
             Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[buildOpts.logLevel]),
           );
         })
@@ -201,7 +373,7 @@ Effect.
   suspend(() => main(process.argv.slice(2))).
   pipe(
     Effect.provide(NodeContext.layer),
-    Runtime.runMain,
+    PlatformRuntime.runMain,
   );
 
 
@@ -241,18 +413,3 @@ function parseOptionsSync(
     ...S.parseSync(BaseBuildConfigFromCLIArgs)(baseOpts),
   });
 }
-
-
-function getPathToSiteTemplate(
-  templateName: S.Schema.To<typeof ContribSiteTemplateName>,
-) {
-  return join(PACKAGE_ROOT, 'site', templateName);
-}
-
-
-const EFFECT_LOG_LEVELS: { [key in _LogLevel]: LogLevel.LogLevel } = {
-  'debug': LogLevel.Debug,
-  'info': LogLevel.Info,
-  'error': LogLevel.Error,
-  'silent': LogLevel.None,
-} as const;

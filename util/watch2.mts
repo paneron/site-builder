@@ -26,8 +26,15 @@ const filteredWatcherStream = (directory: string, ignorePrefixes: string[]) => {
     ));
 }
 
-export const debouncedWatcher = (directory: string, ignorePrefixes: string[], debounce: number) =>
-  filteredWatcherStream(directory, ignorePrefixes).
+export const debouncedWatcher = (
+  dirs: string[],
+  ignorePrefixes: string[],
+  debounce: number,
+) =>
+  Stream.
+    mergeAll(dirs.map(d =>
+      filteredWatcherStream(d, ignorePrefixes)), { concurrency: 2 }
+    ).
     pipe(
       Stream.debounce(`${debounce} millis`),
-    )
+    );

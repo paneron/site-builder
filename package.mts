@@ -9,12 +9,17 @@
 import { resolve, join } from 'node:path';
 
 import * as S from '@effect/schema/Schema';
-import { Command } from '@effect/cli';
+import { Logger, Effect } from 'effect';
 import { NodeContext, Runtime } from '@effect/platform-node';
-import { Effect, Console } from 'effect';
+import { Command } from '@effect/cli';
 import { build as esbuild } from 'esbuild';
 
-import { type BaseBuildOptions, BaseBuildConfigFromCLIArgs, outputOptions } from './util/index.mjs';
+import {
+  type BaseBuildOptions,
+  BaseBuildConfigFromCLIArgs,
+  outputOptions,
+  EFFECT_LOG_LEVELS,
+} from './util/index.mjs';
 import { ContribSiteTemplateName, CONTRIB_SITE_TEMPLATES } from './site/index.mjs';
 
 
@@ -23,27 +28,28 @@ const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
 
 const preparePackage = Command.make('package', outputOptions, (rawOpts) => {
   return Effect.gen(function * (_) {
-    yield * _(Console.debug("Using package root:", PACKAGE_ROOT));
-    yield * _(Console.warn(`Want to build using ${JSON.stringify(rawOpts)}`));
     const opts = yield * _(S.parse(BaseBuildConfigFromCLIArgs)(rawOpts));
-    yield * _(Console.warn(`Decoded opts: ${JSON.stringify(opts)}`));
     //yield * _(Effect.tryPromise(() => buildSiteBuilder(opts)));
-    yield * _(Effect.all([
-      Effect.tryPromise(() => buildSiteBuilder(opts)),
-      ...CONTRIB_SITE_TEMPLATES.map(templateName =>
-        Effect.tryPromise(() =>
-          buildSiteTemplate({ ...opts, templateName })
+    yield * _(
+      Effect.all([
+        Effect.logDebug(`Using package root: ${PACKAGE_ROOT}`),
+        Effect.tryPromise(() => buildSiteBuilder(opts)),
+        ...CONTRIB_SITE_TEMPLATES.map(templateName =>
+          Effect.tryPromise(() =>
+            buildSiteTemplate({ ...opts, templateName })
+          )
         )
-      )
-    ], { concurrency: 'unbounded' }));
-    return Console.warn(`Done building`);
+      ], { concurrency: 'unbounded' }),
+      Effect.tap(Effect.logDebug("Done building.")),
+      Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
+    );
   });
 });
 
 const main = Command.run(
   preparePackage,
   {
-    name: "Site builder builder",
+    name: "Site builder builder (internal script)",
     version: "N/A",
   },
 );
@@ -111,7 +117,8 @@ async function buildSiteTemplate(
     format: 'esm',
     target: ['esnext'],
     bundle: true,
-    external: ['react', 'react-dom'],
+    //external: ['react', 'react-dom', '#ext'],
+    packages: 'external',
     minify: false,
     treeShaking: true,
     sourcemap: 'inline',

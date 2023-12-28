@@ -4,6 +4,7 @@ import { readFile, watch } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { fstatSync } from 'node:fs';
 
+import { LogLevel as EffectLogLevel} from 'effect';
 import { Options } from '@effect/cli';
 import * as S from '@effect/schema/Schema';
 
@@ -14,6 +15,13 @@ export function noop (..._: any[]) { void 0; }
 
 export const LogLevelSchema = S.literal('debug', 'info', 'error', 'silent');
 export type LogLevel = S.Schema.To<typeof LogLevelSchema>
+
+export const EFFECT_LOG_LEVELS: { [key in LogLevel]: EffectLogLevel.LogLevel } = {
+  'debug': EffectLogLevel.Debug,
+  'info': EffectLogLevel.Info,
+  'error': EffectLogLevel.Error,
+  'silent': EffectLogLevel.None,
+} as const;
 
 export const BaseBuildConfigSchema = S.struct({
   logLevel: LogLevelSchema,
