@@ -197,6 +197,7 @@ export function serve(
   const ctypes = new Map([
     ['.html', 'text/html'],
     ['.js', 'text/javascript'],
+    ['.mjs', 'text/javascript'],
     ['.css', 'text/css'],
     ['.json', 'application/json'],
     ['.jsonld', 'application/ld+json'],
