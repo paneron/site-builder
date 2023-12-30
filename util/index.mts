@@ -188,8 +188,8 @@ export function serve(
   port: number,
   { signal, onDebug, onError }: {
     signal?: AbortSignal,
-    onDebug?: (...args: unknown[]) => void,
-    onError?: (...args: unknown[]) => void,
+    onDebug?: (msg: string) => void,
+    onError?: (msg: string) => void,
   },
 ) {
   onDebug?.(`serve: starting server at port ${port}...`);
@@ -217,7 +217,7 @@ export function serve(
       resp.write(blob, 'binary');
       resp.end();
     } catch (e) {
-      onError?.("Failed to handle response", req.url, e);
+      onError?.(`Failed to handle request of ${req.url}: ${String(e)}`);
       resp.writeHead(500);
       resp.end();
     }
