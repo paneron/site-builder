@@ -13,9 +13,6 @@ import { resolve, relative, join } from 'node:path';
 
 import { parse as parseYAML } from 'yaml';
 
-import { build as esbuild } from 'esbuild';
-import { skypackResolver } from 'esbuild-skypack-resolver';
-
 
 import { pipe, Runtime, Console, Stream, Effect, Layer, Logger, Types, Option } from 'effect';
 import * as S from '@effect/schema/Schema';
@@ -143,17 +140,16 @@ Effect.gen(function * (_) {
 
   yield * _(fs.writeFileString(extensionPathInOutdir, extensionCode));
 
-  yield * _(Effect.tryPromise(() =>
-    esbuild({
-      entryPoints: [extensionPathInOutdir],
-      entryNames: '[dir]/[name]',
-      assetNames: '[dir]/[name]',
-      format: 'esm',
-      target: ['esnext'],
-      bundle: true,
-      plugins: [skypackResolver()],
-    })
-  ));
+  //yield * _(Effect.tryPromise(() =>
+  //  esbuild({
+  //    entryPoints: [extensionPathInOutdir],
+  //    entryNames: '[dir]/[name]',
+  //    assetNames: '[dir]/[name]',
+  //    format: 'esm',
+  //    target: ['esnext'],
+  //    bundle: true,
+  //  })
+  //));
 });
 
 
