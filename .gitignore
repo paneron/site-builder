@@ -16,3 +16,6 @@
 
 !.yarn/cache
 #.pnp.*
+
+/site/**/build.mjs
+/site/**/index.js

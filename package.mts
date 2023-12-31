@@ -20,7 +20,7 @@ import {
   outputOptions,
   EFFECT_LOG_LEVELS,
 } from './util/index.mjs';
-import { ContribSiteTemplateName, CONTRIB_SITE_TEMPLATES } from './site/index.mjs';
+//import { ContribSiteTemplateName, CONTRIB_SITE_TEMPLATES } from './site/index.mjs';
 
 
 const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
@@ -34,11 +34,11 @@ const preparePackage = Command.make('package', outputOptions, (rawOpts) => {
       Effect.all([
         Effect.logDebug(`Using package root: ${PACKAGE_ROOT}`),
         Effect.tryPromise(() => buildSiteBuilder(opts)),
-        ...CONTRIB_SITE_TEMPLATES.map(templateName =>
-          Effect.tryPromise(() =>
-            buildSiteTemplate({ ...opts, templateName })
-          )
-        )
+        //...CONTRIB_SITE_TEMPLATES.map(templateName =>
+        //  Effect.tryPromise(() =>
+        //    buildSiteTemplate({ ...opts, templateName })
+        //  )
+        //)
       ], { concurrency: 'unbounded' }),
       Effect.tap(Effect.logDebug("Done building.")),
       Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
@@ -98,40 +98,41 @@ async function buildSiteBuilder(opts: BaseBuildOptions) {
 }
 
 
-/**
- * Builds site template.
- *
- * Currently, that just involves running esbuild against JS.
- */
-async function buildSiteTemplate(
-  opts: BaseBuildOptions & { templateName: S.Schema.To<typeof ContribSiteTemplateName> },
-) {
-  const siteRoot = join(PACKAGE_ROOT, 'site', opts.templateName);
-  return await esbuild({
-    entryPoints: [
-      join(siteRoot, 'index.tsx'),
-      //join(PACKAGE_ROOT, 'site', 'index.tsx'),
-    ],
-    entryNames: '[dir]/[name]',
-    assetNames: '[dir]/[name]',
-    format: 'esm',
-    target: ['esnext'],
-    bundle: true,
-    //external: ['react', 'react-dom', '#ext'],
-    packages: 'external',
-    minify: false,
-    treeShaking: true,
-    sourcemap: 'inline',
-    platform: 'node',
-    //publicPath: 'https://convertor.glossarist.org/',
-    outfile: join(siteRoot, 'app.js'),
-    write: true,
-    loader: {
-      '.css': 'local-css',
-      // '.jpg': 'file',
-      // '.png': 'file',
-    },
-    logLevel: opts.logLevel,
-    plugins: [],
-  });
-}
+// /**
+//  * Builds site template.
+//  *
+//  * Currently, that just involves running esbuild against JS.
+//  */
+// async function buildSiteTemplate(
+//   opts: BaseBuildOptions & { templateName: S.Schema.To<typeof ContribSiteTemplateName> },
+// ) {
+//   //const siteRoot = join(PACKAGE_ROOT, 'site', opts.templateName);
+//   const siteRoot = join(PACKAGE_ROOT, 'site-app');
+//   return await esbuild({
+//     entryPoints: [
+//       join(siteRoot, 'index.tsx'),
+//       //join(PACKAGE_ROOT, 'site', 'index.tsx'),
+//     ],
+//     entryNames: '[dir]/[name]',
+//     assetNames: '[dir]/[name]',
+//     format: 'esm',
+//     target: ['esnext'],
+//     bundle: true,
+//     //external: ['react', 'react-dom', '#ext'],
+//     //packages: 'external',
+//     minify: false,
+//     treeShaking: true,
+//     sourcemap: 'inline',
+//     platform: 'node',
+//     //publicPath: 'https://convertor.glossarist.org/',
+//     outfile: join(siteRoot, 'app.js'),
+//     write: true,
+//     loader: {
+//       '.css': 'local-css',
+//       // '.jpg': 'file',
+//       // '.png': 'file',
+//     },
+//     logLevel: opts.logLevel,
+//     plugins: [],
+//   });
+// }

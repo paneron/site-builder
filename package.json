@@ -9,9 +9,13 @@
   "scripts": {
     "compile": "tsc --outdir compiled",
     "clean": "rm -f ./package.mjs ./build-site.mjs",
-    "build-builder": "yarn esbuild package.mts --packages=external --platform=node --target=node18 --minify=false --bundle --format=esm --outfile=package.mjs",
-    "build": "yarn node package.mjs"
+    "build-builder-builder": "yarn esbuild package.mts --packages=external --platform=node --target=node18 --minify=false --bundle --format=esm --outfile=package.mjs",
+    "build-builder": "yarn node package.mjs",
+    "build-template": "yarn workspace template-isogr2013 build"
   },
+  "workspaces": [
+    "site/geodetic-registry-2013"
+  ],
   "devDependencies": {
     "@types/node": "18",
     "@types/react": "18",

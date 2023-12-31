@@ -1,5 +1,5 @@
 {
-  "include": ["*.mts", "site/**/index.tsx"],
+  "include": ["*.mts", "site/geodetic-registry-2013/index.tsx", "*.d.ts"],
   "compilerOptions": {
     "target": "es2020",
     "module": "node16",
