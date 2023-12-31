@@ -19,3 +19,4 @@
 
 /site/**/build.mjs
 /site/**/index.js
+/site/**/compiled

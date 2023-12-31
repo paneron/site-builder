@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "compile": "tsc --outdir compiled",
     "clean": "rm -f build.mjs index.js app.js imports.js app.mjs",
     "build-builder": "yarn esbuild build.mts --packages=external --platform=node --target=node18 --minify=false --bundle --format=esm --outfile=build.mjs",
     "build-self": "yarn node build.mjs",
