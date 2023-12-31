@@ -46,7 +46,7 @@ const preparePackage = Command.make('package', outputOptions, (rawOpts) => {
 const main = Command.run(
   preparePackage,
   {
-    name: "Site builder builder (internal script)",
+    name: "Site template builder (internal script)",
     version: "N/A",
   },
 );
