@@ -814,8 +814,6 @@ __metadata:
     "@effect/schema": ~0.56.0
     "@effect/typeclass": ~0.21.0
     "@types/node": 18
-    "@types/react": 18
-    "@types/react-dom": 18
     effect: ~2.0.0-next.62
     esbuild: 0.19.11
     fast-check: ~3.15.0
@@ -883,23 +881,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:18":
-  version: 18.2.18
-  resolution: "@types/react-dom@npm:18.2.18"
+"@types/react-dom@npm:17.0.2":
+  version: 17.0.2
+  resolution: "@types/react-dom@npm:17.0.2"
   dependencies:
     "@types/react": "*"
-  checksum: 8e3da404c980e2b2a76da3852f812ea6d8b9d0e7f5923fbaf3bfbbbfa1d59116ff91c129de8f68e9b7668a67ae34484fe9df74d5a7518cf8591ec07a0c4dad57
+  checksum: 1725928a1c3a0026044e6401e6b53729e1a88849034fc67138d7784ec44a5132fe2e9056a19b741ccb462ff0ec0d8c2c01ef316bda19be0e31f2ead9346f600b
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:18":
-  version: 18.2.45
-  resolution: "@types/react@npm:18.2.45"
+"@types/react@npm:17.0.53":
+  version: 17.0.53
+  resolution: "@types/react@npm:17.0.53"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: 40b256bdce67b026348022b4f8616a693afdad88cf493b77f7b4e6c5f4b0e4ba13a6068e690b9b94572920840ff30d501ea3d8518e1f21cc8fb8204d4b140c8a
+  checksum: dacfde02c260fd98bed2eb775ed0c7ce1397be4c0844f907a50763b081a4008f81f57071889a16eb1350ddcf0927f3cf1a6541702c8ad03de3c70383ef931e3f
   languageName: node
   linkType: hard
 
@@ -2137,8 +2135,8 @@ __metadata:
     "@emotion/styled": 11.10.6
     "@riboseinc/paneron-extension-kit": 2.2.13
     "@riboseinc/paneron-registry-kit": 2.2.20
-    "@types/react": 18
-    "@types/react-dom": 18
+    "@types/react": 17.0.53
+    "@types/react-dom": 17.0.2
     date-fns: 2.22.1
     effect: ~2.0.0-next.62
     esbuild: 0.19.9
