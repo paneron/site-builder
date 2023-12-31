@@ -2,7 +2,6 @@
   "name": "template-isogr2013",
   "private": true,
   "version": "0.0.1",
-  "type": "module",
   "scripts": {
     "compile": "tsc --outdir compiled",
     "clean": "rm -f build.mjs index.js app.js imports.js app.mjs",
