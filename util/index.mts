@@ -217,8 +217,14 @@ export function serve(
       resp.write(blob, 'binary');
       resp.end();
     } catch (e) {
-      onError?.(`Failed to handle request of ${req.url}: ${String(e)}`);
-      resp.writeHead(500);
+      const err = String(e);
+      if (err.indexOf('ENOENT')) {
+        onError?.(`${req.url}: Does not exist: ${String(e)}`);
+        resp.writeHead(404);
+      } else {
+        onError?.(`Failed to handle request of ${req.url}: ${String(e)}`);
+        resp.writeHead(500);
+      }
       resp.end();
     }
   });
