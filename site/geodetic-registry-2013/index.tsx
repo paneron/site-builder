@@ -2,6 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { ImportMapper } from 'import-mapper';
 
+
+import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
+//import 'jsondiffpatch/dist/formatters-styles/annotated.css';
+//import 'jsondiffpatch/dist/formatters-styles/html.css';
+import '@blueprintjs/core/lib/css/blueprint.css';
+import '@blueprintjs/popover2/lib/css/blueprint-popover2.css';
+import 'react-resizable/css/styles.css';
+import './site.css';
+//import './normalize.css';
+//import './renderer.css';
 console.debug("hi");
 
 //import { plugin } from '#ext';

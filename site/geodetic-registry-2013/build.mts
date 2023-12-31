@@ -87,7 +87,8 @@ async function buildSiteTemplate(opts: BaseBuildOptions) {
     //outdir: PACKAGE_ROOT,
     write: true,
     loader: {
-      '.css': 'local-css',
+      '.css': 'css',
+      '.module.css': 'local-css',
       // '.jpg': 'file',
       // '.png': 'file',
     },
