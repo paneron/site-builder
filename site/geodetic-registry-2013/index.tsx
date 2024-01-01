@@ -222,7 +222,8 @@ async function renderApp () {
 
 
 renderApp().
-  catch(e =>
+  catch(e => {
+    loading = false;
     ReactDOM.render(
       <NonIdealState
         icon="heart-broken"
@@ -243,7 +244,7 @@ renderApp().
       />,
       container,
     )
-  ).
+  }).
   finally(() => {
     loading = false;
   });
