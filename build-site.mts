@@ -196,7 +196,6 @@ Effect.gen(function * (_) {
 //});
 
 
-/** */
 const generateData = (datadir: string, outdir: string) =>
 Effect.gen(function * (_) {
   const fs = yield * _(FileSystem.FileSystem);
