@@ -88,6 +88,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"\
       ],\
       [\
+        "@effect/platform-browser",\
+        "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:0.25.0"\
+      ],\
+      [\
         "@effect/platform-node",\
         "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"\
       ],\
@@ -765,7 +769,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ],\
       [\
         "typescript",\
-        "patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"\
+        "patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=5da071"\
       ],\
       [\
         "typescript-language-server",\
@@ -828,7 +832,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["effect", "npm:2.0.0-next.62"],\
             ["esbuild", "npm:0.19.11"],\
             ["fast-check", "npm:3.15.0"],\
-            ["typescript", "patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"],\
+            ["typescript", "patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=5da071"],\
             ["typescript-language-server", "npm:3.3.2"],\
             ["yaml", "npm:2.3.4"]\
           ],\
@@ -1198,6 +1202,32 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             "@effect/schema",\
             "@types/effect",\
             "@types/effect__schema",\
+            "effect"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@effect/platform-browser", [\
+        ["npm:0.25.0", {\
+          "packageLocation": "./.yarn/cache/@effect-platform-browser-npm-0.25.0-4c9f4fa80b-b21e88a7b4.zip/node_modules/@effect/platform-browser/",\
+          "packageDependencies": [\
+            ["@effect/platform-browser", "npm:0.25.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:0.25.0", {\
+          "packageLocation": "./.yarn/__virtual__/@effect-platform-browser-virtual-b821d00fec/0/cache/@effect-platform-browser-npm-0.25.0-4c9f4fa80b-b21e88a7b4.zip/node_modules/@effect/platform-browser/",\
+          "packageDependencies": [\
+            ["@effect/platform-browser", "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:0.25.0"],\
+            ["@effect/platform", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
+            ["@types/effect", null],\
+            ["@types/effect__platform", null],\
+            ["effect", "npm:2.0.0-next.62"]\
+          ],\
+          "packagePeers": [\
+            "@effect/platform",\
+            "@types/effect",\
+            "@types/effect__platform",\
             "effect"\
           ],\
           "linkType": "HARD"\
@@ -1942,7 +1972,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["effect", "npm:2.0.0-next.62"],\
             ["esbuild", "npm:0.19.11"],\
             ["fast-check", "npm:3.15.0"],\
-            ["typescript", "patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"],\
+            ["typescript", "patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=5da071"],\
             ["typescript-language-server", "npm:3.3.2"],\
             ["yaml", "npm:2.3.4"]\
           ],\
@@ -3485,6 +3515,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blueprintjs/select", "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:4.9.12"],\
             ["@effect/cli", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.27.0"],\
             ["@effect/platform", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
+            ["@effect/platform-browser", "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:0.25.0"],\
             ["@effect/platform-node", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.39.0"],\
             ["@effect/printer", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.29.0"],\
             ["@effect/printer-ansi", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.30.0"],\
@@ -3494,6 +3525,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@emotion/styled", "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:11.10.6"],\
             ["@riboseinc/paneron-extension-kit", "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:2.2.13"],\
             ["@riboseinc/paneron-registry-kit", "npm:2.2.20"],\
+            ["@types/node", "npm:18.19.3"],\
             ["@types/react", "npm:17.0.53"],\
             ["@types/react-dom", "npm:17.0.2"],\
             ["date-fns", "npm:2.22.1"],\
@@ -3513,7 +3545,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["rough-notation", "npm:0.5.1"],\
             ["semver", "npm:7.3.8"],\
             ["throttle-debounce", "npm:3.0.1"],\
-            ["typescript", "patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"],\
+            ["typescript", "patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=5da071"],\
             ["use-debounce", "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:9.0.4"],\
             ["yaml", "npm:2.3.4"]\
           ],\
@@ -3564,10 +3596,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["typescript", [\
-        ["patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058", {\
-          "packageLocation": "./.yarn/cache/typescript-patch-ecf29fafbd-d26b6ba97b.zip/node_modules/typescript/",\
+        ["patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=5da071", {\
+          "packageLocation": "./.yarn/cache/typescript-patch-bd21d74a9d-f53bfe97f7.zip/node_modules/typescript/",\
           "packageDependencies": [\
-            ["typescript", "patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"]\
+            ["typescript", "patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=5da071"]\
           ],\
           "linkType": "HARD"\
         }]\
