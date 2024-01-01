@@ -2,17 +2,22 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { ImportMapper } from 'import-mapper';
 
+import { Console, Stream, Effect, Cause } from 'effect';
+import * as BrowserHttp from '@effect/platform-browser/HttpClient';
+//import { BrowserContext } from '@effect/platform-browser';
+import * as Http from '@effect/platform/HttpClient';
+
+
 import { NonIdealState, Spinner } from '@blueprintjs/core';
 
-import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
+//import './normalize.css';
 //import 'jsondiffpatch/dist/formatters-styles/annotated.css';
 //import 'jsondiffpatch/dist/formatters-styles/html.css';
+import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import '@blueprintjs/popover2/lib/css/blueprint-popover2.css';
 import 'react-resizable/css/styles.css';
 import './site.css';
-//import './normalize.css';
-//import './renderer.css';
 
 import usePersistentStateReducer from '@riboseinc/paneron-extension-kit/usePersistentStateReducer.js';
 import ErrorBoundary from '@riboseinc/paneron-extension-kit/widgets/ErrorBoundary.js';
@@ -22,9 +27,6 @@ import type { PersistentStateReducerHook } from '@riboseinc/paneron-extension-ki
 
 console.debug("hi");
 
-//import { plugin } from '#ext';
-
-//const container = ReactDOM.createRoot(document.getElementById('app')!);
 const container = document.getElementById('app')!;
 
 ReactDOM.render(<Loader />, container);
@@ -95,8 +97,6 @@ async function setUpExtensionImportMap() {
 
 
 const App: React.FC<any> = ({ View }: { View: NonNullable<RendererPlugin["mainView"]> }) => {
-  console.debug("boundary", ErrorBoundary);
-  console.debug("reducer", usePersistentStateReducer);
   return (
     <ErrorBoundary viewName="Main view">
       <View
@@ -130,34 +130,94 @@ const App: React.FC<any> = ({ View }: { View: NonNullable<RendererPlugin["mainVi
 }
 
 
-(async function renderApp () {
-  await setUpExtensionImportMap();
+async function renderApp () {
+  const [plugin, data] = await (fetchPrerequisites2().pipe(
+    Effect.provide(BrowserHttp.client.layer),
+    Effect.runPromise,
+  ));
 
-  //const plugin = (await import('#ext')).default;
-  const code = await (await fetch('./extension.js')).text();
-  const blob = new Blob([code], { type: 'text/javascript' });
-  const url = URL.createObjectURL(blob);
-  const { 'default': maybePluginPromise } = await import(/* webpackIgnore: true */ url);
-
-  const _plugin = await maybePluginPromise;
-
-  let plugin: RendererPlugin;
-  if (_plugin.mainView) {
-    plugin = _plugin as RendererPlugin;
-  } else {
-    ReactDOM.render(<NonIdealState icon="heart-broken" description="Failed to load extension" />, container);
-    return;
-  }
-
-  const data = await (await fetch('./data.json')).json();
-
-  console.debug("got some data", data);
-
-  //const usePersistentStateReducer: any = (await import('@riboseinc/paneron-extension-kit/usePersistentStateReducer.js')).default.default
-  //const ErrorBoundary: any = (await import('@riboseinc/paneron-extension-kit/widgets/ErrorBoundary.js')).default.default
+  console.debug("Got plugin and data", plugin, data);
 
   ReactDOM.render(
     <App View={plugin.mainView!} />,
     container,
   );
-})();
+};
+
+
+renderApp().catch(e =>
+  ReactDOM.render(
+    <NonIdealState
+      icon="heart-broken"
+      title="Failed to load extension"
+      className="loaderWrapper"
+      description={<>
+        <p>
+          A networking error is a likely cause.
+          More (unlikely helpful) details below.
+        </p>
+        <pre>
+          {String(e)}
+        </pre>
+      </>}
+    />,
+    container,
+  )
+);
+
+
+function fetchPrerequisites2():
+Effect.Effect<
+  BrowserHttp.client.Client.Default,
+  BrowserHttp.error.HttpClientError | Cause.UnknownException,
+  [RendererPlugin, Record<string, Record<string, unknown>>]>
+{
+  return Effect.all(
+    [
+      Console.withTime("load plugin")(Effect.gen(function * (_) {
+        const [, code] = yield * _(
+          Effect.all([
+            Console.withTime("set up import map")
+              (Effect.tryPromise(() => setUpExtensionImportMap())),
+            Console.withTime("fetch extension.js")
+              (fetchOne('./extension.js')),
+          ]),
+        );
+        const blob = new Blob([code], { type: 'text/javascript' });
+        const url = URL.createObjectURL(blob);
+        const { 'default': maybePluginPromise } = yield * _(
+          Console.withTime("dynamically import extension code")
+            (Effect.tryPromise(() => import(url))),
+        );
+        const _plugin: any = yield * _(Effect.tryPromise(() => maybePluginPromise));
+        if (_plugin.mainView) {
+          return _plugin as RendererPlugin;
+        } else {
+          throw Effect.fail("obtained extension does not expose `mainView`");
+        }
+      })),
+      Console.withTime("load data")(Effect.gen(function * (_) {
+        const jsonString = yield * _(Console.withTime("fetch data.json")(fetchOne('./data.json')));
+        const data: Record<string, Record<string, unknown>> =
+          yield * _(Effect.try(() => JSON.parse(jsonString)));
+        return data;
+      })),
+    ],
+    { concurrency: 5 },
+  );
+}
+
+
+function fetchOne (path: string) {
+  return Effect.gen(function * (_) {
+    const client = yield * _(Http.client.Client)
+    const response = yield * _(
+      Http.request.get(path),
+      client,
+      Effect.map((_) => _.stream),
+      Stream.unwrap,
+      Stream.runFold("", (a, b) => a + new TextDecoder().decode(b))
+    );
+    return response;
+  });
+}

@@ -253,6 +253,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@effect/platform-browser@npm:^0.25.0":
+  version: 0.25.0
+  resolution: "@effect/platform-browser@npm:0.25.0"
+  peerDependencies:
+    "@effect/platform": ^0.39.0
+    effect: 2.0.0-next.62
+  checksum: b21e88a7b48160acd9247d3e872cfcbfb84b9eb846e7b81167e80a3ac79ea225aca2814b8f729e842069e561eb203d79a106442442c15165a598aef19c654745
+  languageName: node
+  linkType: hard
+
 "@effect/platform-node@npm:~0.39.0":
   version: 0.39.0
   resolution: "@effect/platform-node@npm:0.39.0"
@@ -2126,6 +2136,7 @@ __metadata:
     "@blueprintjs/select": 4.9.12
     "@effect/cli": ~0.27.0
     "@effect/platform": ~0.39.0
+    "@effect/platform-browser": ^0.25.0
     "@effect/platform-node": ~0.39.0
     "@effect/printer": ~0.29.0
     "@effect/printer-ansi": ~0.30.0
