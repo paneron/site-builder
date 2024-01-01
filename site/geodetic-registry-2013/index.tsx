@@ -201,6 +201,15 @@ async function renderApp () {
         value: { settings: {} },
       };
     },
+    useMapReducedData: function ({ chains }) {
+      return {
+        ...VALUE_HOOK_STUB,
+        value:
+          Object.keys(chains).
+            map((cid) => ({ [cid]: {} })).
+            reduce((prev, curr) => ({ ...prev, ...curr }), {}),
+      };
+    },
   };
 
   console.debug("Got plugin and data", plugin, data);
