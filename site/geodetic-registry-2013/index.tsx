@@ -166,7 +166,9 @@ async function renderApp () {
   loading = false;
 
   const ctx: DatasetContext = {
+    title: "TBD",
     useGlobalSettings,
+    logger: console,
     usePersistentDatasetStateReducer: (...opts) => {
       const effectiveOpts:
       Parameters<PersistentStateReducerHook<any, any>> =
@@ -186,6 +188,18 @@ async function renderApp () {
       return {
         ...VALUE_HOOK_STUB,
         value: { data: {} },
+      };
+    },
+    useRemoteUsername: function () {
+      return {
+        ...VALUE_HOOK_STUB,
+        value: {},
+      };
+    },
+    useSettings: function () {
+      return {
+        ...VALUE_HOOK_STUB,
+        value: { settings: {} },
       };
     },
   };
