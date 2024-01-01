@@ -213,7 +213,7 @@ export function serve(
     onDebug?.(`serve: got request for ${filename} (assuming ${ctype})...`);
     try {
       const blob = await readFile(join(root, filename));
-      resp.writeHead(200, {'Content-Type': ctype});
+      resp.writeHead(200, {'Content-Type': ctype, 'Content-Length': blob.length});
       resp.write(blob, 'binary');
       onDebug?.(`serve: returning ${join(root, filename)} as ${ctype}`);
     } catch (e) {
