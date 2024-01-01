@@ -37,7 +37,9 @@ function loadScript(
 
 const progressEl = document.createElement('progress');
 progressEl.style.marginBottom = '1em';
+progressEl.style.alignSelf = 'center';
 const statusEl = document.createElement('p');
+statusEl.style.alignSelf = 'center';
 const app = document.getElementById('app')!;
 app.innerHTML = '';
 app.appendChild(progressEl);
