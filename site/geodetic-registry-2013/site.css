@@ -14,4 +14,8 @@ div#app {
 .loaderWrapper {
   position: absolute;
   inset: 0;
+
+  pre {
+    text-align: left;
+  }
 }
