@@ -215,7 +215,6 @@ export function serve(
       const blob = await readFile(join(root, filename));
       resp.writeHead(200, {'Content-Type': ctype});
       resp.write(blob, 'binary');
-      resp.end();
       onDebug?.(`serve: returning ${join(root, filename)} as ${ctype}`);
     } catch (e) {
       const err = String(e);
@@ -226,6 +225,7 @@ export function serve(
         onError?.(`serve: failed to handle request of ${req.url}: ${err}`);
         resp.writeHead(500);
       }
+    } finally {
       resp.end();
     }
   });
