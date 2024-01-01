@@ -30,7 +30,11 @@ const container = document.getElementById('app')!;
 ReactDOM.render(<Loader />, container);
 
 function Loader() {
-  return <NonIdealState className="loaderWrapper" title={<Spinner className="loader" />} description="Loading…" />;
+  return <NonIdealState
+    className="loaderWrapper"
+    title={<Spinner className="loader" />}
+    description="Loading…"
+  />;
 }
 
 /** Returns an object with all imports allowed within an extension. */
