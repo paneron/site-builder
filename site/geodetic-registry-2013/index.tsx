@@ -285,9 +285,10 @@ Effect.Effect<
           const jsonString = yield * _(
             Console.withTime("fetch data.json")
               (fetchOne('./data.json'))
+          const data: Record<string, Record<string, unknown>> = yield * _(
+            Console.withTime("parse data.json")
+              (Effect.try(() => JSON.parse(jsonString))),
           );
-          const data: Record<string, Record<string, unknown>> =
-            yield * _(Effect.try(() => JSON.parse(jsonString)));
           return data;
         })),
     ],
