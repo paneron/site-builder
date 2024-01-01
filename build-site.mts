@@ -42,7 +42,7 @@ const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
 function getPathToSiteTemplate(
   templateName: S.Schema.To<typeof ContribSiteTemplateName>,
 ) {
-  return join(PACKAGE_ROOT, 'site', templateName);
+  return join(PACKAGE_ROOT, 'site', templateName, 'dist');
 }
 
 
