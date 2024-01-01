@@ -210,19 +210,20 @@ export function serve(
       ? 'index.html'
       : requestedPath;
     const ctype = ctypes.get(extname(filename)) ?? 'application/octet-stream';
-    onDebug?.(`serve: serving ${filename} as ${ctype}...`);
+    onDebug?.(`serve: got request for ${filename} (assuming ${ctype})...`);
     try {
       const blob = await readFile(join(root, filename));
       resp.writeHead(200, {'Content-Type': ctype});
       resp.write(blob, 'binary');
       resp.end();
+      onDebug?.(`serve: returning ${join(root, filename)} as ${ctype}`);
     } catch (e) {
       const err = String(e);
       if (err.indexOf('ENOENT')) {
-        onError?.(`${req.url}: Does not exist: ${String(e)}`);
+        onError?.(`serve: ${req.url}: ${join(root, filename)} does not exist: ${err}`);
         resp.writeHead(404);
       } else {
-        onError?.(`Failed to handle request of ${req.url}: ${String(e)}`);
+        onError?.(`serve: failed to handle request of ${req.url}: ${err}`);
         resp.writeHead(500);
       }
       resp.end();
