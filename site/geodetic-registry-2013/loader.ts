@@ -1,3 +1,5 @@
+import './site.css';
+
 const byteFormatter = Intl.NumberFormat(navigator.language, {
   notation: "compact",
   style: "unit",
@@ -7,7 +9,7 @@ const byteFormatter = Intl.NumberFormat(navigator.language, {
 
 function loadScript(
   onProgress: (done: number, total: number) => void,
-  onError: (resp: XMLHttpRequest["response"]) => void,
+  onError: (msg?: string, resp?: XMLHttpRequest["response"]) => void,
 ) {
   const xhr = new XMLHttpRequest;
   const tag = document.createElement("script");
@@ -19,9 +21,13 @@ function loadScript(
         tag.setAttribute('src', scriptSrc);
         document.head.appendChild(tag);
       } else {
-        onError(xhr.response);
+        onError("Server returned unexpected HTTP status", xhr.response);
       }
     }
+  };
+  xhr.onerror = function () {
+    xhr.abort();
+    onError("Request was aborted or content length incorrect.");
   };
   xhr.onprogress = function (e) {
     onProgress(e.loaded, e.total);
@@ -30,6 +36,7 @@ function loadScript(
 }
 
 const progressEl = document.createElement('progress');
+progressEl.style.marginBottom = '1em';
 const statusEl = document.createElement('p');
 const app = document.getElementById('app')!;
 app.innerHTML = '';
@@ -38,12 +45,17 @@ app.appendChild(statusEl);
 
 loadScript(
   (done, total) => {
-    progressEl.setAttribute('max', String(total));
-    progressEl.setAttribute('value', String(done));
+    if (done < total) {
+      progressEl.setAttribute('max', String(total));
+      progressEl.setAttribute('value', String(done));
+    } else {
+      progressEl.removeAttribute('max');
+      progressEl.removeAttribute('value');
+    }
     statusEl.innerHTML = `Loading Paneron Web<br/>${byteFormatter.format(done)}`;
   },
-  (resp) => {
-    statusEl.innerHTML = "An error occurred during the initial loading sequence.";
+  (err, resp) => {
+    statusEl.innerHTML = `An error occurred during the initial loading sequence.<br />${err}`;
     console.error("Failed to load script", resp);
   },
 );
