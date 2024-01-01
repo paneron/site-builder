@@ -74,7 +74,7 @@ async function setUpExtensionImportMap() {
   const imports: Record<string, string> = {};
   for (const [moduleID, moduleData] of Object.entries(deps)) {
     const m = moduleData as any;
-    console.debug("processing import", moduleID, m);
+    //console.debug("processing import", moduleID, m);
     const d = m.default // && Object.keys(m).length === 1 // only default export
       ? ImportMapper.forceDefault(m.default)
       : null;
