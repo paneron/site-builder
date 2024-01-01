@@ -118,6 +118,7 @@ async function buildSiteTemplate(opts: BaseBuildOptions) {
   return await esbuild({
     entryPoints: [
       join(PACKAGE_ROOT, 'index.tsx'),
+      join(PACKAGE_ROOT, 'loader.ts'),
       //join(PACKAGE_ROOT, 'imports.mts'),
       //join(PACKAGE_ROOT, 'site', 'index.tsx'),
     ],

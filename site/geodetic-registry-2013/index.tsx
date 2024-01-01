@@ -29,13 +29,44 @@ console.debug("hi");
 
 const container = document.getElementById('app')!;
 
-ReactDOM.render(<Loader />, container);
+let globalBytesToReceive = 0;
+let globalBytesReceived = 0;
+let loading = true;
 
-function Loader() {
+const byteFormatter = Intl.NumberFormat(navigator.language, {
+  notation: "compact",
+  style: "unit",
+  unit: "byte",
+  unitDisplay: "narrow",
+});
+
+function renderLoader() {
+  if (loading) {
+    ReactDOM.render(
+      <Loader
+        total={globalBytesToReceive}
+        done={globalBytesReceived}
+      />,
+      container,
+    );
+    setTimeout(() => requestAnimationFrame(renderLoader), 50);
+  }
+}
+
+renderLoader();
+
+function Loader({ total, done }: { total: number, done: number }) {
+  const value = done && total && total > 0 && total !== done
+    ? done / total
+    : undefined;
   return <NonIdealState
     className="loaderWrapper"
-    title={<Spinner className="loader" />}
-    description="Loading…"
+    icon={<Spinner
+      className="loader"
+      {...(value ? { value } : {})}
+    />}
+    title="Downloading dataset & extension"
+    description={`${byteFormatter.format(done)} of ${byteFormatter.format(total)}`}
   />;
 }
 
@@ -132,6 +163,8 @@ async function renderApp () {
     Effect.runPromise,
   ));
 
+  loading = false;
+
   const ctx: DatasetContext = {
     useGlobalSettings,
     usePersistentDatasetStateReducer: (...opts) => {
@@ -166,25 +199,32 @@ async function renderApp () {
 };
 
 
-renderApp().catch(e =>
-  ReactDOM.render(
-    <NonIdealState
-      icon="heart-broken"
-      title="Failed to load extension or dataset"
-      className="loaderWrapper"
-      description={<>
-        <p>
-          A networking error is a likely cause.
-          More (probably unhelpful) details below.
-        </p>
-        <pre>
-          {String(e)}
-        </pre>
-      </>}
-    />,
-    container,
-  )
-);
+renderApp().
+  catch(e =>
+    ReactDOM.render(
+      <NonIdealState
+        icon="heart-broken"
+        title="Failed to load extension or dataset"
+        className="loaderWrapper"
+        description={<>
+          <p>
+            A networking error is a likely cause.
+            <br />
+            Reloading the page may help.
+            <br />
+            More (probably unhelpful) details below.
+          </p>
+          <pre>
+            {String(e)}
+          </pre>
+        </>}
+      />,
+      container,
+    )
+  ).
+  finally(() => {
+    loading = false;
+  });
 
 
 function fetchPrerequisites2():
@@ -240,10 +280,14 @@ function fetchOne (path: string) {
     const response = yield * _(
       Http.request.get(path),
       client,
-      Effect.tap((f) => Effect.sync(() => console.debug('fetchOne: client', JSON.stringify(f.headers)))),
+      Effect.tap(({ headers }) => Effect.sync(() => {
+        globalBytesToReceive += parseInt(headers['content-length']!, 10);
+      })),
       Effect.map((_) => _.stream),
       Stream.unwrap,
-      Stream.tap((arr) => Effect.sync(() => console.debug('fetchOne: stream: got array with length', arr.length))),
+      Stream.tap((arr) => Effect.sync(() => {
+        globalBytesReceived += arr.length;
+      })),
       Stream.runFold("", (a, b) => a + new TextDecoder().decode(b)),
     );
     return response;
