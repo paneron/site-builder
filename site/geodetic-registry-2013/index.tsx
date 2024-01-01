@@ -21,7 +21,7 @@ import './site.css';
 
 import usePersistentStateReducer from '@riboseinc/paneron-extension-kit/usePersistentStateReducer.js';
 import ErrorBoundary from '@riboseinc/paneron-extension-kit/widgets/ErrorBoundary.js';
-import type { RendererPlugin } from '@riboseinc/paneron-extension-kit/types/index.js';
+import type { RendererPlugin, DatasetContext } from '@riboseinc/paneron-extension-kit/types/index.js';
 import type { PersistentStateReducerHook } from '@riboseinc/paneron-extension-kit/usePersistentStateReducer.js';
 
 
@@ -96,35 +96,31 @@ async function setUpExtensionImportMap() {
 }
 
 
-const App: React.FC<any> = ({ View }: { View: NonNullable<RendererPlugin["mainView"]> }) => {
+const VALUE_HOOK_STUB = {
+    errors: [] as string[],
+    isUpdating: false,
+    _reqCounter: 0,
+    refresh: () => {},
+} as const;
+
+
+function useGlobalSettings() {
+  return {
+    value: {
+      settings: { mainNavbarPosition: 'top', sidebarPosition: 'left', defaultTheme: 'light' },
+    },
+    ...VALUE_HOOK_STUB,
+  } as const;
+}
+
+
+const App: React.FC<any> = ({ View, ctx }: {
+  View: NonNullable<RendererPlugin["mainView"]>,
+  ctx: DatasetContext,
+}) => {
   return (
-    <ErrorBoundary viewName="Main view">
-      <View
-        useGlobalSettings={() => ({
-          value: {
-            settings: { mainNavbarPosition: 'top', sidebarPosition: 'left', defaultTheme: 'light' },
-          },
-          errors: [],
-          isUpdating: false,
-          _reqCounter: 0,
-          refresh: () => {},
-        })}
-        usePersistentDatasetStateReducer={
-          (...opts) => {
-            const effectiveOpts: Parameters<PersistentStateReducerHook<any, any>> = React.useMemo((() => [
-              // opts[0] is the storage key in the list of positional parameters.
-              // Extension code should specify locally scoped key,
-              // and this takes care of additionally scoping it by repository and dataset.
-              opts[0],
-
-              opts[1], opts[2],
-
-              opts[3], opts[4], opts[5],
-            ]), [...[...Array(6).keys()].map(k => opts[k])]);
-            return usePersistentStateReducer(() => {}, async () => ({}), ...effectiveOpts);
-          }
-        }
-      />
+    <ErrorBoundary viewName="main dataset view">
+      <View {...ctx} />
     </ErrorBoundary>
   );
 }
@@ -136,10 +132,35 @@ async function renderApp () {
     Effect.runPromise,
   ));
 
+  const ctx: DatasetContext = {
+    useGlobalSettings,
+    usePersistentDatasetStateReducer: (...opts) => {
+      const effectiveOpts:
+      Parameters<PersistentStateReducerHook<any, any>> =
+      React.useMemo((() => [
+        // opts[0] is the storage key in the list of positional parameters.
+        // Extension code should specify locally scoped key,
+        // and this takes care of additionally scoping it by repository and dataset.
+        opts[0],
+
+        opts[1], opts[2],
+
+        opts[3], opts[4], opts[5],
+      ]), [...[...Array(6).keys()].map(k => opts[k])]);
+      return usePersistentStateReducer(() => {}, async () => ({}), ...effectiveOpts);
+    },
+    useObjectData: function ({ objectPaths, nounLabel }) {
+      return {
+        ...VALUE_HOOK_STUB,
+        value: { data: {} },
+      };
+    },
+  };
+
   console.debug("Got plugin and data", plugin, data);
 
   ReactDOM.render(
-    <App View={plugin.mainView!} />,
+    <App View={plugin.mainView!} ctx={ctx} />,
     container,
   );
 };
@@ -149,12 +170,12 @@ renderApp().catch(e =>
   ReactDOM.render(
     <NonIdealState
       icon="heart-broken"
-      title="Failed to load extension"
+      title="Failed to load extension or dataset"
       className="loaderWrapper"
       description={<>
         <p>
           A networking error is a likely cause.
-          More (unlikely helpful) details below.
+          More (probably unhelpful) details below.
         </p>
         <pre>
           {String(e)}
@@ -174,34 +195,39 @@ Effect.Effect<
 {
   return Effect.all(
     [
-      Console.withTime("load plugin")(Effect.gen(function * (_) {
-        const [, code] = yield * _(
-          Effect.all([
-            Console.withTime("set up import map")
-              (Effect.tryPromise(() => setUpExtensionImportMap())),
-            Console.withTime("fetch extension.js")
-              (fetchOne('./extension.js')),
-          ]),
-        );
-        const blob = new Blob([code], { type: 'text/javascript' });
-        const url = URL.createObjectURL(blob);
-        const { 'default': maybePluginPromise } = yield * _(
-          Console.withTime("dynamically import extension code")
-            (Effect.tryPromise(() => import(url))),
-        );
-        const _plugin: any = yield * _(Effect.tryPromise(() => maybePluginPromise));
-        if (_plugin.mainView) {
-          return _plugin as RendererPlugin;
-        } else {
-          throw Effect.fail("obtained extension does not expose `mainView`");
-        }
-      })),
-      Console.withTime("load data")(Effect.gen(function * (_) {
-        const jsonString = yield * _(Console.withTime("fetch data.json")(fetchOne('./data.json')));
-        const data: Record<string, Record<string, unknown>> =
-          yield * _(Effect.try(() => JSON.parse(jsonString)));
-        return data;
-      })),
+      Console.withTime("load plugin")
+        (Effect.gen(function * (_) {
+          const [, code] = yield * _(
+            Effect.all([
+              Console.withTime("set up import map")
+                (Effect.tryPromise(() => setUpExtensionImportMap())),
+              Console.withTime("fetch extension.js")
+                (fetchOne('./extension.js')),
+            ]),
+          );
+          const blob = new Blob([code], { type: 'text/javascript' });
+          const url = URL.createObjectURL(blob);
+          const { 'default': maybePluginPromise } = yield * _(
+            Console.withTime("dynamically import extension code")
+              (Effect.tryPromise(() => import(url))),
+          );
+          const _plugin: any = yield * _(Effect.tryPromise(() => maybePluginPromise));
+          if (_plugin.mainView) {
+            return _plugin as RendererPlugin;
+          } else {
+            throw Effect.fail("obtained extension does not expose `mainView`");
+          }
+        })),
+      Console.withTime("load data")
+        (Effect.gen(function * (_) {
+          const jsonString = yield * _(
+            Console.withTime("fetch data.json")
+              (fetchOne('./data.json'))
+          );
+          const data: Record<string, Record<string, unknown>> =
+            yield * _(Effect.try(() => JSON.parse(jsonString)));
+          return data;
+        })),
     ],
     { concurrency: 5 },
   );
@@ -214,9 +240,11 @@ function fetchOne (path: string) {
     const response = yield * _(
       Http.request.get(path),
       client,
+      Effect.tap((f) => Effect.sync(() => console.debug('fetchOne: client', JSON.stringify(f.headers)))),
       Effect.map((_) => _.stream),
       Stream.unwrap,
-      Stream.runFold("", (a, b) => a + new TextDecoder().decode(b))
+      Stream.tap((arr) => Effect.sync(() => console.debug('fetchOne: stream: got array with length', arr.length))),
+      Stream.runFold("", (a, b) => a + new TextDecoder().decode(b)),
     );
     return response;
   });
