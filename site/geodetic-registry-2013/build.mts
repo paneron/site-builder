@@ -32,7 +32,13 @@ Effect.all([
   Console.withTime("Copy assets")
     (Effect.gen(function * (_) {
       const fs = yield * _(FileSystem.FileSystem);
-      yield * _(fs.copy(join(PACKAGE_ROOT, 'index.html'), join(OUTDIR, 'index.html')));
+      yield * _(
+        fs.copy(
+          join(PACKAGE_ROOT, 'index.html'),
+          join(OUTDIR, 'index.html'),
+          { overwrite: true },
+        ),
+      );
     })),
   //...CONTRIB_SITE_TEMPLATES.map(templateName =>
   //  Effect.tryPromise(() =>
