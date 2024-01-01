@@ -33,37 +33,6 @@ function Loader() {
   return <NonIdealState className="loaderWrapper" title={<Spinner className="loader" />} description="Loading…" />;
 }
 
-// /** Returns an object with all imports allowed within an extension. */
-// function getDeps(): Record<string, unknown> {
-//   return {
-//     'react': import('react'),
-//     '@emotion/styled': import('@emotion/styled'),
-//     '@emotion/react': import('@emotion/react'),
-//     '@blueprintjs/core': import('@blueprintjs/core'),
-//     '@blueprintjs/popover2': import('@blueprintjs/popover2'),
-//     '@blueprintjs/select': import('@blueprintjs/select'),
-// 
-//     //'react-mathjax2': import('react-mathjax2'),
-//     //'liquidjs': import('liquidjs'),
-//     //'js-yaml': import('js-yaml'),
-//     //'asciidoctor': import('asciidoctor'),
-// 
-//     'immutability-helper': import('immutability-helper'),
-//     'date-fns/format': import('date-fns/format'),
-//     'date-fns/parse': import('date-fns/parse'),
-// 
-//     '@riboseinc/paneron-extension-kit': import('@riboseinc/paneron-extension-kit'),
-//     '@riboseinc/paneron-registry-kit': import('@riboseinc/paneron-registry-kit'),
-//     '@riboseinc/paneron-registry-kit/migrations/initial': import('@riboseinc/paneron-registry-kit/migrations/initial.js'),
-//     '@riboseinc/paneron-registry-kit/views': import('@riboseinc/paneron-registry-kit/views'),
-//     '@riboseinc/paneron-registry-kit/views/FilterCriteria/CRITERIA_CONFIGURATION': import('@riboseinc/paneron-registry-kit/views/FilterCriteria/CRITERIA_CONFIGURATION.js'),
-//     '@riboseinc/paneron-registry-kit/views/util': import('@riboseinc/paneron-registry-kit/views/util.js'),
-//     '@riboseinc/paneron-registry-kit/views/BrowserCtx': import('@riboseinc/paneron-registry-kit/views/BrowserCtx.js'),
-//     '@riboseinc/paneron-registry-kit/views/itemPathUtils': import('@riboseinc/paneron-registry-kit/views/itemPathUtils.js'),
-//     '@riboseinc/paneron-extension-kit/context': import('@riboseinc/paneron-extension-kit/context.js'),
-//   }
-// }
-
 /** Returns an object with all imports allowed within an extension. */
 async function getExtensionImports(): Promise<Record<string, unknown>> {
   return {
