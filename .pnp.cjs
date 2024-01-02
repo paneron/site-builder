@@ -269,7 +269,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ],\
       [\
         "@riboseinc/paneron-extension-kit",\
-        "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:2.2.15"\
+        "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:2.2.17"\
       ],\
       [\
         "@riboseinc/paneron-registry-kit",\
@@ -1989,17 +1989,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@riboseinc/paneron-extension-kit", [\
-        ["npm:2.2.15", {\
-          "packageLocation": "./.yarn/cache/@riboseinc-paneron-extension-kit-npm-2.2.15-798947a65b-9263bfdf32.zip/node_modules/@riboseinc/paneron-extension-kit/",\
+        ["npm:2.2.17", {\
+          "packageLocation": "./.yarn/cache/@riboseinc-paneron-extension-kit-npm-2.2.17-d0db7d5c6a-e233ae0192.zip/node_modules/@riboseinc/paneron-extension-kit/",\
           "packageDependencies": [\
-            ["@riboseinc/paneron-extension-kit", "npm:2.2.15"]\
+            ["@riboseinc/paneron-extension-kit", "npm:2.2.17"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:2.2.15", {\
-          "packageLocation": "./.yarn/__virtual__/@riboseinc-paneron-extension-kit-virtual-42e699e73e/0/cache/@riboseinc-paneron-extension-kit-npm-2.2.15-798947a65b-9263bfdf32.zip/node_modules/@riboseinc/paneron-extension-kit/",\
+        ["virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:2.2.17", {\
+          "packageLocation": "./.yarn/__virtual__/@riboseinc-paneron-extension-kit-virtual-a33241019e/0/cache/@riboseinc-paneron-extension-kit-npm-2.2.17-d0db7d5c6a-e233ae0192.zip/node_modules/@riboseinc/paneron-extension-kit/",\
           "packageDependencies": [\
-            ["@riboseinc/paneron-extension-kit", "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:2.2.15"],\
+            ["@riboseinc/paneron-extension-kit", "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:2.2.17"],\
             ["@paneron/libmmel", null],\
             ["@riboseinc/isogit-lfs", null],\
             ["@types/immer", null],\
@@ -3523,7 +3523,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@effect/typeclass", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.21.0"],\
             ["@emotion/react", "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:11.10.6"],\
             ["@emotion/styled", "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:11.10.6"],\
-            ["@riboseinc/paneron-extension-kit", "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:2.2.15"],\
+            ["@riboseinc/paneron-extension-kit", "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:2.2.17"],\
             ["@riboseinc/paneron-registry-kit", "npm:2.2.24"],\
             ["@types/node", "npm:18.19.3"],\
             ["@types/react", "npm:17.0.53"],\
