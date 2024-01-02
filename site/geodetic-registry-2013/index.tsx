@@ -157,6 +157,9 @@ const App: React.FC<any> = ({ View, ctx }: {
 }
 
 
+function noOp() {};
+
+
 async function renderApp () {
   const [plugin, data] = await (fetchPrerequisites2().pipe(
     Effect.provide(BrowserHttp.client.layer),
@@ -182,7 +185,11 @@ async function renderApp () {
 
         opts[3], opts[4], opts[5],
       ]), [...[...Array(6).keys()].map(k => opts[k])]);
-      return usePersistentStateReducer(() => {}, async () => ({}), ...effectiveOpts);
+
+      // XXX
+      const alwaysLoadInitialState = React.useCallback((async () => opts[4]), [opts[4]]);
+
+      return usePersistentStateReducer(noOp, alwaysLoadInitialState, ...effectiveOpts);
     },
     useObjectData: function ({ objectPaths, nounLabel }) {
       return {
