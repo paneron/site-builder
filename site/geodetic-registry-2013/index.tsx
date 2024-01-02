@@ -216,6 +216,18 @@ async function renderApp () {
           Object.keys(chains).
             map((cid) => ({ [cid]: {} })).
             reduce((prev, curr) => ({ ...prev, ...curr }), {}),
+
+    useFilteredIndex: function ({ queryExpression, keyExpression }) {
+      return {
+        ...VALUE_HOOK_STUB,
+        value: { indexID: queryExpression },
+      };
+    },
+
+    useIndexDescription: function ({ indexID }) {
+      return {
+        ...VALUE_HOOK_STUB,
+        value: { status: { objectCount: 0 } },
       };
     },
   };
