@@ -8,26 +8,40 @@ const byteFormatter = Intl.NumberFormat(navigator.language, {
 });
 
 function loadScript(
+  scriptSrc: string,
   onProgress: (done: number, total: number) => void,
   onError: (msg?: string, resp?: XMLHttpRequest["response"]) => void,
 ) {
+  console.debug("loading script", scriptSrc);
+
   const xhr = new XMLHttpRequest;
   const tag = document.createElement("script");
-  const scriptSrc = './index.js';
   xhr.open("GET", scriptSrc, true);
   xhr.onload = function () {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
         tag.setAttribute('src', scriptSrc);
         document.head.appendChild(tag);
+      } else if (xhr.status === 404) {
+        onError("Script was not found.");
+      } else if (xhr.status === 500) {
+        onError("Server error occurred while serving the script.");
       } else {
-        onError("Server returned unexpected HTTP status", xhr.response);
+        console.error("failed to load script", xhr.response);
+        onError("Server returned an unexpected HTTP status.", xhr.response);
       }
     }
   };
-  xhr.onerror = function () {
+  xhr.onerror = function (e) {
     xhr.abort();
-    onError("Request was aborted or content length incorrect.");
+    console.error("failed to load script", scriptSrc, e);
+    if (xhr.status === 404) {
+      onError("Script was not found.");
+    } else if (xhr.status === 500) {
+      onError("Server error occurred while serving the script.");
+    } else {
+      onError("Request was aborted or content length incorrect.");
+    }
   };
   xhr.onprogress = function (e) {
     onProgress(e.loaded, e.total);
@@ -46,6 +60,7 @@ app.appendChild(progressEl);
 app.appendChild(statusEl);
 
 loadScript(
+  './index.js',
   (done, total) => {
     if (done < total) {
       progressEl.setAttribute('max', String(total));
@@ -58,7 +73,7 @@ loadScript(
   },
   (err, resp) => {
     statusEl.innerHTML = `An error occurred during the initial loading sequence.<br />${err}`;
-    console.error("Failed to load script", resp);
+    console.error("failed to load", resp);
   },
 );
 
