@@ -128,10 +128,10 @@ async function setUpExtensionImportMap() {
 
 
 const VALUE_HOOK_STUB = {
-    errors: [] as string[],
-    isUpdating: false,
-    _reqCounter: 0,
-    refresh: () => {},
+  errors: [] as string[],
+  isUpdating: false,
+  _reqCounter: 0,
+  refresh: () => {},
 } as const;
 
 
