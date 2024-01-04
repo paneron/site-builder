@@ -109,8 +109,10 @@ const App: React.FC<any> = ({ View, ctx }: {
   ctx: DatasetContext,
 }) => {
   return (
-    <ErrorBoundary viewName="main dataset view">
-      <View {...ctx} />
-    </ErrorBoundary>
+    <React.StrictMode>
+      <ErrorBoundary viewName="main dataset view">
+        <View {...ctx} />
+      </ErrorBoundary>
+    </React.StrictMode>
   );
 };
