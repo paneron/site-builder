@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 
 import { Effect } from 'effect';
 import * as BrowserHttp from '@effect/platform-browser/HttpClient';
@@ -25,7 +25,7 @@ import { getExtensionContext } from './extension-context.js';
 
 console.debug("Hello World");
 
-const container = document.getElementById('app')!;
+const container = ReactDOM.createRoot(document.getElementById('app')!);
 
 
 // Remove loader CSS ASAP
@@ -43,9 +43,8 @@ const byteFormatter = Intl.NumberFormat(navigator.language, {
 });
 
 repeatWhileLoading(function renderLoader(done, total) {
-  ReactDOM.render(
+  container.render(
     <Loader done={done} total={total} />,
-    container,
   );
 });
 
@@ -69,7 +68,7 @@ function Loader({ total, done }: { total: number, done: number }) {
 
 loadApp().
   catch(e => {
-    ReactDOM.render(
+    container.render(
       <NonIdealState
         icon="heart-broken"
         title="Failed to load extension or dataset"
@@ -87,7 +86,6 @@ loadApp().
           </pre>
         </>}
       />,
-      container,
     )
   });
 
@@ -101,9 +99,8 @@ async function loadApp () {
 
   const ctx = getExtensionContext(data);
 
-  ReactDOM.render(
+  container.render(
     <App View={plugin.mainView!} ctx={ctx} />,
-    container,
   );
 }
 
