@@ -114,14 +114,11 @@ Effect.Effect<
                 (Effect.tryPromise(() => import(url))),
               Effect.tapError((e) => Effect.sync(() => console.error("failed to import", String(e)))),
             );
-            console.debug("imported plugin");
             const _plugin: any = yield * _(Effect.tryPromise(() => maybePluginPromise));
             if (_plugin.mainView) {
               Effect.logDebug("got plugin");
-              console.debug("got plugin");
               return _plugin as RendererPlugin;
             } else {
-              console.error("invalid plugin");
               Effect.logError("not a valid plugin");
               throw Effect.fail("obtained extension does not expose `mainView`");
             }
@@ -136,7 +133,6 @@ Effect.Effect<
               Console.withTime("parse data.json")
                 (Effect.try(() => JSON.parse(jsonString))),
             );
-            console.debug("got data");
             Effect.logDebug("got data");
             return data;
           })),
