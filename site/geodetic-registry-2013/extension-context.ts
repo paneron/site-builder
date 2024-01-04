@@ -5,6 +5,11 @@ import type { PersistentStateReducerHook } from '@riboseinc/paneron-extension-ki
 import type { DatasetContext } from '@riboseinc/paneron-extension-kit/types/index.js';
 
 
+type Dataset = Record<string, Record<string, unknown>>;
+type Predicate = (objPath: string, obj: Record<string, unknown>) => boolean
+type Keyer = (obj: Record<string, unknown>) => string
+
+
 export function getExtensionContext(
   data: Record<string, Record<string, unknown>>,
 ): DatasetContext {
@@ -35,7 +40,11 @@ export function getExtensionContext(
     useObjectData: function ({ objectPaths, nounLabel }) {
       return {
         ...VALUE_HOOK_STUB,
-        value: { data: {} },
+        value: {
+          data: objectPaths.
+            map(objPath => ({ [objPath]: data[objPath] ?? null })).
+            reduce((prev, curr) => ({ ...prev, ...curr }), {}),
+        },
       };
     },
     useRemoteUsername: function () {
@@ -61,16 +70,38 @@ export function getExtensionContext(
     },
 
     useFilteredIndex: function ({ queryExpression, keyExpression }) {
+      // const predicate = new Function('objPath', 'obj', queryExpression);
+      // const keyer = keyExpression
+      //   ? new Function('obj', keyExpression)
+      //   : undefined;
       return {
         ...VALUE_HOOK_STUB,
-        value: { indexID: queryExpression },
+        value: { indexID: getIndexID(queryExpression) },
       };
     },
 
     useIndexDescription: function ({ indexID }) {
       return {
         ...VALUE_HOOK_STUB,
-        value: { status: { objectCount: 0 } },
+        value: {
+          status: {
+            objectCount: indexID
+              ? matchObjects(
+                  data,
+                  getPredicateString(indexID),
+                ).length
+              : 0,
+          },
+        },
+      };
+    },
+
+    useObjectPathFromFilteredIndex: function ({ indexID, position }) {
+      const objPaths = matchObjects(data, getPredicateString(indexID))
+      const objectPath = objPaths[position] ?? '';
+      return {
+        ...VALUE_HOOK_STUB,
+        value: { objectPath },
       };
     },
   };
@@ -98,3 +129,50 @@ function useGlobalSettings() {
 
 
 function noOp() {};
+
+
+
+// INDEX UTILS
+// ===========
+
+
+const INDICES: Record<string, { objPaths: string[] }> = {};
+
+function matchObjects(d: Dataset, predicateString: string): string[] {
+  const indexID = getIndexID(predicateString);
+
+  if (!INDICES[indexID]) {
+    const predicate = getPredicate(predicateString);
+
+    const objPaths: string[] = [];
+    for (const [objPath, objData] of Object.entries(d)) {
+      console.debug(objPath);
+      if (predicate(objPath, objData)) {
+        objPaths.push(objPath);
+      }
+    }
+
+    INDICES[indexID] = { objPaths };
+  }
+
+  return INDICES[indexID]!.objPaths;
+}
+
+
+function getPredicateString(indexID: string) {
+  return indexID;
+}
+
+function getPredicate(predicateString: string): Predicate {
+  // XXX: simulated validation
+  return new Function('objPath', 'obj', predicateString) as Predicate;
+}
+
+function getKeyer(keyExpression: string): Keyer {
+  // XXX: simulated validation
+  return new Function('obj', keyExpression) as Keyer;
+}
+
+function getIndexID(predicateString: string) {
+  return predicateString;
+}
