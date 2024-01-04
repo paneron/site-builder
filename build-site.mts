@@ -209,9 +209,8 @@ Effect.gen(function * (_) {
     // TODO: Parse non-YAML files as well.
     filter(p => p.endsWith('.yaml') || p.endsWith('.yml')).
     filter(p => !p.startsWith('proposals')).
-    map(path => join(datadir, path)).
     map(path => pipe(
-      fs.readFileString(path),
+      fs.readFileString(join(datadir, path)),
       Effect.map(parseYAML),
       Effect.flatMap(S.parse(S.record(S.string, S.unknown))),
       //Effect.flatMap(S.parse(RegisterItem)),
@@ -220,7 +219,7 @@ Effect.gen(function * (_) {
         "ParseError",
         err => Effect.logDebug(`skipping non-object YAML at ${path} due to ${String(err)}`),
       ),
-      Effect.map((out) => out ? ({ [path]: out }) : ({})),
+      Effect.map((out) => out ? ({ [`/${path}`]: out }) : ({})),
     )),
     Effect.succeed({}),
     (accum, item) => ({ ...accum, ...item }),
