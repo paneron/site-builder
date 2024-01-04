@@ -1594,6 +1594,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"liquidjs@npm:9.25.0":
+  version: 9.25.0
+  resolution: "liquidjs@npm:9.25.0"
+  bin:
+    liquid: bin/liquid.js
+    liquidjs: bin/liquid.js
+  checksum: 91ca4d184910bb518ff451c7465bcc14e3ad8c0be4f0aff40a90b768e508ac07bf0e0019ebc7b41ba9a557642c78d29c4f6f193801ebbd3c336078c0800e96b6
+  languageName: node
+  linkType: hard
+
+"load-script@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "load-script@npm:1.0.0"
+  checksum: 8458e3f07b4a86f8d9d66e47a987811491a5d013af23ba7b371c6d3c9dc899885b072ccf65abf7874c10cb197d4975eacd8a7a125bfb38dbbcb267539f5dc1e9
+  languageName: node
+  linkType: hard
+
 "lodash@npm:^4.17.10":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
@@ -1773,7 +1790,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:15.x, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:15.x, prop-types@npm:^15.6.0, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -1852,6 +1869,17 @@ __metadata:
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: f7a19ac3496de32ca9ae12aa030f00f14a3d45374f1ceca0af707c831b2a6098ef0d6bdae51bd437b0a306d7f01d4677fcc8de7c0d331eb47ad0f46130e53c5f
+  languageName: node
+  linkType: hard
+
+"react-mathjax2@npm:0.0.2":
+  version: 0.0.2
+  resolution: "react-mathjax2@npm:0.0.2"
+  dependencies:
+    load-script: ^1.0.0
+    prop-types: ^15.6.0
+    react: ^16.0.0
+  checksum: c974a356e9792f49cb32584eabb2d1c67bc644839fe349c2a4f29041bf280975954f8ebc2c95f75c6f5dfc4137386ff4041d07b411311d8fff10418f34a3cbf9
   languageName: node
   linkType: hard
 
@@ -2164,9 +2192,11 @@ __metadata:
     immer: 9.0.2
     immutability-helper: 3.1.1
     import-mapper: 0.0.4
+    liquidjs: 9.25.0
     react: 18
     react-dom: 18
     react-helmet: 6.1.0
+    react-mathjax2: 0.0.2
     react-resizable: 3.0.5
     react-virtualized-auto-sizer: 1.0.7
     react-visual-diff: 0.4.3

@@ -47,6 +47,9 @@ async function getExtensionImports(): Promise<Record<string, unknown>> {
     'date-fns/format': await import('date-fns/format'),
     'date-fns/parse': await import('date-fns/parse'),
 
+    'liquidjs': await import('liquidjs'),
+    'react-mathjax2': await import('react-mathjax2'),
+
     '@riboseinc/paneron-extension-kit': (await import('@riboseinc/paneron-extension-kit')),
     '@riboseinc/paneron-extension-kit/context': (await import('@riboseinc/paneron-extension-kit/context.js')),
     '@riboseinc/paneron-registry-kit': (await import('@riboseinc/paneron-registry-kit')),
