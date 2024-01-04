@@ -19,10 +19,13 @@ function leaveLoadingState() {
 }
 
 export function repeatWhileLoading(func: (done: number, total: number) => void) {
-  const cb = () => func(globalBytesReceived, globalBytesReceived);
   if (loading) {
+    const cb = () => func(globalBytesReceived, globalBytesToReceive);
     cb();
-    setTimeout(() => requestAnimationFrame(cb), 50);
+    setTimeout(() =>
+      requestAnimationFrame(() =>
+        repeatWhileLoading(cb)
+      ), 50);
   }
 }
 
