@@ -1,3 +1,11 @@
+/*
+ * These rules are applied at all times, including initial loading.
+ *
+ * Anything that is needed only for the main functionality should be in site.css,
+ * anything needed only for the loader should be in loader.css, this file should be
+ * as small and light as possible.
+ */
+
 body {
   padding: 0;
   margin: 0;

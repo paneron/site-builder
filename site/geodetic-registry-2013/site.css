@@ -1,3 +1,8 @@
+/*
+ * Rules in this file are applied to the main app, and not to initial loader screen.
+ * As such, these rules can be a bit more extensive.
+ */
+
 .loaderWrapper {
   position: absolute;
   inset: 0;
