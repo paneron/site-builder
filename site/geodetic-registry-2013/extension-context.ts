@@ -1,8 +1,11 @@
+import * as S from '@effect/schema/Schema';
+
 import React from 'react';
 
 import usePersistentStateReducer from '@riboseinc/paneron-extension-kit/usePersistentStateReducer.js';
+import { isObject } from '@riboseinc/paneron-extension-kit/util';
 import type { PersistentStateReducerHook } from '@riboseinc/paneron-extension-kit/usePersistentStateReducer.js';
-import type { DatasetContext } from '@riboseinc/paneron-extension-kit/types/index.js';
+import type { Hooks, DatasetContext } from '@riboseinc/paneron-extension-kit/types/index.js';
 
 
 type Dataset = Record<string, Record<string, unknown>>;
@@ -22,6 +25,17 @@ type Predicate = (
 /** Allows to index objects by something other than their paths. */
 type Keyer = (obj: Record<string, unknown>) => string
 
+type MapFunc = (
+  /** Object path. */
+  key: string,
+  /** Object data. */
+  value: unknown,
+  /** Called for matches. */
+  emit: (val: unknown) => void,
+) => void
+
+type ReduceFunc = (accumulator: unknown, current: unknown) => void
+
 
 export function getExtensionContext(
   data: Record<string, Record<string, unknown>>,
@@ -31,6 +45,7 @@ export function getExtensionContext(
     title: "Paneron dataset",
     useGlobalSettings,
     logger: console,
+    openExternalLink: async ({ uri }) => { window.open(uri, '_blank') },
 
     usePersistentDatasetStateReducer: (...opts) => {
       const effectiveOpts:
@@ -56,11 +71,15 @@ export function getExtensionContext(
       return {
         ...VALUE_HOOK_STUB,
         value: {
-          data: objectPaths.
-            map(objPath => ({ [objPath]: data[objPath] ?? null })).
-            reduce((prev, curr) => ({ ...prev, ...curr }), {}),
+          data: getObjectData(data, objectPaths) as any,
         },
       };
+    },
+
+    getObjectData: async function ({ objectPaths }) {
+      return {
+        data: getObjectData(data, objectPaths) as any,
+      }
     },
 
     useRemoteUsername: function () {
@@ -76,11 +95,12 @@ export function getExtensionContext(
     useMapReducedData: function ({ chains }) {
       return {
         ...VALUE_HOOK_STUB,
-        value: {},
-          //Object.keys(chains).
-          //  map((cid) => ({ [cid]: {} })).
-          //  reduce((prev, curr) => ({ ...prev, ...curr }), {}),
+        value: mapReduceChains(data, chains) as any,
       };
+    },
+
+    getMapReducedData: async function  ({ chains }) {
+      return mapReduceChains(data, chains) as any;
     },
 
     useFilteredIndex: function ({ queryExpression, keyExpression }) {
@@ -90,7 +110,7 @@ export function getExtensionContext(
       //   : undefined;
       return {
         ...VALUE_HOOK_STUB,
-        value: { indexID: getIndexID(queryExpression) },
+        value: { indexID: getIndexID(queryExpression, keyExpression) },
       };
     },
 
@@ -100,10 +120,7 @@ export function getExtensionContext(
         value: {
           status: {
             objectCount: indexID
-              ? matchObjects(
-                  data,
-                  getPredicateString(indexID),
-                ).length
+              ? matchObjectsWithCache(data, indexID).length
               : 0,
           },
         },
@@ -111,7 +128,7 @@ export function getExtensionContext(
     },
 
     useObjectPathFromFilteredIndex: function ({ indexID, position }) {
-      const objPaths = matchObjects(data, getPredicateString(indexID))
+      const objPaths = matchObjectsWithCache(data, indexID)
       const objectPath = objPaths[position] ?? '';
       return {
         ...VALUE_HOOK_STUB,
@@ -120,12 +137,12 @@ export function getExtensionContext(
     },
 
     getObjectPathFromFilteredIndex: async function ({ indexID, position }) {
-      const objPaths = matchObjects(data, getPredicateString(indexID))
+      const objPaths = matchObjectsWithCache(data, indexID)
       return { objectPath: objPaths[position] ?? '' };
     },
 
     useFilteredIndexPosition: function ({ indexID, objectPath }) {
-      const objPaths = matchObjects(data, getPredicateString(indexID));
+      const objPaths = matchObjectsWithCache(data, indexID);
       const pos = objPaths.indexOf(objectPath);
       return {
         ...VALUE_HOOK_STUB,
@@ -134,7 +151,7 @@ export function getExtensionContext(
     },
 
     getFilteredIndexPosition: async function ({ indexID, objectPath }) {
-      const objPaths = matchObjects(data, getPredicateString(indexID));
+      const objPaths = matchObjectsWithCache(data, indexID);
       const pos = objPaths.indexOf(objectPath);
       return { position: pos >= 0 ? pos : null };
     },
@@ -172,30 +189,124 @@ function noOp() {};
 
 const INDICES: Record<string, { objPaths: string[] }> = {};
 
-function matchObjects(d: Dataset, predicateString: string): string[] {
-  const indexID = getIndexID(predicateString);
 
-  if (!INDICES[indexID]) {
-    const predicate = getPredicate(predicateString);
+function getObjectData(data: Dataset, objectPaths: string[]) {
+  const d= objectPaths.
+    map(objPath => ({ [objPath]: parseData(data[objPath]) ?? null })).
+    reduce((prev, curr) => ({ ...prev, ...curr }), {});
+  return d;
+}
 
-    const objPaths: string[] = [];
-    for (const [objPath, objData] of Object.entries(d)) {
-      console.debug(objPath);
-      if (predicate(objPath, objData)) {
-        objPaths.push(objPath);
-      }
-    }
+const parseDate = S.parseSync(S.Date);
 
-    INDICES[indexID] = { objPaths };
+function parseData(val: unknown, _seen?: WeakSet<any>) {
+  const seen = _seen ?? new WeakSet();
+
+  if (seen.has(val)) {
+    return val;
   }
 
-  return INDICES[indexID]!.objPaths;
+  if (val && isObject(val)) {
+    seen.add(val);
+    return Object.entries(val as Record<string, unknown>).
+      map(([k, v]): Record<string, unknown> => ({ [k]: parseData(v, seen) })).
+      reduce((prev, curr) => ({ ...prev, ...curr }), {});
+  } else if (val && Array.isArray(val)) {
+    return val.map((val): unknown => parseData(val, seen));
+  } else if (typeof val === 'string') {
+    try {
+      const date = parseDate(val);
+      if (date.toISOString() === val) {
+        return date;
+      } else {
+        return val;
+      }
+    } catch (e) {
+      return val;
+    }
+  } else {
+    return val;
+  }
 }
 
+function mapReduceChains(data: Dataset, chains: Hooks.Data.MapReduceChains) {
+  return Object.entries(chains).
+  map(([cID, c]) => {
 
-function getPredicateString(indexID: string) {
-  return indexID;
+    const mapped: Record<string, unknown> = {}
+    function handleEmit(objPath: string, val: unknown) {
+      mapped[objPath] = val;
+    }
+    const mapFunc = getMapFunc(c.mapFunc);
+    const objPaths = c.predicateFunc
+      ? matchObjectsWithCache(data, getIndexID(c.predicateFunc))
+      : Object.keys(data);
+    for (const objPath of objPaths) {
+      mapFunc(
+        objPath,
+        data[objPath],
+        (val) => handleEmit(objPath, val))
+    }
+
+    let final;
+    if (c.reduceFunc) {
+      const reduceFunc = getReduceFunc(c.reduceFunc);
+      final = Object.values(mapped).reduce(reduceFunc);
+    } else {
+      final = Object.values(mapped) || [];
+    }
+
+    return { [cID]: final };
+  }).
+  reduce((prev, curr) => ({ ...prev, ...curr }), {})
 }
+
+function matchObjects(
+  d: Dataset,
+  predicateString: string,
+  keyerString?: string,
+): string[] {
+  const predicate = getPredicate(predicateString);
+  const keyer = keyerString ? getKeyer(keyerString) : undefined;
+
+  const keyed: Record<string, string> = {};
+  if (keyer) {
+    for (const [objPath, objData] of Object.entries(d)) {
+      try {
+        keyed[keyer(objData)] = objPath;
+      } catch (e) {
+        keyed[objPath] = objPath;
+      }
+    }
+  }
+
+  const entries = keyer
+    ? Object.keys(keyed).
+        sort().
+        map(key => [ keyed[key]!, d[keyed[key]!] ]) as [string, Record<string, unknown>][]
+    : Object.entries(d);
+
+  const objPaths: string[] = [];
+  for (const [objPath, objData] of entries) {
+    if (predicate(objPath, objData)) {
+      objPaths.push(objPath);
+    }
+  }
+
+  return objPaths;
+}
+
+function matchObjectsWithCache(
+  d: Dataset,
+  query: string,
+): string[] {
+  if (!INDICES[query]) {
+    const { predicateString, keyerString } = unpackQuery(query);
+    INDICES[query] = { objPaths: matchObjects(d, predicateString, keyerString) };
+  }
+  return INDICES[query]!.objPaths;
+}
+
 
 function getPredicate(predicateString: string): Predicate {
   // XXX: simulated validation
@@ -207,6 +318,25 @@ function getKeyer(keyExpression: string): Keyer {
   return new Function('obj', keyExpression) as Keyer;
 }
 
-function getIndexID(predicateString: string) {
-  return predicateString;
+function getMapFunc(mapFunc: string): MapFunc {
+  // XXX: simulated validation
+  return new Function('key', 'value', 'emit', mapFunc) as MapFunc;
+}
+
+function getReduceFunc(reduceFunc: string): ReduceFunc {
+  // XXX: simulated validation
+  return new Function('accumulator', 'value', reduceFunc) as ReduceFunc;
+}
+
+function getIndexID(predicateString: string, keyerString?: string): string {
+  return JSON.stringify({ predicateString, keyerString });
+}
+
+const IndexQuery = S.struct({
+  predicateString: S.string,
+  keyerString: S.union(S.string, S.undefined),
+});
+
+function unpackQuery(indexID: string): S.Schema.To<typeof IndexQuery> {
+  return JSON.parse(indexID);
 }
