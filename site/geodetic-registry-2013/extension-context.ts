@@ -105,6 +105,26 @@ export function getExtensionContext(
         value: { objectPath },
       };
     },
+
+    getObjectPathFromFilteredIndex: async function ({ indexID, position }) {
+      const objPaths = matchObjects(data, getPredicateString(indexID))
+      return { objectPath: objPaths[position] ?? '' };
+    },
+
+    useFilteredIndexPosition: function ({ indexID, objectPath }) {
+      const objPaths = matchObjects(data, getPredicateString(indexID));
+      const pos = objPaths.indexOf(objectPath);
+      return {
+        ...VALUE_HOOK_STUB,
+        value: { position: pos >= 0 ? pos : null },
+      };
+    },
+
+    getFilteredIndexPosition: async function ({ indexID, objectPath }) {
+      const objPaths = matchObjects(data, getPredicateString(indexID));
+      const pos = objPaths.indexOf(objectPath);
+      return { position: pos >= 0 ? pos : null };
+    },
   };
 
   return ctx;
