@@ -15,7 +15,7 @@ export function getExtensionContext(
 ): DatasetContext {
 
   const ctx: DatasetContext = {
-    title: "TBD",
+    title: "Paneron dataset",
     useGlobalSettings,
     logger: console,
 
