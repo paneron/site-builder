@@ -5,10 +5,9 @@ This builds a static site for given Paneron RegistryKit based dataset.
 
 Not production ready; currently under development.
 
-Intended to be run as
-(assuming invocation from dataset root directory, i.e. where register.yaml is located)::
+Intended to be run as::
 
-    npx @paneron/site-builder --outdir dist --debug
+    npx @paneron/site-builder [--debug|--verbose] --outdir dist [--datadir path/to/register] [watch --serve]
 
 It would:
 
