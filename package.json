@@ -8,6 +8,7 @@
   },
   "files": [
     "README.rst",
+    "site/**/dist",
     "build-site.mjs"
   ],
   "scripts": {
