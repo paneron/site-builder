@@ -18,6 +18,7 @@ export function getExtensionContext(
     title: "TBD",
     useGlobalSettings,
     logger: console,
+
     usePersistentDatasetStateReducer: (...opts) => {
       const effectiveOpts:
       Parameters<PersistentStateReducerHook<any, any>> =
@@ -37,6 +38,7 @@ export function getExtensionContext(
 
       return usePersistentStateReducer(noOp, alwaysLoadInitialState, ...effectiveOpts);
     },
+
     useObjectData: function ({ objectPaths, nounLabel }) {
       return {
         ...VALUE_HOOK_STUB,
@@ -47,18 +49,21 @@ export function getExtensionContext(
         },
       };
     },
+
     useRemoteUsername: function () {
       return {
         ...VALUE_HOOK_STUB,
         value: {},
       };
     },
+
     useSettings: function () {
       return {
         ...VALUE_HOOK_STUB,
         value: { settings: {} },
       };
     },
+
     useMapReducedData: function ({ chains }) {
       return {
         ...VALUE_HOOK_STUB,
