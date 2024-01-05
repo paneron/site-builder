@@ -61,7 +61,15 @@ Effect.
     Runtime.runMain);
 
 
-/** Builds the entry point for site build CLI command. */
+/**
+ * Builds the entry point for site build CLI command.
+ *
+ * NOTE: It bundles all deps into that file.
+ * That may be suboptimal, since it results in a >1MB size .js script.
+ * However, it makes NPX invocation faster since we have no runtime
+ * dependencies, only devDependencies. Also, I couldn’t figure out
+ * how to properly import runtime dependencies from a packace.json’s bin.
+ */
 async function buildSiteBuilder(opts: BaseBuildOptions) {
   const { logLevel } = opts;
   return await esbuild({
