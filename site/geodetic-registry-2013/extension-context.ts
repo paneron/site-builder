@@ -51,17 +51,13 @@ export function getExtensionContext(
     },
 
     useRemoteUsername: function () {
-      return {
-        ...VALUE_HOOK_STUB,
-        value: {},
-      };
+      // Always unset, since web GUI is not meant to be editable for now.
+      return { ...VALUE_HOOK_STUB, value: {} };
     },
 
     useSettings: function () {
-      return {
-        ...VALUE_HOOK_STUB,
-        value: { settings: {} },
-      };
+      // Stub
+      return { ...VALUE_HOOK_STUB, value: { settings: {} } };
     },
 
     useMapReducedData: function ({ chains }) {
