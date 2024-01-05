@@ -1,6 +1,6 @@
 {
   "name": "@paneron/site-builder",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "packageManager": "yarn@3.6.1",
   "type": "module",
   "bin": {
@@ -22,12 +22,6 @@
     "site/geodetic-registry-2013"
   ],
   "devDependencies": {
-    "@types/node": "18",
-    "esbuild": "0.19.11",
-    "typescript": "~5.1",
-    "typescript-language-server": "~3.3.2"
-  },
-  "dependencies": {
     "@effect/cli": "~0.27.0",
     "@effect/platform": "~0.39.0",
     "@effect/platform-node": "~0.39.0",
@@ -35,8 +29,12 @@
     "@effect/printer-ansi": "~0.30.0",
     "@effect/schema": "~0.56.0",
     "@effect/typeclass": "~0.21.0",
+    "@types/node": "18",
     "effect": "~2.0.0-next.62",
+    "esbuild": "0.19.11",
     "fast-check": "~3.15.0",
+    "typescript": "~5.1",
+    "typescript-language-server": "~3.3.2",
     "yaml": "^2.3.4"
   }
 }
