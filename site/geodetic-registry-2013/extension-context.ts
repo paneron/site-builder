@@ -6,7 +6,20 @@ import type { DatasetContext } from '@riboseinc/paneron-extension-kit/types/inde
 
 
 type Dataset = Record<string, Record<string, unknown>>;
-type Predicate = (objPath: string, obj: Record<string, unknown>) => boolean
+
+type Predicate = (
+  /**
+   * Also known as “key”
+   * (a custom keyer can make it be something other than object path).
+   */
+  objPath: string,
+  /**
+   * Object data (value).
+   */
+  obj: Record<string, unknown>,
+) => boolean
+
+/** Allows to index objects by something other than their paths. */
 type Keyer = (obj: Record<string, unknown>) => string
 
 
