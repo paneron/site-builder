@@ -6,6 +6,10 @@
   "bin": {
     "build-site": "./build-site.mjs"
   },
+  "files": [
+    "README.rst",
+    "build-site.mjs"
+  ],
   "scripts": {
     "compile": "tsc --outdir compiled",
     "clean": "rm -f ./package.mjs ./build-site.mjs",
