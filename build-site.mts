@@ -208,7 +208,6 @@ Effect.gen(function * (_) {
     objectPaths.
     // TODO: Parse non-YAML files as well.
     filter(p => p.endsWith('.yaml') || p.endsWith('.yml')).
-    filter(p => !p.startsWith('proposals')).
     map(path => pipe(
       fs.readFileString(join(datadir, path)),
       Effect.map(parseYAML),
@@ -219,7 +218,10 @@ Effect.gen(function * (_) {
         "ParseError",
         err => Effect.logDebug(`skipping non-object YAML at ${path} due to ${String(err)}`),
       ),
-      Effect.map((out) => out ? ({ [`/${path}`]: out }) : ({})),
+      Effect.map((out) =>
+        out && shouldIncludeObjectInIndex(path, out)
+          ? ({ [`/${path}`]: out })
+          : ({})),
     )),
     Effect.succeed({}),
     (accum, item) => ({ ...accum, ...item }),
@@ -228,6 +230,15 @@ Effect.gen(function * (_) {
 
   yield * _(fs.writeFileString(join(outdir, 'data.json'), JSON.stringify(out, undefined, 4)));
 });
+
+
+function shouldIncludeObjectInIndex(objPath: string, objData: Record<string, unknown>) {
+  if (!objPath.startsWith('proposals') || objData.state === 'accepted' || objData.state === 'accepted-on-appeal') {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 
 const buildFull = (opts: S.Schema.To<typeof SiteBuildConfigSchema>) =>
