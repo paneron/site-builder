@@ -350,7 +350,7 @@ const watch = Command.
           yield * _(
             debouncedWatcher(watchedDirs, ignorePrefixes, 1000),
             Stream.runForEach(path => Effect.gen(function * (_) {
-              yield * _(Console.debug(`Path changed: ${path}`));
+              yield * _(Effect.logDebug(`Path changed: ${path}`));
               if (path.startsWith(buildOpts.datadir)) {
                 yield * _(generateData(buildOpts.datadir, buildOpts.outdir));
               } else {
