@@ -165,12 +165,12 @@ Effect.gen(function * (_) {
   const dirEntries = yield * _(fs.readDirectory(dir));
   const dirEntriesFull = dirEntries.map(path => join(dir, path));
 
-  const stats: Record<string, FileSystem.File.Info> = yield * _(Effect.reduceEffect(
+  const stats = yield * _(Effect.reduceEffect(
     dirEntriesFull.map(path => pipe(
       fs.stat(path),
       Effect.map(stat => ({ [path]: stat })),
     )),
-    Effect.succeed({}),
+    Effect.succeed({} as Record<string, FileSystem.File.Info>),
     (accum, item) => ({ ...accum, ...item }),
     { concurrency: 10 },
   ));
