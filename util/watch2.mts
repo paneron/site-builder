@@ -8,7 +8,7 @@ const watcherStream = (directory: string) =>
   Stream.
     fromAsyncIterable(
       watch(directory, { recursive: true }),
-      (e) => new Error(String(e))
+      (e) => new Error(String(e)),
     ).
     pipe(
       // Omit events without a filename
