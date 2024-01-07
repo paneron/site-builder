@@ -28,11 +28,6 @@ console.debug("Hello World");
 const container = ReactDOM.createRoot(document.getElementById('app')!);
 
 
-// Remove loader CSS ASAP
-
-document.getElementById('loaderCSS')?.remove();
-
-
 // Render loader
 
 const byteFormatter = Intl.NumberFormat(navigator.language, {
@@ -102,6 +97,9 @@ async function loadApp () {
   container.render(
     <App View={plugin.mainView!} ctx={ctx} />,
   );
+
+  // Clean up loader CSS
+  document.getElementById('loaderCSS')?.remove();
 }
 
 const App: React.FC<any> = ({ View, ctx }: {
