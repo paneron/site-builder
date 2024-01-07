@@ -63,6 +63,7 @@ function Loader({ total, done }: { total: number, done: number }) {
 
 loadApp().
   catch(e => {
+    console.error(e);
     container.render(
       <NonIdealState
         icon="heart-broken"
