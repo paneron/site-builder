@@ -81,7 +81,7 @@ loadApp().
           </pre>
         </>}
       />,
-    )
+    );
   });
 
 async function loadApp () {
