@@ -3,7 +3,6 @@ import * as S from '@effect/schema/Schema';
 import React from 'react';
 
 import usePersistentStateReducer from '@riboseinc/paneron-extension-kit/usePersistentStateReducer.js';
-import { isObject } from '@riboseinc/paneron-extension-kit/util';
 import type { PersistentStateReducerHook } from '@riboseinc/paneron-extension-kit/usePersistentStateReducer.js';
 import type { Hooks, DatasetContext } from '@riboseinc/paneron-extension-kit/types/index.js';
 
@@ -244,7 +243,7 @@ function mapReduceChains(data: Dataset, chains: Hooks.Data.MapReduceChains) {
     for (const objPath of objPaths) {
       mapFunc(
         objPath,
-        parseData(data[objPath]),
+        data[objPath],
         (val) => handleEmit(objPath, val))
     }
 
@@ -291,55 +290,12 @@ Record<string, Record<string, unknown> | null> {
   const d= objectPaths.
     map(objPath => ({
       [objPath]:
-        (parseData(data[objPath]) as Record<string, unknown>)
+        (data[objPath] as Record<string, unknown>)
         ?? null,
     })).
     reduce((prev, curr) => ({ ...prev, ...curr }), {});
   return d;
 }
-
-/**
- * Recursively processes deserialized object data, additionally deserializing:
- *
- * - String ISO timestamps into Date instances.
- */
-function parseData(val: unknown, _seen?: WeakSet<any>) {
-  const seen = _seen ?? new WeakSet();
-
-  if (seen.has(val)) {
-    return val;
-  }
-
-  if (val && isObject(val)) {
-    seen.add(val);
-    return Object.entries(val as Record<string, unknown>).
-      map(([k, v]): Record<string, unknown> => ({ [k]: parseData(v, seen) })).
-      reduce((prev, curr) => ({ ...prev, ...curr }), {});
-  } else if (val && Array.isArray(val)) {
-    // XXX: If array can be added to “seen”, it should.
-    return val.map((val): unknown => parseData(val, seen));
-  } else if (typeof val === 'string') {
-    return maybeDate(val);
-  } else {
-    return val;
-  }
-}
-
-/** If string is a valid ISO date, returns Date; otherwise the string itself. */
-function maybeDate(val: string): Date | string {
-  try {
-    const date = _parseDate(val);
-    const fullISO = date.toISOString();
-    if (fullISO === val || fullISO.split('T')[0] === val) {
-      return date;
-    } else {
-      return val;
-    }
-  } catch (e) {
-    return val;
-  }
-}
-const _parseDate = S.parseSync(S.Date);
 
 
 // Extension kit helpers

@@ -2,15 +2,19 @@ import React from 'react';
 
 import { ImportMapper } from 'import-mapper';
 
-import { pipe, Console, Stream, Effect, Cause } from 'effect';
+import { pipe, Console, Schedule, Duration, Stream, Effect, Cause } from 'effect';
+import * as S from '@effect/schema/Schema';
+import { ParseError } from '@effect/schema/ParseResult';
 import * as BrowserHttp from '@effect/platform-browser/HttpClient';
 import * as Http from '@effect/platform/HttpClient';
 
+import { isObject } from '@riboseinc/paneron-extension-kit/util';
 import type { RendererPlugin } from '@riboseinc/paneron-extension-kit/types/index.js';
 
 
-let globalBytesToReceive = 0;
-let globalBytesReceived = 0;
+let totalWorkUnits = 0;
+let completedWorkUnits = 0;
+let workStage: 'fetching' | 'processing' = 'fetching';
 let loading = true;
 
 
@@ -18,9 +22,9 @@ function leaveLoadingState() {
   loading = false;
 }
 
-export function repeatWhileLoading(func: (done: number, total: number) => void) {
+export function repeatWhileLoading(func: (done: number, total: number, stage: typeof workStage) => void) {
   if (loading) {
-    const cb = () => func(globalBytesReceived, globalBytesToReceive);
+    const cb = () => func(completedWorkUnits, totalWorkUnits, workStage);
     cb();
     setTimeout(() =>
       requestAnimationFrame(() =>
@@ -90,10 +94,10 @@ async function setUpExtensionImportMap() {
 }
 
 
-export function loadExtensionAndDataset():
+export function loadExtensionAndDataset(ignoreCache = false):
 Effect.Effect<
   BrowserHttp.client.Client.Default,
-  BrowserHttp.error.HttpClientError | Cause.UnknownException,
+  BrowserHttp.error.HttpClientError | ParseError | Cause.UnknownException,
   [RendererPlugin, Record<string, Record<string, unknown>>]>
 {
   return pipe(
@@ -132,12 +136,32 @@ Effect.Effect<
               Console.withTime("fetch data.json")
                 (fetchOne('./data.json')),
             );
-            const data: Record<string, Record<string, unknown>> = yield * _(
-              Console.withTime("parse data.json")
-                (Effect.try(() => JSON.parse(jsonString))),
+            const data = yield * _(
+              Console.withTime("deserialize data")
+                (S.parse(S.parseJson(DatasetSchema))(jsonString)),
             );
-            Effect.logDebug("got data");
-            return data;
+            workStage = 'processing';
+            totalWorkUnits += Object.keys(data).length * 1000;
+            const dataParsed = yield * _(
+              Console.withTime("post-process deserialized data")
+                (pipe(
+                  Stream.fromIterable(Object.entries(data)).pipe(
+                    Stream.schedule(Schedule.spaced(Duration.zero)),
+                    Stream.tap((() => Effect.sync(() => { completedWorkUnits += 1000 }))),
+                    Stream.mapEffect(([objPath, objData]) =>
+                      Effect.try(() =>
+                        ({ [objPath]: parseData(objData) as Record<string, unknown> })
+                      ),
+                    ),
+                    Stream.runFold(
+                      {} as Record<string, Record<string, unknown>>,
+                      (prev, curr) => ({ ...prev, ...curr }),
+                    ),
+                  ),
+                  Effect.flatMap(d => S.parse(DatasetSchema)(d)),
+                )),
+            );
+            return dataParsed;
           })),
       ],
       { concurrency: 5 },
@@ -150,6 +174,9 @@ Effect.Effect<
 }
 
 
+const DatasetSchema = S.record(S.string, S.record(S.string, S.unknown));
+
+
 function fetchOne (path: string) {
   return Effect.gen(function * (_) {
     const client = yield * _(Http.client.Client)
@@ -157,15 +184,59 @@ function fetchOne (path: string) {
       Http.request.get(path),
       client,
       Effect.tap(({ headers }) => Effect.sync(() => {
-        globalBytesToReceive += parseInt(headers['content-length']!, 10);
+        totalWorkUnits += parseInt(headers['content-length']!, 10);
       })),
       Effect.map((_) => _.stream),
       Stream.unwrap,
       Stream.tap((arr) => Effect.sync(() => {
-        globalBytesReceived += arr.length;
+        completedWorkUnits += arr.length;
       })),
       Stream.runFold("", (a, b) => a + new TextDecoder().decode(b)),
     );
     return response;
   });
 }
+
+
+/**
+ * Recursively processes deserialized object data, additionally deserializing:
+ *
+ * - String ISO timestamps into Date instances.
+ */
+function parseData(val: unknown, _seen?: WeakSet<any>) {
+  const seen = _seen ?? new WeakSet();
+
+  if (seen.has(val)) {
+    return val;
+  }
+
+  if (val && isObject(val)) {
+    seen.add(val);
+    return Object.entries(val as Record<string, unknown>).
+      map(([k, v]): Record<string, unknown> => ({ [k]: parseData(v, seen) })).
+      reduce((prev, curr) => ({ ...prev, ...curr }), {});
+  } else if (val && Array.isArray(val)) {
+    // XXX: If array can be added to “seen”, it should.
+    return val.map((val): unknown => parseData(val, seen));
+  } else if (typeof val === 'string') {
+    return maybeDate(val);
+  } else {
+    return val;
+  }
+}
+
+/** If string is a valid ISO date, returns Date; otherwise the string itself. */
+function maybeDate(val: string): Date | string {
+  try {
+    const date = _parseDate(val);
+    const fullISO = date.toISOString();
+    if (fullISO === val || fullISO.split('T')[0] === val) {
+      return date;
+    } else {
+      return val;
+    }
+  } catch (e) {
+    return val;
+  }
+}
+const _parseDate = S.parseSync(S.Date);

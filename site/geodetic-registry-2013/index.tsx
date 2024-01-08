@@ -37,14 +37,22 @@ const byteFormatter = Intl.NumberFormat(navigator.language, {
   unitDisplay: "narrow",
 });
 
-repeatWhileLoading(function renderLoader(done, total) {
+repeatWhileLoading(function renderLoader(done, total, stage) {
   container.render(
-    <Loader done={done} total={total} />,
+    <Loader
+      done={done < total ? done : undefined}
+      total={total > done ? total : undefined}
+      stage={stage}
+    />,
   );
 });
 
-function Loader({ total, done }: { total: number, done: number }) {
-  const value = done && total && total > 0 && total !== done
+
+function Loader(
+  { total, done, stage }:
+  { total?: number | undefined, done?: number | undefined, stage: string },
+) {
+  const value = stage === 'fetching' && done && total && total > 0 && total !== done
     ? done / total
     : undefined;
   return <NonIdealState
@@ -53,8 +61,10 @@ function Loader({ total, done }: { total: number, done: number }) {
       className="loader"
       {...(value ? { value } : {})}
     />}
-    title="Downloading dataset & extension"
-    description={`${byteFormatter.format(done)} of ${byteFormatter.format(total)}`}
+    title={stage === 'fetching' ? "Downloading dataset & extension" : "Preparing dataset"}
+    description={stage === 'fetching'
+      ? `${done ? byteFormatter.format(done) : 'N/A'} of ${total ? byteFormatter.format(total) : 'N/A'}`
+      : undefined}
   />;
 }
 
