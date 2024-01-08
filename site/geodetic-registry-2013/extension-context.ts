@@ -6,8 +6,7 @@ import usePersistentStateReducer from '@riboseinc/paneron-extension-kit/usePersi
 import type { PersistentStateReducerHook } from '@riboseinc/paneron-extension-kit/usePersistentStateReducer.js';
 import type { Hooks, DatasetContext } from '@riboseinc/paneron-extension-kit/types/index.js';
 
-
-type Dataset = Record<string, Record<string, unknown>>;
+import type { Dataset } from './dataset';
 
 
 const GLOBAL_SETTINGS = {
