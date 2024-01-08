@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { Effect } from 'effect';
 import * as BrowserHttp from '@effect/platform-browser/HttpClient';
 
-import { NonIdealState, Spinner } from '@blueprintjs/core';
+import { NonIdealState, Spinner, Button } from '@blueprintjs/core';
 
 //import './normalize.css';
 //import 'jsondiffpatch/dist/formatters-styles/annotated.css';
@@ -25,10 +25,8 @@ import { getExtensionContext } from './extension-context.js';
 
 console.debug("Hello World");
 
+
 const container = ReactDOM.createRoot(document.getElementById('app')!);
-
-
-// Render loader
 
 const byteFormatter = Intl.NumberFormat(navigator.language, {
   notation: "compact",
@@ -37,16 +35,75 @@ const byteFormatter = Intl.NumberFormat(navigator.language, {
   unitDisplay: "narrow",
 });
 
-repeatWhileLoading(function renderLoader(done, total, stage) {
-  container.render(
-    <Loader
-      done={done < total ? done : undefined}
-      total={total > done ? total : undefined}
-      stage={stage}
-    />,
-  );
-});
 
+loadApp();
+
+function loadApp (ignoreCache = false) {
+  const leaveLoadingState = repeatWhileLoading(function renderLoader(done, total, stage) {
+    container.render(
+      <Loader
+        done={done < total ? done : undefined}
+        total={total > done ? total : undefined}
+        stage={stage}
+      />,
+    );
+  });
+
+  loadExtensionAndDataset(ignoreCache).
+  pipe(
+    Effect.provide(BrowserHttp.client.layer),
+    Effect.runPromise,
+  ).
+  then(([plugin, data]) => {
+    leaveLoadingState();
+    const ctx = getExtensionContext(data);
+    container.render(
+      <App View={plugin.mainView!} ctx={ctx} />,
+    );
+
+  }).
+  catch(e => {
+    console.error("Failed to load", e);
+    leaveLoadingState();
+    container.render(
+      <NonIdealState
+        icon="heart-broken"
+        title="Failed to load extension or dataset"
+        className="loaderWrapper"
+        description={<>
+          <p>
+            A networking error is a likely cause.
+            <br />
+            Reloading the page may help.
+            <br />
+            More (probably unhelpful) details below.
+          </p>
+          <pre>
+            {String(e)}
+          </pre>
+          <Button onClick={() => loadApp(true)}>Reload</Button>
+        </>}
+      />,
+    );
+  }).
+  finally(() => {
+    // Clean up loader CSS
+    document.getElementById('loaderCSS')?.remove();
+  });
+}
+
+const App: React.FC<{
+  View: NonNullable<RendererPlugin["mainView"]>,
+  ctx: DatasetContext,
+}> = function ({ View, ctx }) {
+  return (
+    <React.StrictMode>
+      <ErrorBoundary viewName="main dataset view">
+        <View {...ctx} />
+      </ErrorBoundary>
+    </React.StrictMode>
+  );
+};
 
 function Loader(
   { total, done, stage }:
@@ -67,61 +124,3 @@ function Loader(
       : undefined}
   />;
 }
-
-
-// Load app
-
-loadApp().
-  catch(e => {
-    console.error(e);
-    container.render(
-      <NonIdealState
-        icon="heart-broken"
-        title="Failed to load extension or dataset"
-        className="loaderWrapper"
-        description={<>
-          <p>
-            A networking error is a likely cause.
-            <br />
-            Reloading the page may help.
-            <br />
-            More (probably unhelpful) details below.
-          </p>
-          <pre>
-            {String(e)}
-          </pre>
-        </>}
-      />,
-    );
-  });
-
-async function loadApp () {
-  const [plugin, data] = await (loadExtensionAndDataset().pipe(
-    Effect.provide(BrowserHttp.client.layer),
-    Effect.runPromise,
-  ));
-
-  console.debug("Got plugin and data", plugin, data);
-
-  const ctx = getExtensionContext(data);
-
-  container.render(
-    <App View={plugin.mainView!} ctx={ctx} />,
-  );
-
-  // Clean up loader CSS
-  document.getElementById('loaderCSS')?.remove();
-}
-
-const App: React.FC<any> = ({ View, ctx }: {
-  View: NonNullable<RendererPlugin["mainView"]>,
-  ctx: DatasetContext,
-}) => {
-  return (
-    <React.StrictMode>
-      <ErrorBoundary viewName="main dataset view">
-        <View {...ctx} />
-      </ErrorBoundary>
-    </React.StrictMode>
-  );
-};

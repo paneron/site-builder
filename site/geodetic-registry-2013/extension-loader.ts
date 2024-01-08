@@ -15,22 +15,18 @@ import type { RendererPlugin } from '@riboseinc/paneron-extension-kit/types/inde
 let totalWorkUnits = 0;
 let completedWorkUnits = 0;
 let workStage: 'fetching' | 'processing' = 'fetching';
-let loading = true;
 
 
-function leaveLoadingState() {
-  loading = false;
-}
-
+let repeatTimeout: null | ReturnType<Window["setTimeout"]> = null;
 export function repeatWhileLoading(func: (done: number, total: number, stage: typeof workStage) => void) {
-  if (loading) {
-    const cb = () => func(completedWorkUnits, totalWorkUnits, workStage);
-    cb();
-    setTimeout(() =>
-      requestAnimationFrame(() =>
-        repeatWhileLoading(cb)
-      ), 50);
-  }
+  repeatTimeout = setTimeout(
+    () => {
+      func(completedWorkUnits, totalWorkUnits, workStage);
+      repeatWhileLoading(func);
+    },
+    100,
+  ) as unknown as ReturnType<Window["setTimeout"]>; // XXX: wut?
+  return function cleanUp() { repeatTimeout ? clearTimeout(repeatTimeout) : void 0; };
 }
 
 
@@ -100,6 +96,8 @@ Effect.Effect<
   BrowserHttp.error.HttpClientError | ParseError | Cause.UnknownException,
   [RendererPlugin, Record<string, Record<string, unknown>>]>
 {
+  totalWorkUnits = 0;
+  completedWorkUnits = 0;
   return pipe(
     Effect.all(
       [
@@ -166,10 +164,6 @@ Effect.Effect<
       ],
       { concurrency: 5 },
     ),
-    Effect.tapBoth({
-      onFailure: () => Effect.sync(leaveLoadingState),
-      onSuccess: () => Effect.sync(leaveLoadingState),
-    }),
   );
 }
 
