@@ -16,69 +16,84 @@ const byteFormatter = Intl.NumberFormat(navigator.language, {
 
 const LOAD_STATUS: Record<string, { done: number, total: number }> = {};
 
-function loadScript(
-  srcs: readonly string[],
+function loadScript<SRCS extends readonly string[]>(
+  srcs: SRCS,
   onProgress: (done: number[], total: number[]) => void,
   onError: (msg?: string, resp?: XMLHttpRequest["response"]) => void,
   onDone: (src: string) => void,
 ) {
-  const xhrs: XMLHttpRequest[] = [];
+  const xhrs: { [src in SRCS[number]]: XMLHttpRequest } = srcs.
+    map((scriptSrc: SRCS[number]) => {
+      console.debug("loading dependency", scriptSrc);
 
-  for (const scriptSrc of srcs) {
-    console.debug("loading dependency", scriptSrc);
+      const xhr = new XMLHttpRequest;
 
-    const xhr = new XMLHttpRequest;
-    xhrs.push(xhr);
-
-    xhr.open('GET', scriptSrc, true);
-    xhr.onload = function (e) {
-      if (xhr.readyState === 2 && !LOAD_STATUS[scriptSrc]) {
-        LOAD_STATUS[scriptSrc] = {
-          done: 0,
-          total: parseInt(
-            xhr.getResponseHeader('content-length') ?? '0',
-            10),
-        };
-      }
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          onDone(scriptSrc);
-        } else {
-          handleError((e.currentTarget as XMLHttpRequest).status);
+      xhr.open('GET', scriptSrc, true);
+      xhr.onload = function (e) {
+        if (xhr.readyState === 2 && !LOAD_STATUS[scriptSrc]) {
+          LOAD_STATUS[scriptSrc] = {
+            done: 0,
+            total: parseInt(
+              xhr.getResponseHeader('content-length') || '0',
+              10),
+          };
         }
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            handleDone();
+          } else {
+            handleError((e.currentTarget as XMLHttpRequest).status);
+          }
+        }
+      };
+      xhr.onerror = function (e) {
+        handleError((e.currentTarget as XMLHttpRequest).status);
+      };
+      xhr.onprogress = function (e) {
+        LOAD_STATUS[scriptSrc] = { done: e.loaded, total: e.total };
+        onProgress(
+          Object.values(LOAD_STATUS).map(e => e['done']),
+          Object.values(LOAD_STATUS).map(e => e['total']),
+        );
+      };
+
+      xhr.send();
+
+      function handleError(status: number, e?: unknown) {
+        console.error("failed to load dependency", scriptSrc, status, xhr.response, e);
+        if (status === 404) {
+          onError(`${scriptSrc} was not found.`);
+        } else if (status === 500) {
+          onError(`Server error occurred while serving ${scriptSrc}.`);
+        } else if (status === 0) {
+          onError(`Request was aborted or content length incorrect for ${scriptSrc}.`);
+        } else {
+          onError(`Server returned an unexpected HTTP status for ${scriptSrc}.`, xhr.response);
+        }
+
+        abortAll();
       }
-    };
-    xhr.onerror = function (e) {
-      handleError((e.currentTarget as XMLHttpRequest).status);
-    };
-    xhr.onprogress = function (e) {
-      LOAD_STATUS[scriptSrc] = { done: e.loaded, total: e.total };
-      onProgress(
-        Object.values(LOAD_STATUS).map(e => e['done']),
-        Object.values(LOAD_STATUS).map(e => e['total']),
-      );
-    };
 
-    xhr.send();
+      return { [scriptSrc]: xhr } as { [key in SRCS[number]]: XMLHttpRequest };
+    }).
+    reduce((prev, curr) => ({ ...prev, ...curr }));
 
-    function handleError(status: number, e?: unknown) {
-      console.error("failed to load dependency", scriptSrc, status, xhr.response, e);
-      if (status === 404) {
-        onError(`${scriptSrc} was not found.`);
-      } else if (status === 500) {
-        onError(`Server error occurred while serving ${scriptSrc}.`);
-      } else if (status === 0) {
-        onError(`Request was aborted or content length incorrect for ${scriptSrc}.`);
-      } else {
-        onError(`Server returned an unexpected HTTP status for ${scriptSrc}.`, xhr.response);
+  function getXHRs(): XMLHttpRequest[] {
+    return ([...Object.values(xhrs)] as XMLHttpRequest[]);
+  }
+
+  function handleDone() {
+    const unfinished = getXHRs().find(xhr => xhr.status !== 200 || xhr.readyState !== 4);
+
+    if (!unfinished) {
+      for (const scriptSrc of Object.keys(xhrs)) {
+        onDone(scriptSrc);
       }
-
-      abortAll();
     }
   }
 
   const abortAll = function abortAll() {
-    for (const xhr of xhrs) {
+    for (const xhr of getXHRs()) {
       xhr.abort();
     }
   }
