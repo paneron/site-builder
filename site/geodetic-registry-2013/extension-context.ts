@@ -16,9 +16,7 @@ const GLOBAL_SETTINGS = {
 } as const;
 
 
-export function getExtensionContext(
-  data: Record<string, Record<string, unknown>>,
-): DatasetContext {
+export function getExtensionContext(data: Dataset): DatasetContext {
 
   const ctx: DatasetContext = {
     title: "Paneron dataset",
