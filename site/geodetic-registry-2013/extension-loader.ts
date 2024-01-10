@@ -227,7 +227,7 @@ export function loadExtensionAndDataset(ignoreCache = false) {
 
 function fetchOne (path: string) {
   return Effect.gen(function * (_) {
-    const client = yield * _(Http.client.Client)
+    const client = yield * _(Http.client.Client);
     const response = yield * _(
       Http.request.get(path),
       client,
