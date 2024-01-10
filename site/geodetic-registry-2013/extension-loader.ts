@@ -2,14 +2,15 @@ import React from 'react';
 
 import { ImportMapper } from 'import-mapper';
 
-import { pipe, Console, Schedule, Duration, Stream, Effect, Cause } from 'effect';
+import { pipe, Console, Stream, Effect } from 'effect';
 import * as S from '@effect/schema/Schema';
-import { ParseError } from '@effect/schema/ParseResult';
-import * as BrowserHttp from '@effect/platform-browser/HttpClient';
 import * as Http from '@effect/platform/HttpClient';
 
 import { isObject } from '@riboseinc/paneron-extension-kit/util';
 import type { RendererPlugin } from '@riboseinc/paneron-extension-kit/types/index.js';
+
+import { DatasetSchema } from './dataset';
+import { getDB, storeObject, getItem } from './db';
 
 
 let totalWorkUnits = 0;
@@ -90,85 +91,138 @@ async function setUpExtensionImportMap() {
 }
 
 
-export function loadExtensionAndDataset(ignoreCache = false):
-Effect.Effect<
-  BrowserHttp.client.Client.Default,
-  BrowserHttp.error.HttpClientError | ParseError | Cause.UnknownException,
-  [RendererPlugin, Record<string, Record<string, unknown>>]>
-{
-  totalWorkUnits = 0;
-  completedWorkUnits = 0;
-  return pipe(
-    Effect.all(
-      [
-        Console.withTime("load plugin")
-          (Effect.gen(function * (_) {
-            const [, code] = yield * _(
-              Effect.all([
-                Console.withTime("set up import map")
-                  (Effect.tryPromise(() => setUpExtensionImportMap())),
-                Console.withTime("fetch extension.js")
-                  (fetchOne('./extension.js')),
-              ]),
-            );
-            const blob = new Blob([code], { type: 'text/javascript' });
-            const url = URL.createObjectURL(blob);
-            Effect.logDebug("importing plugin");
-            const { 'default': maybePluginPromise } = yield * _(
-              Console.withTime("dynamically import extension code")
-                (Effect.tryPromise(() => import(url))),
-              Effect.tapError((e) => Effect.sync(() => console.error("failed to import", String(e)))),
-            );
-            const _plugin: any = yield * _(Effect.tryPromise(() => maybePluginPromise));
-            if (_plugin.mainView) {
-              Effect.logDebug("got plugin");
-              return _plugin as RendererPlugin;
-            } else {
-              Effect.logError("not a valid plugin");
-              throw Effect.fail("obtained extension does not expose `mainView`");
-            }
-          })),
-        Console.withTime("load data")
-          (Effect.gen(function * (_) {
-            const jsonString = yield * _(
-              Console.withTime("fetch data.json")
-                (fetchOne('./data.json')),
-            );
-            const data = yield * _(
-              Console.withTime("deserialize data")
-                (S.parse(S.parseJson(DatasetSchema))(jsonString)),
-            );
-            workStage = 'processing';
-            totalWorkUnits += Object.keys(data).length * 1000;
-            const dataParsed = yield * _(
-              Console.withTime("post-process deserialized data")
-                (pipe(
-                  Stream.fromIterable(Object.entries(data)).pipe(
-                    Stream.schedule(Schedule.spaced(Duration.zero)),
-                    Stream.tap((() => Effect.sync(() => { completedWorkUnits += 1000 }))),
-                    Stream.mapEffect(([objPath, objData]) =>
-                      Effect.try(() =>
-                        ({ [objPath]: parseData(objData) as Record<string, unknown> })
-                      ),
-                    ),
-                    Stream.runFold(
-                      {} as Record<string, Record<string, unknown>>,
-                      (prev, curr) => ({ ...prev, ...curr }),
-                    ),
+function loadDataFull() {
+  return Console.withTime("load data")
+    (Effect.gen(function * (_) {
+      const jsonString = yield * _(
+        Console.withTime("fetch data.json")
+          (fetchOne('./data.json')),
+      );
+      const data = yield * _(
+        Console.withTime("deserialize data")
+          (S.parse(S.parseJson(DatasetSchema))(jsonString)),
+      );
+      workStage = 'processing';
+      totalWorkUnits += Object.keys(data).length * 1000;
+      const dataParsed = yield * _(
+        Console.withTime("post-process deserialized data")
+          (pipe(
+            Stream.fromIterable(Object.entries(data)).pipe(
+              // XXX: This would ensure that below doesn’t freeze GUI while processing happens,
+              // but it also makes processing too slow for some reason.
+              //Stream.schedule(Schedule.spaced(Duration.zero)),
+              Stream.tap((() => Effect.sync(() => { completedWorkUnits += 1000 }))),
+              Stream.mapEffect(
+                ([objPath, objData]) =>
+                  Effect.try(() =>
+                    ({ [objPath]: parseData(objData) as Record<string, unknown> })
                   ),
-                  Effect.flatMap(d => S.parse(DatasetSchema)(d)),
-                )),
-            );
-            return dataParsed;
-          })),
-      ],
-      { concurrency: 5 },
-    ),
-  );
+                { concurrency: 50 },
+              ),
+              Stream.runFold(
+                {} as Record<string, Record<string, unknown>>,
+                (prev, curr) => ({ ...prev, ...curr }),
+              ),
+            ),
+            Effect.flatMap(d => S.parse(DatasetSchema)(d)),
+          )),
+      );
+      return dataParsed;
+    }));
 }
 
 
-const DatasetSchema = S.record(S.string, S.record(S.string, S.unknown));
+export function loadExtensionAndDataset(ignoreCache = false) {
+  totalWorkUnits = 0;
+  completedWorkUnits = 0;
+  return Effect.all(
+    [
+      Console.withTime("load plugin")
+        (Effect.gen(function * (_) {
+          const [, code] = yield * _(
+            Effect.all([
+              Console.withTime("set up import map")
+                (Effect.tryPromise(() => setUpExtensionImportMap())),
+              Console.withTime("fetch extension.js")
+                (fetchOne('./extension.js')),
+            ]),
+          );
+          const blob = new Blob([code], { type: 'text/javascript' });
+          const url = URL.createObjectURL(blob);
+          Effect.logDebug("importing plugin");
+          const { 'default': maybePluginPromise } = yield * _(
+            Console.withTime("dynamically import extension code")
+              (Effect.tryPromise(() => import(url))),
+            Effect.tapError((e) => Effect.sync(() => console.error("failed to import", String(e)))),
+          );
+          const _plugin: any = yield * _(Effect.tryPromise(() => maybePluginPromise));
+          if (_plugin.mainView) {
+            Effect.logDebug("got plugin");
+            return _plugin as RendererPlugin;
+          } else {
+            Effect.logError("not a valid plugin");
+            throw Effect.fail("obtained extension does not expose `mainView`");
+          }
+        })),
+      Console.withTime("load data")
+        (Effect.scoped(Effect.gen(function * (_) {
+          const dbVersion = yield * _(
+            Effect.try(() => {
+              const storedVersionString = localStorage.getItem('dbVersion');
+              const storedVersion = parseInt(storedVersionString ?? '1', 10);
+              const effectiveVersion = ignoreCache
+                ? storedVersion + 1
+                : storedVersion;
+              const effectiveVersionString = `${effectiveVersion}`;
+              if (!storedVersionString || effectiveVersionString !== storedVersionString) {
+                localStorage.setItem('dbVersion', effectiveVersionString);
+              }
+              return effectiveVersion;
+            }),
+          );
+
+          const db = yield * _(getDB(dbVersion));
+          yield * _(Effect.log(`Using DB version ${dbVersion}`));
+
+          const STORE_NAME = 'misc';
+          const PARSED_DATASET_KEY = 'parsed-dataset';
+
+          yield * _(Effect.log("Obtaining parsed data, trying cache first"));
+
+          const cachedParsedData = yield * _(
+            getItem(
+              db,
+              STORE_NAME,
+              PARSED_DATASET_KEY,
+              S.struct({ id: S.literal(PARSED_DATASET_KEY), data: DatasetSchema }),
+            ),
+            Effect.tapBoth({
+              onSuccess: () => Effect.log("Obtained cached data"),
+              onFailure: () => Effect.log("Could not obtain cached data, will download"),
+            }),
+            Effect.orElse(() => pipe(
+              loadDataFull(),
+              Effect.tap(() => Effect.log("Downloaded data")),
+              Effect.flatMap((data) =>
+                Effect.tryPromise(async () => {
+                  const obj = { id: PARSED_DATASET_KEY, data };
+                  await storeObject(db, STORE_NAME, obj);
+                  return obj;
+                })
+              ),
+              Effect.tap(() => Effect.log("Cached downloaded data")),
+            )),
+            Effect.map(obj => obj.data),
+          );
+
+          yield * _(Effect.log("Obtained parsed data"));
+
+          return cachedParsedData;
+        }))),
+    ],
+    { concurrency: 5 },
+  );
+}
 
 
 function fetchOne (path: string) {
