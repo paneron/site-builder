@@ -119,7 +119,7 @@ function Loader(
       {...(value ? { value } : {})}
     />}
     title={stage === 'fetching' ? "Downloading dataset & extension" : "Preparing dataset"}
-    description={stage === 'fetching'
+    description={stage === 'fetching' && value
       ? `${done ? byteFormatter.format(done) : 'N/A'} of ${total ? byteFormatter.format(total) : 'N/A'}`
       : undefined}
   />;
