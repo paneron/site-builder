@@ -48,7 +48,7 @@
     "@effect/printer-ansi": "~0.30.0",
     "@effect/schema": "~0.56.0",
     "@effect/typeclass": "~0.21.0",
-    "@types/node": "18",
+    "@types/node": "20",
     "@types/react": "18",
     "@types/react-dom": "18",
     "effect": "~2.0.0-next.62",

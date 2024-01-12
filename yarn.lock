@@ -823,7 +823,7 @@ __metadata:
     "@effect/printer-ansi": ~0.30.0
     "@effect/schema": ~0.56.0
     "@effect/typeclass": ~0.21.0
-    "@types/node": 18
+    "@types/node": 20
     effect: ~2.0.0-next.62
     esbuild: 0.19.11
     fast-check: ~3.15.0
@@ -868,12 +868,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:18":
-  version: 18.19.3
-  resolution: "@types/node@npm:18.19.3"
+"@types/node@npm:20":
+  version: 20.11.0
+  resolution: "@types/node@npm:20.11.0"
   dependencies:
     undici-types: ~5.26.4
-  checksum: 58c4fa45a78fcec75c78182a4b266395905957633654eb0311c5f9c30ac15c179ea2287ab1af034e46c2db7bb0589ef0000ee64c1de8f568a0aad29eaadb100c
+  checksum: 1bd6890db7e0404d11c33d28f46f19f73256f0ba35d19f0ef2a0faba09f366f188915fb9338eebebcc472075c1c4941e17c7002786aa69afa44980737846b200
   languageName: node
   linkType: hard
 
@@ -2182,7 +2182,7 @@ __metadata:
     "@emotion/styled": 11.10.6
     "@riboseinc/paneron-extension-kit": 2.2.17
     "@riboseinc/paneron-registry-kit": 2.2.25
-    "@types/node": 18
+    "@types/node": 20
     "@types/react": 18
     "@types/react-dom": 18
     date-fns: 2.22.1

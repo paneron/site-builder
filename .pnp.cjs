@@ -281,7 +281,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ],\
       [\
         "@types/node",\
-        "npm:18.19.3"\
+        "npm:20.11.0"\
       ],\
       [\
         "@types/parse-json",\
@@ -840,7 +840,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@effect/printer-ansi", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.30.0"],\
             ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.1"],\
             ["@effect/typeclass", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.21.0"],\
-            ["@types/node", "npm:18.19.3"],\
+            ["@types/node", "npm:20.11.0"],\
             ["effect", "npm:2.0.0-next.62"],\
             ["esbuild", "npm:0.19.11"],\
             ["fast-check", "npm:3.15.0"],\
@@ -1980,7 +1980,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@effect/printer-ansi", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.30.0"],\
             ["@effect/schema", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.56.1"],\
             ["@effect/typeclass", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.21.0"],\
-            ["@types/node", "npm:18.19.3"],\
+            ["@types/node", "npm:20.11.0"],\
             ["effect", "npm:2.0.0-next.62"],\
             ["esbuild", "npm:0.19.11"],\
             ["fast-check", "npm:3.15.0"],\
@@ -2053,10 +2053,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/node", [\
-        ["npm:18.19.3", {\
-          "packageLocation": "./.yarn/cache/@types-node-npm-18.19.3-9a233afc47-58c4fa45a7.zip/node_modules/@types/node/",\
+        ["npm:20.11.0", {\
+          "packageLocation": "./.yarn/cache/@types-node-npm-20.11.0-cb757f0c2a-1bd6890db7.zip/node_modules/@types/node/",\
           "packageDependencies": [\
-            ["@types/node", "npm:18.19.3"],\
+            ["@types/node", "npm:20.11.0"],\
             ["undici-types", "npm:5.26.5"]\
           ],\
           "linkType": "HARD"\
@@ -3574,7 +3574,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@emotion/styled", "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:11.10.6"],\
             ["@riboseinc/paneron-extension-kit", "virtual:92eda5c455e5d42d637d826de67ae619b702c60b03309771c943b754bc9e18746b776de04f6d3c2f1a62477dcd034ffd13e9b1d15a7c9c71b233b33b5179b913#npm:2.2.17"],\
             ["@riboseinc/paneron-registry-kit", "npm:2.2.25"],\
-            ["@types/node", "npm:18.19.3"],\
+            ["@types/node", "npm:20.11.0"],\
             ["@types/react", "npm:18.2.46"],\
             ["@types/react-dom", "npm:18.2.18"],\
             ["date-fns", "npm:2.22.1"],\

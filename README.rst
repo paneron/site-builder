@@ -15,4 +15,4 @@ It would:
 * generate data indices as required by site runtime
   and place them under ``outdir`` where expected.
 
-Uses Node 18.18.2.
+Uses Node 20.11.2.
