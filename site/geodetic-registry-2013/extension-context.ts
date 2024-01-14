@@ -1,6 +1,6 @@
 import * as S from '@effect/schema/Schema';
 
-import React from 'react';
+import * as React from 'react';
 
 import usePersistentStateReducer from '@riboseinc/paneron-extension-kit/usePersistentStateReducer.js';
 import type { PersistentStateReducerHook } from '@riboseinc/paneron-extension-kit/usePersistentStateReducer.js';
