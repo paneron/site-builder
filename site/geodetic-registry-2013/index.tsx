@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom/client';
 
 import { Effect } from 'effect';
 import * as BrowserHttp from '@effect/platform-browser/HttpClient';
