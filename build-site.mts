@@ -156,37 +156,45 @@ Effect.gen(function * (_) {
 const readdirRecursive = (
   /** Directory to list. */
   dir: string,
-  /** Directory to output paths relative to. */
+  /**
+   * Directory to output paths relative to.
+   * (Don’t specify, used for recursion.)
+   */
   relativeTo?: string,
 ):
 Effect.Effect<FileSystem.FileSystem, PlatformError, readonly string[]> =>
 Effect.gen(function * (_) {
   const fs = yield * _(FileSystem.FileSystem);
-  const dirEntries = yield * _(fs.readDirectory(dir));
-  const dirEntriesFull = dirEntries.map(path => join(dir, path));
 
-  const stats = yield * _(Effect.reduceEffect(
-    dirEntriesFull.map(path => pipe(
-      fs.stat(path),
-      Effect.map(stat => ({ [path]: stat })),
-    )),
-    Effect.succeed({} as Record<string, FileSystem.File.Info>),
-    (accum, item) => ({ ...accum, ...item }),
-    { concurrency: 10 },
-  ));
+  const dirEntries = yield * _(
+    fs.readDirectory(dir),
+    Effect.map(basenames => basenames.map(name => join(dir, name))),
+  );
 
-  const mapEffects = dirEntriesFull.map(path =>
-    stats[path]?.type === 'Directory'
+  const dirEntryStats: Record<string, FileSystem.File.Info> = yield * _(
+    Effect.reduceEffect(
+      dirEntries.map(path => pipe(
+        fs.stat(path),
+        Effect.map(stat => ({ [path]: stat })),
+      )),
+      Effect.succeed({}),
+      (accum, item) => ({ ...accum, ...item }),
+      { concurrency: 10 },
+    ),
+  );
+
+  const recursiveListings = dirEntries.map(path =>
+    dirEntryStats[path]?.type === 'Directory'
       ? readdirRecursive(path, relativeTo ?? dir)
       : Effect.succeed([relative(relativeTo ?? dir, path)])
     );
 
-  const list = yield * _(
-    Effect.all(mapEffects, { concurrency: 10 }),
-    Effect.map(pathBunch => pathBunch.flat()),
+  const entries = yield * _(
+    Effect.all(recursiveListings, { concurrency: 10 }),
+    Effect.map(resultLists => resultLists.flat()),
   );
 
-  return list;
+  return entries;
 });
 
 
