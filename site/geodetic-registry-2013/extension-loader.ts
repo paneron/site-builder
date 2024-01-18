@@ -10,7 +10,7 @@ import { isObject } from '@riboseinc/paneron-extension-kit/util';
 import type { RendererPlugin } from '@riboseinc/paneron-extension-kit/types/index.js';
 
 import { DatasetSchema } from './dataset';
-import { getDB, storeObject, getItem } from './db';
+import { getDB, storeItem, getItem } from './db';
 
 
 let totalWorkUnits = 0;
@@ -206,11 +206,7 @@ export function loadExtensionAndDataset(ignoreCache = false) {
               loadDataFull(),
               Effect.tap(() => Effect.log("Downloaded data")),
               Effect.flatMap((data) =>
-                Effect.tryPromise(async () => {
-                  const obj = { id: PARSED_DATASET_KEY, data };
-                  await storeObject(db, STORE_NAME, obj);
-                  return obj;
-                })
+                storeItem(db, STORE_NAME, { id: PARSED_DATASET_KEY, data })
               ),
               Effect.tap(() => Effect.log("Cached downloaded data")),
             )),

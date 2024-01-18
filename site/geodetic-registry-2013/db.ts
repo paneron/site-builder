@@ -1,10 +1,80 @@
-import { Effect, Cause } from 'effect';
+/** Wraps IndexedDB. */
+
+import { Effect } from 'effect';
 import * as S from '@effect/schema/Schema';
-import { ParseError } from '@effect/schema/ParseResult';
 
 
 let db: Promise<IDBDatabase> | null = null;
 let dbVersion: number | null = null;
+
+
+// API
+// ===
+
+export const getDB = (version: number) =>
+  Effect.tryPromise(() => _getDB(version));
+
+
+export function getItem<T>(
+  db: IDBDatabase,
+  storeName: string,
+  key: IDBValidKey,
+  schema: S.Schema<T>,
+) {
+  return Effect.gen(function * (_) {
+    const obj = yield * _(Effect.tryPromise(() => _getItem(db, storeName, key)));
+    return yield * _(S.parse(schema)(obj));
+  });
+}
+
+export function storeItem<T>(
+  db: IDBDatabase,
+  storeName: string,
+  item: T,
+) {
+  return Effect.tryPromise(async () => {
+    await _storeItem(db, storeName, item);
+    return item;
+  })
+}
+
+
+// Internals
+// =========
+
+function _getItem(
+  db: IDBDatabase,
+  storeName: string,
+  key: IDBValidKey,
+): Promise<unknown> {
+  return new Promise((resolve, reject) => {
+    try {
+      const store = getStore(db, storeName, false);
+      const req = store.get(key);
+      req.onerror = function (evt) { reject(getErrorCode(evt)); };
+      req.onsuccess = () => resolve(req.result);
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+function _storeItem(
+  db: IDBDatabase,
+  storeName: string,
+  val: unknown,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    try {
+      const store = getStore(db, storeName, true);
+      const req = store.add(val);
+      req.onerror = function (evt) { reject(getErrorCode(evt)); };
+      req.onsuccess = () => resolve();
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
 
 
 function getErrorCode (evt: Event): string | undefined {
@@ -32,42 +102,8 @@ function createStore(
   });
 }
 
-function getObject(
-  db: IDBDatabase,
-  storeName: string,
-  key: IDBValidKey,
-): Promise<unknown> {
-  return new Promise((resolve, reject) => {
-    try {
-      const store = getStore(db, storeName, false);
-      const req = store.get(key);
-      req.onerror = function (evt) { reject(getErrorCode(evt)); };
-      req.onsuccess = () => resolve(req.result);
-    } catch (e) {
-      reject(e);
-    }
-  });
-}
 
-export function storeObject(
-  db: IDBDatabase,
-  storeName: string,
-  val: unknown,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    try {
-      const store = getStore(db, storeName, true);
-      const req = store.add(val);
-      req.onerror = function (evt) { reject(getErrorCode(evt)); };
-      req.onsuccess = () => resolve();
-    } catch (e) {
-      reject(e);
-    }
-  });
-}
-
-
-// XXX: Move to layer/service
+// XXX: Move to Effect layer/service
 function _getDB(version: number): Promise<IDBDatabase> {
   db ??= new Promise((resolve, reject) => {
 
@@ -107,19 +143,8 @@ function _getDB(version: number): Promise<IDBDatabase> {
   return db;
 }
 
-export const getDB = (version: number) => Effect.tryPromise(() => _getDB(version));
-
 function getStore(db: IDBDatabase, storeName: string, write = false) {
   return db.
       transaction(storeName, write ? 'readwrite' : 'readonly').
       objectStore(storeName);
 };
-
-export function getItem<T>
-(db: IDBDatabase, storeName: string, key: IDBValidKey, schema: S.Schema<T>):
-Effect.Effect<never, ParseError | Cause.UnknownException, T> {
-  return Effect.gen(function * (_) {
-    const obj = yield * _(Effect.tryPromise(() => getObject(db, storeName, key)));
-    return yield * _(S.parse(schema)(obj));
-  });
-}
