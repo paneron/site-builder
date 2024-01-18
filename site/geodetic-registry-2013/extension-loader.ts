@@ -200,6 +200,8 @@ export function loadExtensionAndDataset(ignoreCache = false) {
               onSuccess: () => Effect.log("Obtained cached data"),
               onFailure: () => Effect.log("Could not obtain cached data, will download"),
             }),
+            // If getting cached items failed, we’ll fetch in full
+            // and then cache.
             Effect.orElse(() => pipe(
               loadDataFull(),
               Effect.tap(() => Effect.log("Downloaded data")),
