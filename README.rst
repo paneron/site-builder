@@ -7,7 +7,17 @@ Not production ready; currently under development.
 
 Intended to be run as::
 
-    npx @paneron/site-builder [--debug|--verbose] --outdir dist [--datadir path/to/register] [watch --serve]
+    npx @paneron/site-builder --outdir dist [--datadir path/to/register] [watch --serve]
+
+More complete option overview::
+
+    npx @paneron/site-builder \
+      --outdir dist \
+      [--debug | --verbose] \
+      [--datadir path/to/register] \
+      [--dataversion (git rev-parse --short HEAD)] \
+      [--forusername <username>] \
+      [watch [--serve] [--watch-template]]
 
 It would:
 
