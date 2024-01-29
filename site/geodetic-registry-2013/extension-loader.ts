@@ -132,7 +132,10 @@ function loadDataFull() {
 }
 
 
-export function loadExtensionAndDataset(ignoreCache = false) {
+export function loadExtensionAndDataset(
+  /** If true, will increment DB version & rebuild it by downloading data again. */
+  ignoreCache = true,
+) {
   totalWorkUnits = 0;
   completedWorkUnits = 0;
   return Effect.all(
