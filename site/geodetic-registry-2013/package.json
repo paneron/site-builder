@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "scripts": {
-    "compile": "tsc --outdir compiled",
+    "compile": "tsc --outdir compiled; tsc --noEmit --module nodenext --skipLibCheck build.mts",
     "clean": "rm -rf dist build.mjs",
     "build-builder": "yarn esbuild build.mts --packages=external --platform=node --target=node18 --minify=false --bundle --format=esm --outfile=build.mjs",
     "build-self": "yarn node build.mjs",
