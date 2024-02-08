@@ -4,33 +4,33 @@
 
 import { resolve, join } from 'node:path';
 
-import * as S from '@effect/schema/Schema';
 import { Stream, Console, Logger, Effect } from 'effect';
 import { FileSystem, NodeContext, Runtime } from '@effect/platform-node';
 import { Command } from '@effect/cli';
 import { build as esbuild } from 'esbuild';
 
 import {
-  type BaseBuildOptions,
-  BaseBuildConfigFromCLIArgs,
-  outputOptions,
+  type ReportingOptions,
+  parseReportingConfig,
+  reportingOptions,
   EFFECT_LOG_LEVELS,
 } from '../../util/index.mjs';
 import { debouncedWatcher } from '../../util/watch2.mjs';
 //import { ContribSiteTemplateName, CONTRIB_SITE_TEMPLATES } from './site/index.mjs';
 
+
 const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
 const OUTDIR = join(PACKAGE_ROOT, 'dist');
+
 
 console.debug("site-app build", PACKAGE_ROOT);
 
 
-const distFull = (opts: BaseBuildOptions) =>
-Effect.all([
+const distFull = (opts: ReportingOptions) => Effect.all([
   Effect.logDebug(`Using package root: ${PACKAGE_ROOT}`),
   Effect.tryPromise(() => buildSiteTemplate(opts)),
-  Console.withTime("Copy assets")
-    (Effect.gen(function * (_) {
+  Console.withTime("Copy assets")(
+    Effect.gen(function * (_) {
       const fs = yield * _(FileSystem.FileSystem);
       yield * _(
         fs.copy(
@@ -39,26 +39,27 @@ Effect.all([
           { overwrite: true },
         ),
       );
-    })),
-  //...CONTRIB_SITE_TEMPLATES.map(templateName =>
-  //  Effect.tryPromise(() =>
-  //    buildSiteTemplate({ ...opts, templateName })
-  //  )
-  //)
+    })
+  ),
 ], { concurrency: 'unbounded' });
 
 
-const dist = Command.make('dist', outputOptions, (rawOpts) => {
-  return Effect.gen(function * (_) {
-    const opts = yield * _(S.parse(BaseBuildConfigFromCLIArgs)(rawOpts));
-    //yield * _(Effect.tryPromise(() => buildSiteBuilder(opts)));
-    yield * _(
-      distFull(opts),
-      Effect.tap(Effect.logDebug("Done building.")),
-      Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
-    );
-  });
-});
+const dist = Command.
+  make(
+    'dist',
+    {
+      ...reportingOptions,
+    },
+    (rawOpts) => Effect.gen(function * (_) {
+      const opts = yield * _(Effect.try(() => parseReportingConfig(rawOpts)));
+      //yield * _(Effect.tryPromise(() => buildSiteBuilder(opts)));
+      yield * _(
+        distFull(opts),
+        Effect.tap(Effect.logDebug("Done building.")),
+        Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
+      );
+    })
+  );
 
 const watch = Command.
   make(
@@ -73,26 +74,24 @@ const watch = Command.
       // ignorePrefix: Options.text('ignore-prefix').pipe(
       //   Options.optional),
     },
-    () =>
-      Effect.
-        gen(function * (_) {
-          const rawOpts = yield * _(dist);
-          const opts = yield * _(S.parse(BaseBuildConfigFromCLIArgs)(rawOpts));
+    () => Effect.gen(function * (_) {
+      const rawOpts = yield * _(dist);
+      const opts = yield * _(Effect.try(() => parseReportingConfig(rawOpts)));
 
-          yield * _(
-            distFull(opts),
-            Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
-          );
+      yield * _(
+        distFull(opts),
+        Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
+      );
 
-          yield * _(
-            debouncedWatcher([PACKAGE_ROOT], [OUTDIR], 1000),
-            Stream.runForEach(path => Effect.gen(function * (_) {
-              yield * _(Console.debug(`Path changed: ${path}`));
-              yield * _(distFull(opts));
-            })),
-            Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
-          );
-        })
+      yield * _(
+        debouncedWatcher([PACKAGE_ROOT], [OUTDIR], 1000),
+        Stream.runForEach(path => Effect.gen(function * (_) {
+          yield * _(Console.debug(`Path changed: ${path}`));
+          yield * _(distFull(opts));
+        })),
+        Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
+      );
+    })
   ).
   pipe(
     Command.withDescription('watch files for changes'),
@@ -111,14 +110,15 @@ Effect.
   suspend(() => main(process.argv.slice(2))).
   pipe(
     Effect.provide(NodeContext.layer),
-    Runtime.runMain);
+    Runtime.runMain,
+  );
 
 /**
  * Builds site template.
  *
  * Currently, that just involves running esbuild against JS.
  */
-async function buildSiteTemplate(opts: BaseBuildOptions) {
+async function buildSiteTemplate(opts: ReportingOptions) {
   //const siteRoot = join(PACKAGE_ROOT, 'site', opts.templateName);
   //const siteRoot = join(PACKAGE_ROOT, 'site-app');
   return await esbuild({

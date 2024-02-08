@@ -38,7 +38,7 @@ const byteFormatter = Intl.NumberFormat(navigator.language, {
 
 loadApp();
 
-function loadApp (ignoreCache = false) {
+function loadApp (ignoreCache = true) {
   const leaveLoadingState = repeatWhileLoading(function renderLoader(done, total, stage) {
     container.render(
       <Loader
@@ -54,9 +54,12 @@ function loadApp (ignoreCache = false) {
     Effect.provide(BrowserHttp.client.layer),
     Effect.runPromise,
   ).
-  then(([plugin, data]) => {
+  then(([plugin, dataset]) => {
     leaveLoadingState();
-    const ctx = getExtensionContext(data);
+    const ctx = getExtensionContext(
+      dataset.data,
+      { username: dataset.manifest?.forUsername ?? undefined },
+    );
     container.render(
       <App View={plugin.mainView!} ctx={ctx} />,
     );

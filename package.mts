@@ -8,16 +8,15 @@
 
 import { resolve, join } from 'node:path';
 
-import * as S from '@effect/schema/Schema';
 import { Logger, Effect } from 'effect';
 import { NodeContext, Runtime } from '@effect/platform-node';
 import { Command } from '@effect/cli';
 import { build as esbuild } from 'esbuild';
 
 import {
-  type BaseBuildOptions,
-  BaseBuildConfigFromCLIArgs,
-  outputOptions,
+  type ReportingOptions,
+  parseReportingConfig,
+  reportingOptions,
   EFFECT_LOG_LEVELS,
 } from './util/index.mjs';
 //import { ContribSiteTemplateName, CONTRIB_SITE_TEMPLATES } from './site/index.mjs';
@@ -26,9 +25,9 @@ import {
 const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
 
 
-const preparePackage = Command.make('package', outputOptions, (rawOpts) => {
-  return Effect.gen(function * (_) {
-    const opts = yield * _(S.parse(BaseBuildConfigFromCLIArgs)(rawOpts));
+const preparePackage = Command.make('package', reportingOptions, (rawOpts) =>
+  Effect.gen(function * (_) {
+    const opts = yield * _(Effect.try(() => parseReportingConfig(rawOpts)));
     //yield * _(Effect.tryPromise(() => buildSiteBuilder(opts)));
     yield * _(
       Effect.all([
@@ -43,8 +42,8 @@ const preparePackage = Command.make('package', outputOptions, (rawOpts) => {
       Effect.tap(Effect.logDebug("Done building.")),
       Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
     );
-  });
-});
+  })
+);
 
 const main = Command.run(
   preparePackage,
@@ -70,7 +69,7 @@ Effect.
  * dependencies, only devDependencies. Also, I couldn’t figure out
  * how to properly import runtime dependencies from a packace.json’s bin.
  */
-async function buildSiteBuilder(opts: BaseBuildOptions) {
+async function buildSiteBuilder(opts: ReportingOptions) {
   const { logLevel } = opts;
   return await esbuild({
     entryPoints: [

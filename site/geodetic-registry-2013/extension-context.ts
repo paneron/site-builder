@@ -16,13 +16,18 @@ const GLOBAL_SETTINGS = {
 } as const;
 
 
-export function getExtensionContext(data: Dataset): DatasetContext {
+export function getExtensionContext(
+  data: Dataset,
+  opts?: { username?: string | undefined },
+): DatasetContext {
 
   const ctx: DatasetContext = {
     title: "Paneron dataset",
     logger: console,
 
     openExternalLink: async ({ uri }) => { window.open(uri, '_blank') },
+
+    performOperation: (action, func) => (...args) => func(...args),
 
     useGlobalSettings: function () {
       return {
@@ -61,7 +66,10 @@ export function getExtensionContext(data: Dataset): DatasetContext {
 
     useRemoteUsername: function () {
       // Always unset, since web GUI is not meant to be editable for now.
-      return { ...VALUE_HOOK_STUB, value: {} };
+      return React.useMemo(() => ({
+        ...VALUE_HOOK_STUB,
+        value: opts?.username ? { username: opts.username } : {},
+      }), [opts?.username]);
     },
 
     useSettings: makeValueHook(function () {
@@ -127,6 +135,8 @@ function listPathsCached(
     CACHE[query] = {
       objPaths: listPathsMatchingSimpleQuery(d, runnableQuery)
     };
+    console.debug("Listing paths", query, CACHE[query]!.objPaths.length);
+    //if (query.indexOf('transformation') >= 0) debugger;
   }
   return CACHE[query]!.objPaths;
 }
@@ -141,31 +151,25 @@ function listPathsMatchingSimpleQuery(
 
   const { predicateFunc: predicate, keyerFunc: keyer } = query;
 
+  const objPaths: string[] = [];
+  for (const [key, value] of Object.entries(d)) {
+    if (predicate(key, value)) {
+      objPaths.push(key);
+    }
+  }
+
   const keyed: Record<string, string> = {};
   if (keyer) {
-    for (const [objPath, objData] of Object.entries(d)) {
+    for (const objPath of objPaths) {
       try {
-        keyed[keyer(objData)] = objPath;
+        keyed[keyer(d[objPath]!)] = objPath;
       } catch (e) {
         keyed[objPath] = objPath;
       }
     }
   }
 
-  const entries = keyer
-    ? Object.keys(keyed).
-        sort().
-        map(key => [ keyed[key]!, d[keyed[key]!] ]) as [string, Record<string, unknown>][]
-    : Object.entries(d);
-
-  const objPaths: string[] = [];
-  for (const [objPath, objData] of entries) {
-    if (predicate(objPath, objData)) {
-      objPaths.push(objPath);
-    }
-  }
-
-  return objPaths;
+  return keyer ? Object.keys(keyed).sort().map(key => keyed[key]!) : objPaths;
 }
 
 const SimpleQuery = S.struct({
@@ -198,8 +202,17 @@ function getRunnableSimpleQuery(queryKey: string): RunnableSimpleQuery {
 
 function deserializePredicate(predicateString: string): Predicate {
   // XXX: simulated validation
-  return new Function('objPath', 'obj', predicateString) as Predicate;
+  try {
+    return new Function('objPath', 'obj', predicateString) as Predicate;
+  } catch (e) {
+    return new Function('key', 'value', predicateString) as MapPredicate;
+  }
 }
+
+//function deserializeMapPredicate(predicateString: string): MapPredicate {
+//  // XXX: simulated validation
+//  return new Function('key', 'value', predicateString) as MapPredicate;
+//}
 
 function deserializeKeyer(keyExpression: string): Keyer {
   // XXX: simulated validation
@@ -208,14 +221,24 @@ function deserializeKeyer(keyExpression: string): Keyer {
 
 type Predicate = (
   /**
-   * Also known as “key”
-   * (a custom keyer can make it be something other than object path).
+   * Also known as “key”.
    */
   objPath: string,
   /**
    * Object data (value).
    */
   obj: Record<string, unknown>,
+) => boolean
+
+type MapPredicate = (
+  /**
+   * Also known as object path.
+   */
+  key: string,
+  /**
+   * Object data (value).
+   */
+  value: Record<string, unknown>,
 ) => boolean
 
 /** Allows to index objects by something other than their paths. */

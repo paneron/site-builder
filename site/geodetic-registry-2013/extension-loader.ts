@@ -9,7 +9,7 @@ import * as Http from '@effect/platform/HttpClient';
 import { isObject } from '@riboseinc/paneron-extension-kit/util';
 import type { RendererPlugin } from '@riboseinc/paneron-extension-kit/types/index.js';
 
-import { DatasetSchema } from './dataset';
+import { DatasetSchema, ManifestSchema } from './dataset';
 import { getDB, storeItem, getItem } from './db';
 
 
@@ -92,15 +92,21 @@ async function setUpExtensionImportMap() {
 
 
 function loadDataFull() {
-  return Console.withTime("load data")
+  return Console.withTime("load data (full)")
     (Effect.gen(function * (_) {
-      const jsonString = yield * _(
-        Console.withTime("fetch data.json")
-          (fetchOne('./data.json')),
+      const [manifestJSON, dataJSON] = yield * _(
+        Console.withTime("load data.json & manifest.json")
+          (Effect.all([
+            fetchOne('./manifest.json'),
+            fetchOne('./data.json'),
+          ], { concurrency: 5 })),
       );
-      const data = yield * _(
-        Console.withTime("deserialize data")
-          (S.parse(S.parseJson(DatasetSchema))(jsonString)),
+      const [manifest, data] = yield * _(
+        Console.withTime("parse data.json & manifest.json")
+          (Effect.all([
+            S.parse(S.parseJson(ManifestSchema))(manifestJSON),
+            S.parse(S.parseJson(DatasetSchema))(dataJSON),
+          ], { concurrency: 5 })),
       );
       workStage = 'processing';
       totalWorkUnits += Object.keys(data).length * 1000;
@@ -127,7 +133,7 @@ function loadDataFull() {
             Effect.flatMap(d => S.parse(DatasetSchema)(d)),
           )),
       );
-      return dataParsed;
+      return { manifest, data: dataParsed };
     }));
 }
 
@@ -169,22 +175,28 @@ export function loadExtensionAndDataset(
         })),
       Console.withTime("load data")
         (Effect.scoped(Effect.gen(function * (_) {
-          const dbVersion = yield * _(
-            Effect.try(() => {
-              const storedVersionString = localStorage.getItem('dbVersion');
-              const storedVersion = parseInt(storedVersionString ?? '1', 10);
-              const effectiveVersion = ignoreCache
-                ? storedVersion + 1
-                : storedVersion;
-              const effectiveVersionString = `${effectiveVersion}`;
-              if (!storedVersionString || effectiveVersionString !== storedVersionString) {
-                localStorage.setItem('dbVersion', effectiveVersionString);
-              }
-              return effectiveVersion;
-            }),
-          );
 
-          const db = yield * _(getDB(dbVersion));
+          const dbVersion = 1;
+          // const dbVersion = yield * _(
+          //   Effect.try(() => {
+          //     const storedVersionString = localStorage.getItem('dbVersion');
+          //     const storedVersion = parseInt(storedVersionString ?? '1', 10);
+          //     const effectiveVersion = ignoreCache
+          //       ? storedVersion + 1
+          //       : storedVersion;
+          //     const effectiveVersionString = `${effectiveVersion}`;
+          //     if (!storedVersionString || effectiveVersionString !== storedVersionString) {
+          //       localStorage.setItem('dbVersion', effectiveVersionString);
+          //     }
+          //     return effectiveVersion;
+          //   }),
+          // );
+
+          const db = yield * _(getDB('cache', 1, {
+            fileCache: { keyPath: 'filePath' },
+            misc: { keyPath: 'id' },
+            dataset: { keyPath: 'objPath' },
+          }, ignoreCache));
           yield * _(Effect.log(`Using DB version ${dbVersion}`));
 
           const STORE_NAME = 'misc';
@@ -192,12 +204,16 @@ export function loadExtensionAndDataset(
 
           yield * _(Effect.log("Obtaining parsed data, trying cache first"));
 
-          const cachedParsedData = yield * _(
+          const { data, manifest } = yield * _(
             getItem(
               db,
               STORE_NAME,
               PARSED_DATASET_KEY,
-              S.struct({ id: S.literal(PARSED_DATASET_KEY), data: DatasetSchema }),
+              S.struct({
+                id: S.literal(PARSED_DATASET_KEY),
+                data: DatasetSchema,
+                manifest: ManifestSchema,
+              }),
             ),
             Effect.tapBoth({
               onSuccess: () => Effect.log("Obtained cached data"),
@@ -208,17 +224,17 @@ export function loadExtensionAndDataset(
             Effect.orElse(() => pipe(
               loadDataFull(),
               Effect.tap(() => Effect.log("Downloaded data")),
-              Effect.flatMap((data) =>
-                storeItem(db, STORE_NAME, { id: PARSED_DATASET_KEY, data })
+              Effect.flatMap(({ manifest, data }) =>
+                storeItem(db, STORE_NAME, { id: PARSED_DATASET_KEY, data, manifest })
               ),
               Effect.tap(() => Effect.log("Cached downloaded data")),
             )),
-            Effect.map(obj => obj.data),
+            Effect.map(({ data, manifest }) => ({ data, manifest })),
           );
 
           yield * _(Effect.log("Obtained parsed data"));
 
-          return cachedParsedData;
+          return { data, manifest };
         }))),
     ],
     { concurrency: 5 },
@@ -229,6 +245,9 @@ export function loadExtensionAndDataset(
 function fetchOne (path: string) {
   return Effect.gen(function * (_) {
     const client = yield * _(Http.client.Client);
+
+    yield * _(Effect.log(`Loading raw ${path}`));
+
     const response = yield * _(
       Http.request.get(path),
       client,
@@ -242,6 +261,9 @@ function fetchOne (path: string) {
       })),
       Stream.runFold("", (a, b) => a + new TextDecoder().decode(b)),
     );
+
+    yield * _(Effect.log(`Loaded raw ${path}`));
+
     return response;
   });
 }

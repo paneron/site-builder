@@ -22,10 +22,14 @@ import { Options, Command } from '@effect/cli';
 import type { Command as Command_ } from '@effect/cli/Command';
 
 import {
-  BaseBuildConfigFromCLIArgs,
   type LogLevel as _LogLevel,
-  outputOptions,
-  BaseBuildConfigSchema,
+  unpackOption,
+  reportingOptions,
+  parseDatasetBuildOptions,
+  datasetBuildOptions,
+  DatasetBuildConfigSchema,
+  ReportingConfigSchema,
+  parseReportingConfig,
   serve as simpleServe,
   EFFECT_LOG_LEVELS,
 } from './util/index.mjs';
@@ -48,20 +52,27 @@ function getPathToSiteTemplate(
 
 const siteBuildOptions = {
   outdir: Options.directory('outdir'),
-  datadir: Options.directory('datadir', { exists: 'yes' }).pipe(
-    Options.optional),
+  forUsername: Options.text('forusername').pipe(Options.optional),
+
+  // TODO: instead of passing --dataversion, calculate it based on datadir state?
+  dataVersion: Options.text('dataversion').pipe(Options.optional),
+
   siteTemplateName: Options.choice('template', CONTRIB_SITE_TEMPLATES).pipe(
     Options.withDefault(CONTRIB_SITE_TEMPLATES[0])),
-  ...outputOptions,
+
+  ...reportingOptions,
+  ...datasetBuildOptions,
 } as const;
 
 
 const SiteBuildConfigSchema = S.struct({
   outdir: S.string.pipe(S.nonEmpty()),
+  dataVersion: S.optional(S.string.pipe(S.nonEmpty())),
+  forUsername: S.optional(S.string.pipe(S.nonEmpty())),
   siteTemplatePath: S.string.pipe(S.nonEmpty()),
-  datadir: S.string.pipe(S.nonEmpty()),
 }).pipe(
-  S.extend(BaseBuildConfigSchema),
+  S.extend(ReportingConfigSchema),
+  S.extend(DatasetBuildConfigSchema),
 );
 
 
@@ -109,9 +120,11 @@ Effect.gen(function * (_) {
 const scaffoldTemplate = (siteTemplatePath: string, outdir: string) =>
 Effect.gen(function * (_) {
   const fs = yield * _(FileSystem.FileSystem);
-  yield * _(Console.withTime(`Scaffold site template from ${siteTemplatePath} into ${outdir}`)(
-    fs.copy(siteTemplatePath, outdir, { overwrite: true })
-  ));
+  yield * _(
+    Console.withTime(`Scaffold site template from ${siteTemplatePath} into ${outdir}`)(
+      fs.copy(siteTemplatePath, outdir, { overwrite: true })
+    ),
+  );
 });
 
 
@@ -131,11 +144,13 @@ Effect.gen(function * (_) {
   const extensionPathInOutdir = join(outdir, 'extension.js');
 
   const extensionCode = yield * _(
-    Console.withTime(`Fetch extension code for ${extensionURL} to ${extensionPathInOutdir}`)(pipe(
-      Effect.tryPromise(() => fetch(extensionURL)),
-      Effect.flatMap(resp => Effect.tryPromise(() => resp.text())),
-      Effect.flatMap(S.parse(S.string)),
-    )),
+    Console.withTime(`Fetch extension code for ${extensionURL} to ${extensionPathInOutdir}`)(
+      pipe(
+        Effect.tryPromise(() => fetch(extensionURL)),
+        Effect.flatMap(resp => Effect.tryPromise(() => resp.text())),
+        Effect.flatMap(S.parse(S.string)),
+      )
+    ),
   );
 
   yield * _(fs.writeFileString(extensionPathInOutdir, extensionCode));
@@ -204,7 +219,8 @@ Effect.gen(function * (_) {
 //});
 
 
-const generateData = (datadir: string, outdir: string) =>
+const generateData =
+({ datadir, outdir, forUsername, dataVersion }: S.Schema.To<typeof SiteBuildConfigSchema>) =>
 Effect.gen(function * (_) {
   const fs = yield * _(FileSystem.FileSystem);
 
@@ -227,7 +243,7 @@ Effect.gen(function * (_) {
         err => Effect.logDebug(`skipping non-object YAML at ${path} due to ${String(err)}`),
       ),
       Effect.map((out) =>
-        out && shouldIncludeObjectInIndex(path, out)
+        out && shouldIncludeObjectInIndex(path, out, forUsername)
           ? ({ [`/${path}`]: out })
           : ({})),
     )),
@@ -236,14 +252,24 @@ Effect.gen(function * (_) {
     { concurrency: 10 },
   ));
 
+  yield * _(fs.writeFileString(join(outdir, 'manifest.json'), JSON.stringify({
+    forUsername,
+    dataVersion,
+  }, undefined, 4)));
+
   yield * _(fs.writeFileString(join(outdir, 'data.json'), JSON.stringify(out, undefined, 4)));
 });
 
 
-function shouldIncludeObjectInIndex(objPath: string, objData: Record<string, unknown>) {
-  if (!objPath.startsWith('proposals') || objData.state === 'accepted' || objData.state === 'accepted-on-appeal') {
+function shouldIncludeObjectInIndex(
+  objPath: string,
+  objData: Record<string, unknown>,
+  forUsername: string | undefined,
+) {
+  if (forUsername !== undefined || !objPath.startsWith('proposals') || objData.state === 'accepted' || objData.state === 'accepted-on-appeal') {
     return true;
   } else {
+    console.debug("NOT including", objPath);
     return false;
   }
 }
@@ -254,7 +280,7 @@ Effect.gen(function * (_) {
   yield * _(scaffoldOutdir(opts));
   yield * _(Effect.all([
     fetchExtension(opts.datadir, opts.outdir),
-    generateData(opts.datadir, opts.outdir),
+    generateData(opts),
   ], { concurrency: 2 }));
 });
 
@@ -360,7 +386,7 @@ const watch = Command.
             Stream.runForEach(path => Effect.gen(function * (_) {
               yield * _(Effect.logDebug(`Path changed: ${path}`));
               if (path.startsWith(buildOpts.datadir)) {
-                yield * _(generateData(buildOpts.datadir, buildOpts.outdir));
+                yield * _(generateData(buildOpts));
               } else {
                 yield * _(scaffoldTemplate(buildOpts.siteTemplatePath, buildOpts.outdir));
               }
@@ -414,15 +440,16 @@ Effect.Effect<FileSystem.FileSystem, PlatformError, void> =>
     ));
   });
 
-
 function parseOptionsSync(
   rawOpts: Types.Simplify<Command_.ParseConfig<typeof siteBuildOptions>>,
 ) {
-  const { outdir, siteTemplateName, datadir, ...baseOpts } = rawOpts;
+  const { outdir, siteTemplateName, datadir, forUsername, dataVersion, ...baseOpts } = rawOpts;
   return S.parseSync(SiteBuildConfigSchema)({
     outdir,
-    datadir: Option.isNone(datadir) ? process.cwd() : datadir.value,
     siteTemplatePath: getPathToSiteTemplate(siteTemplateName),
-    ...S.parseSync(BaseBuildConfigFromCLIArgs)(baseOpts),
+    forUsername: unpackOption(forUsername),
+    dataVersion: unpackOption(dataVersion),
+    ...parseDatasetBuildOptions({ datadir }),
+    ...parseReportingConfig(baseOpts),
   });
 }

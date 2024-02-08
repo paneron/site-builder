@@ -4,7 +4,8 @@ import { readFile, watch } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { fstatSync } from 'node:fs';
 
-import { LogLevel as EffectLogLevel} from 'effect';
+import { Types, Option, LogLevel as EffectLogLevel} from 'effect';
+import type { Command } from '@effect/cli/Command';
 import { Options } from '@effect/cli';
 import * as S from '@effect/schema/Schema';
 
@@ -12,6 +13,14 @@ import * as S from '@effect/schema/Schema';
 /** @deprecated */
 export function noop (..._: any[]) { void 0; }
 
+
+export function unpackOption(opt: Option.Option<string>, df?: undefined): string | undefined {
+  return Option.isNone(opt) ? df : opt.value;
+}
+
+
+// Reporting options
+// =================
 
 export const LogLevelSchema = S.literal('debug', 'info', 'error', 'silent');
 export type LogLevel = S.Schema.To<typeof LogLevelSchema>
@@ -23,41 +32,75 @@ export const EFFECT_LOG_LEVELS: { [key in LogLevel]: EffectLogLevel.LogLevel } =
   'silent': EffectLogLevel.None,
 } as const;
 
-export const BaseBuildConfigSchema = S.struct({
+export const ReportingConfigSchema = S.struct({
   logLevel: LogLevelSchema,
 });
-export interface BaseBuildOptions extends S.Schema.To<typeof BaseBuildConfigSchema> {}
+export interface ReportingOptions extends S.Schema.To<typeof ReportingConfigSchema> {}
 
-export const BaseBuildCLIArgSchema = S.struct({
-  debug: S.union(S.boolean, S.undefined),
-  verbose: S.union(S.boolean, S.undefined),
-});
-
-export const outputOptions = {
+export const reportingOptions = {
   verbose: Options.boolean("verbose").pipe(Options.withAlias("v")),
   debug: Options.boolean("debug"),
 } as const;
 
-export const BaseBuildConfigFromCLIArgs: S.Schema<
-  S.Schema.To<typeof BaseBuildCLIArgSchema>,
-  S.Schema.To<typeof BaseBuildConfigSchema>> =
-S.transform(
-  BaseBuildCLIArgSchema,
-  BaseBuildConfigSchema,
-  (values) => ({ logLevel: values.debug
-    ? 'debug'
-    : values.verbose
-      ? 'info'
-      : 'error'
-  } as const),
-  // We don’t want to support reverse transformation but we have to per typings.
-  // XXX: this does the wrong thing
-  ({ logLevel }) => ({ debug: logLevel === 'debug', verbose: logLevel === 'info' }),
-  //() => ParseResult.fail(ParseResult.ParseIssue),
-)
+export function parseReportingConfig(
+  values: Types.Simplify<Command.ParseConfig<typeof reportingOptions>>,
+) {
+  return S.parseSync(ReportingConfigSchema)({
+    logLevel: values.debug
+      ? 'debug'
+      : values.verbose
+        ? 'info'
+        : 'error'
+  });
+}
 
-export interface BaseBuildOptions extends S.Schema.To<typeof BaseBuildConfigSchema> {}
+// const ReportingCLIArgSchema = S.struct({
+//   debug: S.union(S.boolean, S.undefined),
+//   verbose: S.union(S.boolean, S.undefined),
+// });
+// export const ReportingConfigFromCLIArgs: S.Schema<
+//   S.Schema.To<typeof ReportingCLIArgSchema>,
+//   S.Schema.To<typeof ReportingConfigSchema>> =
+// S.transform(
+//   ReportingCLIArgSchema,
+//   ReportingConfigSchema,
+//   (values) => ({
+//     logLevel: values.debug
+//       ? 'debug'
+//       : values.verbose
+//         ? 'info'
+//         : 'error'
+//   } as const),
+//   // We don’t want to support reverse transformation but we have to per typings.
+//   // XXX: this does the wrong thing
+//   ({ logLevel }) => ({ debug: logLevel === 'debug', verbose: logLevel === 'info' }),
+//   //() => ParseResult.fail(ParseResult.ParseIssue),
+// );
 
+
+// Dataset build options
+// =====================
+
+export const DatasetBuildConfigSchema = S.struct({
+  datadir: S.string.pipe(S.nonEmpty()),
+});
+
+export const datasetBuildOptions = {
+  datadir: Options.directory('datadir', { exists: 'yes' }).pipe(
+    Options.optional),
+} as const;
+
+export function parseDatasetBuildOptions(
+  { datadir }: Types.Simplify<Command.ParseConfig<typeof datasetBuildOptions>>,
+) {
+  return S.parseSync(DatasetBuildConfigSchema)({
+    datadir: Option.isNone(datadir) ? process.cwd() : datadir.value,
+  });
+}
+
+
+// Misc.
+// =====
 
 /**
  * Returns true if we are in CLI mode,

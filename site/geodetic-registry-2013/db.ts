@@ -11,8 +11,29 @@ let dbVersion: number | null = null;
 // API
 // ===
 
-export const getDB = (version: number) =>
-  Effect.tryPromise(() => _getDB(version));
+export const getDB = (
+  dbName: string,
+  version: number,
+  stores: Readonly<Record<string, IDBObjectStoreParameters>>,
+  /** Force recreate (delete DB first). */
+  recreate?: boolean,
+) =>
+  Effect.tryPromise((): Promise<IDBDatabase> => {
+    return new Promise((resolve, reject) => {
+      function createDB() {
+        console.debug("Creating indexed DB", dbName);
+        _getDB(dbName, version, stores).then(resolve, reject);
+      };
+      if (recreate) {
+        console.debug("Deleting indexed DB", dbName);
+        const req = indexedDB.deleteDatabase(dbName);
+        req.onerror = reject;
+        req.onsuccess = () => _getDB(dbName, version, stores).then(resolve, reject);
+      } else {
+        createDB();
+      }
+    });
+  });
 
 
 export function getItem<T>(
@@ -104,14 +125,18 @@ function createStore(
 
 
 // XXX: Move to Effect layer/service
-function _getDB(version: number): Promise<IDBDatabase> {
+function _getDB(
+  dbName: string,
+  version: number,
+  stores: Readonly<Record<string, IDBObjectStoreParameters>>,
+): Promise<IDBDatabase> {
   db ??= new Promise((resolve, reject) => {
 
     if (dbVersion !== null && dbVersion !== version) {
       reject("DB was created with another version");
     }
 
-    const request = indexedDB.open('cache', version);
+    const request = indexedDB.open(dbName, version);
     request.onerror = function handleDBOpenError (evt) {
       const errCode = (evt.target as { errorCode?: string })?.errorCode;
       console.error("Failed to get indexedDB", errCode);
@@ -122,11 +147,9 @@ function _getDB(version: number): Promise<IDBDatabase> {
       if (!db) {
         throw new Error("Unable to obtain IDB handle while handling version update");
       }
-      Promise.all([
-        createStore(db, 'fileCache', { keyPath: 'filePath' }),
-        createStore(db, 'misc', { keyPath: 'id' }),
-        createStore(db, 'dataset', { keyPath: 'objPath' }),
-      ]).then(() => resolve(db), reject);
+      Promise.all(Object.entries(stores).map(([storeName, params]) =>
+        createStore(db, storeName, params)
+      )).then(() => resolve(db), reject);
     }
     request.onsuccess = function handleDBOpenSuccess(evt) {
       const db = (evt.target as IDBOpenDBRequest).result;
