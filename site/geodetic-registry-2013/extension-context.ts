@@ -135,8 +135,6 @@ function listPathsCached(
     CACHE[query] = {
       objPaths: listPathsMatchingSimpleQuery(d, runnableQuery)
     };
-    console.debug("Listing paths", query, CACHE[query]!.objPaths.length);
-    //if (query.indexOf('transformation') >= 0) debugger;
   }
   return CACHE[query]!.objPaths;
 }
