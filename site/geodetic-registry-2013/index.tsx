@@ -6,6 +6,8 @@ import * as BrowserHttp from '@effect/platform-browser/HttpClient';
 
 import { NonIdealState, Spinner, Button } from '@blueprintjs/core';
 
+import MathJax from 'react-mathjax2';
+
 //import './normalize.css';
 //import 'jsondiffpatch/dist/formatters-styles/annotated.css';
 //import 'jsondiffpatch/dist/formatters-styles/html.css';
@@ -102,7 +104,9 @@ const App: React.FC<{
   return (
     <React.StrictMode>
       <ErrorBoundary viewName="main dataset view">
-        <View {...ctx} />
+        <MathJax.Context options={MATHJAX_OPTS} script={MATHJAX_SCRIPT_PATH}>
+          <View {...ctx} />
+        </MathJax.Context>
       </ErrorBoundary>
     </React.StrictMode>
   );
@@ -127,3 +131,13 @@ function Loader(
       : undefined}
   />;
 }
+
+
+const MATHJAX_SCRIPT_PATH = './mathjax/MathJax.js?config=AM_HTMLorMML';
+const MATHJAX_OPTS = {
+  asciimath2jax: {
+    useMathMLspacing: true,
+    delimiters: [["`","`"]],
+    preview: "none",
+  },
+} as const;
