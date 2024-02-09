@@ -18,6 +18,7 @@
 #.pnp.*
 
 /site/**/build.mjs
+/site/**/dist.mjs
 /site/**/index.js
 /site/**/compiled
 /site/**/dist
