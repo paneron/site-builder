@@ -4,7 +4,7 @@ import { readFile, watch } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { fstatSync } from 'node:fs';
 
-import { Types, Option, LogLevel as EffectLogLevel} from 'effect';
+import { type Types, Option, LogLevel as EffectLogLevel} from 'effect';
 import type { Command } from '@effect/cli/Command';
 import { Options } from '@effect/cli';
 import * as S from '@effect/schema/Schema';
