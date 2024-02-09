@@ -261,6 +261,7 @@ Effect.gen(function * (_) {
 });
 
 
+/** @deprecated for cases requiring private data exclusion use other site templates. */
 function shouldIncludeObjectInIndex(
   objPath: string,
   objData: Record<string, unknown>,
