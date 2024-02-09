@@ -274,29 +274,26 @@ function shouldIncludeObjectInIndex(
 }
 
 
-const buildFull = (opts: S.Schema.To<typeof SiteBuildConfigSchema>) =>
-Effect.gen(function * (_) {
-  yield * _(scaffoldOutdir(opts));
-  yield * _(Effect.all([
+const buildFull = (opts: S.Schema.To<typeof SiteBuildConfigSchema>) => pipe(
+  scaffoldOutdir(opts),
+  Effect.andThen(() => Effect.all([
     fetchExtension(opts.datadir, opts.outdir),
     generateData(opts),
-  ], { concurrency: 2 }));
-});
+  ], { concurrency: 2 })),
+);
 
 
 const build = Command.
   make(
     'build',
     siteBuildOptions,
-    (rawOpts) =>
-      Effect.
-        gen(function * (_) {
-          const opts = yield * _(Effect.try(() => parseOptionsSync(rawOpts)));
-          yield * _(
-            buildFull(opts),
-            Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
-          );
-        })
+    (rawOpts) => pipe(
+      Effect.try(() => parseOptionsSync(rawOpts)),
+      Effect.andThen((opts) => pipe(
+        buildFull(opts),
+        Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
+      )),
+    ),
   ).
   pipe(
     Command.withDescription('asdf'),
