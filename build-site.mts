@@ -42,8 +42,8 @@ import { CONTRIB_SITE_TEMPLATES, ContribSiteTemplateName } from './site/index.mj
 // actual, unpacked source file location when building the site.
 const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
 
-/** Returns absolute path to given contrib site template. */
-function getPathToSiteTemplate(
+/** Returns absolute path to given contrib site template’s dist directory. */
+function getPathToSiteTemplateDist(
   templateName: S.Schema.To<typeof ContribSiteTemplateName>,
 ) {
   return join(PACKAGE_ROOT, 'site', templateName, 'dist');
@@ -442,7 +442,7 @@ function parseOptionsSync(
   const { outdir, siteTemplateName, datadir, forUsername, dataVersion, ...baseOpts } = rawOpts;
   return S.parseSync(SiteBuildConfigSchema)({
     outdir,
-    siteTemplatePath: getPathToSiteTemplate(siteTemplateName),
+    siteTemplatePath: getPathToSiteTemplateDist(siteTemplateName),
     forUsername: unpackOption(forUsername),
     dataVersion: unpackOption(dataVersion),
     ...parseDatasetBuildOptions({ datadir }),
