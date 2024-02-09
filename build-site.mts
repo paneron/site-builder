@@ -269,7 +269,6 @@ function shouldIncludeObjectInIndex(
   if (forUsername !== undefined || !objPath.startsWith('proposals') || objData.state === 'accepted' || objData.state === 'accepted-on-appeal') {
     return true;
   } else {
-    console.debug("NOT including", objPath);
     return false;
   }
 }
