@@ -203,8 +203,11 @@ function getRunnableSimpleQuery(queryKey: string): RunnableSimpleQuery {
 function deserializePredicate(predicateString: string): Predicate {
   // XXX: simulated validation
   try {
-    return new Function('objPath', 'obj', predicateString) as Predicate;
+    const func = new Function('objPath', 'obj', predicateString) as Predicate;
+    func('', {});
+    return func;
   } catch (e) {
+    console.error("Failed to deserialize predicate with objPath & obj variables, or predicate is malformed", predicateString);
     return new Function('key', 'value', predicateString) as MapPredicate;
   }
 }
