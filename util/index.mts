@@ -19,6 +19,12 @@ export function unpackOption(opt: Option.Option<string>, df?: undefined): string
 }
 
 
+export interface SiteBuildOptions extends ReportingOptions {
+  packageRoot: string;
+  outdir: string;
+}
+
+
 // Reporting options
 // =================
 
@@ -84,6 +90,7 @@ export function parseReportingConfig(
 export const DatasetBuildConfigSchema = S.struct({
   datadir: S.string.pipe(S.nonEmpty()),
 });
+export interface DatasetBuildOptions extends S.Schema.To<typeof DatasetBuildConfigSchema> {}
 
 export const datasetBuildOptions = {
   datadir: Options.directory('datadir', { exists: 'yes' }).pipe(
