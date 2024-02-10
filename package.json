@@ -16,10 +16,10 @@
     "clean": "rm -f ./package.mjs ./build-site.mjs",
     "build-builder-builder": "yarn esbuild package.mts --packages=external --platform=node --target=node18 --minify=false --bundle --format=esm --outfile=package.mjs",
     "build-builder": "yarn node package.mjs",
-    "build-template": "yarn workspace template-isogr2013 build"
+    "build-template": "yarn workspace spa build"
   },
   "workspaces": [
-    "site/geodetic-registry-2013"
+    "site/spa"
   ],
   "devDependencies": {
     "@effect/cli": "~0.27.0",

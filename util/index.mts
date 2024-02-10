@@ -10,6 +10,9 @@ import type { PlatformError } from '@effect/platform-node/Error';
 import type { Command } from '@effect/cli/Command';
 import { Options } from '@effect/cli';
 import * as S from '@effect/schema/Schema';
+import type { Command as Command_ } from '@effect/cli/Command';
+
+import { CONTRIB_SITE_TEMPLATES, ContribSiteTemplateName } from '../site/index.mjs';
 
 
 /** @deprecated */
@@ -18,12 +21,6 @@ export function noop (..._: any[]) { void 0; }
 
 export function unpackOption(opt: Option.Option<string>, df?: undefined): string | undefined {
   return Option.isNone(opt) ? df : opt.value;
-}
-
-
-export interface SiteBuildOptions extends ReportingOptions {
-  packageRoot: string;
-  outdir: string;
 }
 
 
@@ -105,6 +102,59 @@ export function parseDatasetBuildOptions(
   return S.parseSync(DatasetBuildConfigSchema)({
     datadir: Option.isNone(datadir) ? process.cwd() : datadir.value,
   });
+}
+
+
+// Site build options
+// ==================
+
+export const siteBuildOptions = {
+  outdir: Options.directory('outdir'),
+  forUsername: Options.text('forusername').pipe(Options.optional),
+
+  // TODO: instead of passing --dataversion, calculate it based on datadir state?
+  dataVersion: Options.text('dataversion').pipe(Options.optional),
+
+  siteTemplateName: Options.choice('template', CONTRIB_SITE_TEMPLATES).pipe(
+    Options.withDefault(CONTRIB_SITE_TEMPLATES[0])),
+
+  ...reportingOptions,
+  ...datasetBuildOptions,
+} as const;
+
+export const SiteBuildConfigSchema = S.struct({
+  outdir: S.string.pipe(S.nonEmpty()),
+  dataVersion: S.optional(S.string.pipe(S.nonEmpty())),
+  forUsername: S.optional(S.string.pipe(S.nonEmpty())),
+  siteTemplatePath: S.string.pipe(S.nonEmpty()),
+}).pipe(
+  S.extend(ReportingConfigSchema),
+  S.extend(DatasetBuildConfigSchema),
+);
+
+export interface SiteBuildOptions extends S.Schema.To<typeof SiteBuildConfigSchema> {}
+
+export function parseSiteBuildConfig(
+  rawOpts: Types.Simplify<Command_.ParseConfig<typeof siteBuildOptions>>,
+  packageRoot: string,
+) {
+  const { outdir, siteTemplateName, datadir, forUsername, dataVersion, ...baseOpts } = rawOpts;
+  return S.parseSync(SiteBuildConfigSchema)({
+    outdir,
+    siteTemplatePath: getPathToSiteTemplateDist(siteTemplateName, packageRoot),
+    forUsername: unpackOption(forUsername),
+    dataVersion: unpackOption(dataVersion),
+    ...parseDatasetBuildOptions({ datadir }),
+    ...parseReportingConfig(baseOpts),
+  });
+}
+
+/** Returns absolute path to given contrib site template’s dist directory. */
+function getPathToSiteTemplateDist(
+  templateName: S.Schema.To<typeof ContribSiteTemplateName>,
+  packageRoot: string,
+) {
+  return join(packageRoot, 'site', templateName, 'dist');
 }
 
 

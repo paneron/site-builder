@@ -2161,9 +2161,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"template-isogr2013@workspace:site/geodetic-registry-2013":
+"template-spa@workspace:site/spa":
   version: 0.0.0-use.local
-  resolution: "template-isogr2013@workspace:site/geodetic-registry-2013"
+  resolution: "template-spa@workspace:site/spa"
   dependencies:
     "@blueprintjs/core": 4.17.8
     "@blueprintjs/datetime": 4.4.27

@@ -9,72 +9,34 @@
  * Depends on Node, currently.
  */
 
-import { resolve, relative, join } from 'node:path';
+import { resolve, join } from 'node:path';
 
 import { parse as parseYAML } from 'yaml';
 
 
-import { pipe, Runtime, Console, Stream, Effect, Layer, Logger, Types, Option } from 'effect';
+import { pipe, Runtime, Console, Stream, Effect, Layer, Logger, Option } from 'effect';
 import * as S from '@effect/schema/Schema';
 import { FileSystem, NodeContext, Runtime as PlatformRuntime } from '@effect/platform-node';
 import type { PlatformError } from '@effect/platform-node/Error';
 import { Options, Command } from '@effect/cli';
-import type { Command as Command_ } from '@effect/cli/Command';
 
 import {
   type LogLevel as _LogLevel,
-  unpackOption,
-  reportingOptions,
-  parseDatasetBuildOptions,
-  datasetBuildOptions,
-  DatasetBuildConfigSchema,
-  ReportingConfigSchema,
-  parseReportingConfig,
+  siteBuildOptions,
+  parseSiteBuildConfig,
+  SiteBuildConfigSchema,
+  type SiteBuildOptions,
   serve as simpleServe,
   EFFECT_LOG_LEVELS,
   readdirRecursive,
 } from './util/index.mjs';
 import { debouncedWatcher } from './util/watch2.mjs';
 import { getExtensionURL, PaneronDataset } from './model.mjs';
-import { CONTRIB_SITE_TEMPLATES, ContribSiteTemplateName } from './site/index.mjs';
 
 
 // We will need to access this package’s
 // actual, unpacked source file location when building the site.
 const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
-
-/** Returns absolute path to given contrib site template’s dist directory. */
-function getPathToSiteTemplateDist(
-  templateName: S.Schema.To<typeof ContribSiteTemplateName>,
-) {
-  return join(PACKAGE_ROOT, 'site', templateName, 'dist');
-}
-
-
-const siteBuildOptions = {
-  outdir: Options.directory('outdir'),
-  forUsername: Options.text('forusername').pipe(Options.optional),
-
-  // TODO: instead of passing --dataversion, calculate it based on datadir state?
-  dataVersion: Options.text('dataversion').pipe(Options.optional),
-
-  siteTemplateName: Options.choice('template', CONTRIB_SITE_TEMPLATES).pipe(
-    Options.withDefault(CONTRIB_SITE_TEMPLATES[0])),
-
-  ...reportingOptions,
-  ...datasetBuildOptions,
-} as const;
-
-
-const SiteBuildConfigSchema = S.struct({
-  outdir: S.string.pipe(S.nonEmpty()),
-  dataVersion: S.optional(S.string.pipe(S.nonEmpty())),
-  forUsername: S.optional(S.string.pipe(S.nonEmpty())),
-  siteTemplatePath: S.string.pipe(S.nonEmpty()),
-}).pipe(
-  S.extend(ReportingConfigSchema),
-  S.extend(DatasetBuildConfigSchema),
-);
 
 
 /**
@@ -125,6 +87,7 @@ Effect.gen(function * (_) {
     Console.withTime(`Scaffold site template from ${siteTemplatePath} into ${outdir}`)(
       fs.copy(siteTemplatePath, outdir, { overwrite: true })
     ),
+    Effect.orElse(() => Effect.logDebug("Failed to scaffold template")),
   );
 });
 
@@ -211,6 +174,53 @@ Effect.gen(function * (_) {
 });
 
 
+const runExtensionBuild = (opts: SiteBuildOptions) => (Effect.gen(function * (_) {
+
+  const extensionBuildScriptPath = join(
+    opts.siteTemplatePath,
+    '..', // Step one directory up, since siteTemplatePath goes to dist
+    'build-site.mjs',
+  );
+
+  const builder = yield * _(
+    Console.withTime(`Importing site builder from ${extensionBuildScriptPath}`)(
+      Effect.tryPromise(() => import(extensionBuildScriptPath))
+    ),
+    Effect.tapError(err => Effect.logError(`Failed to import site builder: ${String(err)}`)),
+  );
+
+  yield * _(
+    Console.withTime(`Running site builder`)(
+      builder.buildSite({ ...opts, packageRoot: PACKAGE_ROOT })
+    ),
+    Effect.tapError(err => Effect.logDebug(`Failed to run extension build script: ${String(err)}`)),
+  );
+
+  //return yield * _(Effect.succeed(null));
+  // Another option is to shell out, e.g. with execSync:
+  //
+  // let cliString = `${extensionBuildScriptPath} --datadir ${datadir} --outdir ${outdir}`;
+  // if (dataVersion) {
+  //   cliString += ` --dataversion ${dataVersion}`;
+  // }
+  // if (forUsername) {
+  //   cliString += ` --forusername ${forUsername}`;
+  // }
+  // if (logLevel === 'debug') {
+  //   cliString += ` --debug`;
+  // } else if (logLevel === 'info') {
+  //   cliString += ` --verbose`;
+  // }
+  //
+  // yield * _(Effect.logDebug(`Build extension: calling ${cliString}`));
+  //
+  // yield * _(Effect.try(() => execSync(cliString, { stdio: 'inherit' })));
+
+// TS is rightfully complaining that this effect has `unknown` requirements, not `never`,
+// probably due to dynamic import, but we can’t help that.
+}) as Effect.Effect<never, unknown, void>);
+
+
 /** @deprecated for cases requiring private data exclusion use other site templates. */
 function shouldIncludeObjectInIndex(
   objPath: string,
@@ -230,6 +240,7 @@ const buildFull = (opts: S.Schema.To<typeof SiteBuildConfigSchema>) => pipe(
   Effect.andThen(() => Effect.all([
     fetchExtension(opts.datadir, opts.outdir),
     generateData(opts),
+    runExtensionBuild(opts),
   ], { concurrency: 2 })),
 );
 
@@ -239,7 +250,7 @@ const build = Command.
     'build',
     siteBuildOptions,
     (rawOpts) => pipe(
-      Effect.try(() => parseOptionsSync(rawOpts)),
+      Effect.try(() => parseSiteBuildConfig(rawOpts, PACKAGE_ROOT)),
       Effect.andThen((opts) => pipe(
         buildFull(opts),
         Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
@@ -279,7 +290,7 @@ const watch = Command.
         gen(function * (_) {
           const rawBuildOpts = yield * _(build);
           const buildOpts =
-            yield * _(Effect.try(() => parseOptionsSync(rawBuildOpts)));
+            yield * _(Effect.try(() => parseSiteBuildConfig(rawBuildOpts, PACKAGE_ROOT)));
 
           yield * _(
             buildFull(buildOpts),
@@ -333,7 +344,10 @@ const watch = Command.
             Stream.runForEach(path => Effect.gen(function * (_) {
               yield * _(Effect.logDebug(`Path changed: ${path}`));
               if (path.startsWith(buildOpts.datadir)) {
-                yield * _(generateData(buildOpts));
+                yield * _(Effect.all([
+                  generateData(buildOpts),
+                  runExtensionBuild(buildOpts),
+                ], { concurrency: 5 }));
               } else {
                 yield * _(scaffoldTemplate(buildOpts.siteTemplatePath, buildOpts.outdir));
               }
@@ -386,17 +400,3 @@ Effect.Effect<FileSystem.FileSystem, PlatformError, void> =>
       { concurrency: 10 },
     ));
   });
-
-function parseOptionsSync(
-  rawOpts: Types.Simplify<Command_.ParseConfig<typeof siteBuildOptions>>,
-) {
-  const { outdir, siteTemplateName, datadir, forUsername, dataVersion, ...baseOpts } = rawOpts;
-  return S.parseSync(SiteBuildConfigSchema)({
-    outdir,
-    siteTemplatePath: getPathToSiteTemplateDist(siteTemplateName),
-    forUsername: unpackOption(forUsername),
-    dataVersion: unpackOption(dataVersion),
-    ...parseDatasetBuildOptions({ datadir }),
-    ...parseReportingConfig(baseOpts),
-  });
-}

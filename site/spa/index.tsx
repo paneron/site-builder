@@ -1,3 +1,8 @@
+// Client-side JS entry point.
+//
+// TODO: Move this client-side stuff into a subdir?
+
+
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 

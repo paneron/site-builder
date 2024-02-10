@@ -6,7 +6,7 @@ import { build as esbuild } from 'esbuild';
 import { Console, Effect } from 'effect';
 import { FileSystem } from '@effect/platform-node';
 
-import { type SiteBuildOptions } from '../../util/index.mjs';
+import { type ReportingOptions } from '../../util/index.mjs';
 
 
 const FILES = [
@@ -18,7 +18,7 @@ const FILES = [
 ] as const;
 
 
-export const distSPA = (opts: SiteBuildOptions) => Effect.all([
+export const distSPA = (opts: ReportingOptions & { outdir: string, packageRoot: string }) => Effect.all([
   Effect.logDebug(`Using package root: ${opts.packageRoot}`),
   Effect.tryPromise(() => buildJSForSPA(opts)),
   Console.withTime("Copy assets")(
@@ -43,7 +43,7 @@ export const distSPA = (opts: SiteBuildOptions) => Effect.all([
  *
  * Currently, that just involves running esbuild against JS.
  */
-async function buildJSForSPA(opts: SiteBuildOptions) {
+async function buildJSForSPA(opts: ReportingOptions & { outdir: string, packageRoot: string }) {
   //const siteRoot = join(opts.packageRoot, 'site', opts.templateName);
   //const siteRoot = join(opts.packageRoot, 'site-app');
   return await esbuild({
@@ -55,7 +55,7 @@ async function buildJSForSPA(opts: SiteBuildOptions) {
     ],
     entryNames: '[dir]/[name]',
     assetNames: '[dir]/[name]',
-    tsconfig: join(opts.packageRoot, 'tsconfig.json'),
+    tsconfig: join(opts.packageRoot, 'client-side-tsconfig.json'),
     format: 'iife',
     target: ['chrome120'],
     bundle: true,
