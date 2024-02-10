@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "compile": "tsc --outdir compiled; tsc --noEmit --module nodenext --skipLibCheck build.mts",
-    "clean": "rm -rf dist build.mjs dist.mjs",
+    "clean": "rm -rf dist compiled build.mjs dist.mjs",
     "build-builder-command": "yarn esbuild build.mts --packages=external --platform=node --target=node18 --minify=false --bundle --format=esm --outfile=build.mjs",
     "build-builder": "yarn esbuild dist.mts --tsconfig='.../../tsconfig.json' --platform=node --target=esnext --minify=false --bundle --format=esm --log-level=debug --outfile=dist.mjs",
     "build-self": "yarn node build.mjs",
