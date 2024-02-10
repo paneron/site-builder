@@ -1,10 +1,12 @@
-import { join, extname, resolve } from 'node:path';
+import { join, extname, resolve, relative } from 'node:path';
 import { parse as parseURL, fileURLToPath } from 'node:url'
 import { readFile, watch } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { fstatSync } from 'node:fs';
 
-import { type Types, Option, LogLevel as EffectLogLevel} from 'effect';
+import { pipe, Effect, type Types, Option, LogLevel as EffectLogLevel} from 'effect';
+import { FileSystem } from '@effect/platform-node';
+import type { PlatformError } from '@effect/platform-node/Error';
 import type { Command } from '@effect/cli/Command';
 import { Options } from '@effect/cli';
 import * as S from '@effect/schema/Schema';
@@ -294,3 +296,48 @@ export function serve(
 
   return server;
 }
+
+
+export const readdirRecursive = (
+  /** Directory to list. */
+  dir: string,
+  /**
+   * Directory to output paths relative to.
+   * (Don’t specify, used for recursion.)
+   */
+  relativeTo?: string,
+):
+Effect.Effect<FileSystem.FileSystem, PlatformError, readonly string[]> =>
+Effect.gen(function * (_) {
+  const fs = yield * _(FileSystem.FileSystem);
+
+  const dirEntries = yield * _(
+    fs.readDirectory(dir),
+    Effect.map(basenames => basenames.map(name => join(dir, name))),
+  );
+
+  const dirEntryStats: Record<string, FileSystem.File.Info> = yield * _(
+    Effect.reduceEffect(
+      dirEntries.map(path => pipe(
+        fs.stat(path),
+        Effect.map(stat => ({ [path]: stat })),
+      )),
+      Effect.succeed({}),
+      (accum, item) => ({ ...accum, ...item }),
+      { concurrency: 10 },
+    ),
+  );
+
+  const recursiveListings = dirEntries.map(path =>
+    dirEntryStats[path]?.type === 'Directory'
+      ? readdirRecursive(path, relativeTo ?? dir)
+      : Effect.succeed([relative(relativeTo ?? dir, path)])
+    );
+
+  const entries = yield * _(
+    Effect.all(recursiveListings, { concurrency: 10 }),
+    Effect.map(resultLists => resultLists.flat()),
+  );
+
+  return entries;
+});
