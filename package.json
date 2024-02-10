@@ -9,6 +9,7 @@
   "files": [
     "README.rst",
     "site/**/dist/**",
+    "site/**/build-site.mjs",
     "build-site.mjs"
   ],
   "scripts": {
