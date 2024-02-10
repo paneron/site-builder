@@ -15,7 +15,7 @@ const FILES = [
   ['../../common/mathjax/config/AM_HTMLorMML.js', 'mathjax/config/AM_HTMLorMML.js'],
   ['../../common/mathjax/extensions/MathMenu.js', 'mathjax/extensions/MathMenu.js'],
   ['../../common/mathjax/extensions/MathZoom.js', 'mathjax/extensions/MathZoom.js'],
-];
+] as const;
 
 
 export const distSPA = (opts: SiteBuildOptions) => Effect.all([
