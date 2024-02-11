@@ -68,7 +68,7 @@ async function buildSiteBuilder(opts: ReportingOptions) {
   const { logLevel } = opts;
   return await esbuild({
     entryPoints: [
-      join(PACKAGE_ROOT, 'build-site-core.mts'),
+      join(PACKAGE_ROOT, 'build-site.mts'),
       //join(PACKAGE_ROOT, 'site', 'index.tsx'),
     ],
     entryNames: '[dir]/[name]',
