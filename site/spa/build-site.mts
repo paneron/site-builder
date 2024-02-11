@@ -1,14 +1,15 @@
 import { pipe, Effect } from 'effect';
-import { type SiteBuildOptions } from '../../util/index.mjs';
+import { type SiteBuilder } from '../../util/index.mjs';
 import { readdirRecursive } from '../../util/index.mjs';
 
 
-export const buildSite =
-(opts: SiteBuildOptions & { outdir: string, packageRoot: string }) =>
+export const buildSite: SiteBuilder = (opts) =>
   Effect.all([
     Effect.logDebug(`What’s up, ${opts.outdir} ${opts.packageRoot}`),
     pipe(
       readdirRecursive(opts.datadir),
-      Effect.andThen(dirs => Effect.logDebug(`${JSON.stringify(dirs)}`)),
+      Effect.andThen(dirs =>
+        Effect.logDebug(`First 10 dir entries: ${JSON.stringify(dirs.slice(0, 10))}`)
+      ),
     ),
   ]);
