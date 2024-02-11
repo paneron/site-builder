@@ -24,13 +24,14 @@ export function unpackOption(opt: Option.Option<string>, df?: undefined): string
 }
 
 
-export type SiteBuilder =
-(opts: SiteBuildOptions & {
-  /** Where to put built static site assets. */
-  outdir: string;
-  /** Path to the package on filesystem. */
-  packageRoot: string;
-}) => Effect.Effect<FileSystem.FileSystem, PlatformError, void>
+export type SiteBuilder = (
+  opts: SiteBuildOptions & {
+    /** Where to put built static site assets. */
+    outdir: string;
+    /** Path to the package on filesystem. */
+    packageRoot: string;
+  },
+) => Effect.Effect<FileSystem.FileSystem, PlatformError, void>
 
 
 // Reporting options
