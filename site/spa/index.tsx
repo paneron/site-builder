@@ -70,7 +70,6 @@ function loadApp (ignoreCache = true) {
     container.render(
       <App View={plugin.mainView!} ctx={ctx} />,
     );
-
   }).
   catch(e => {
     console.error("Failed to load", e);
