@@ -216,9 +216,9 @@ const runExtensionBuild = (opts: SiteBuildOptions) => (Effect.gen(function * (_)
   //
   // yield * _(Effect.try(() => execSync(cliString, { stdio: 'inherit' })));
 
-// TS is rightfully complaining that this effect has `unknown` requirements, not `never`,
-// probably due to dynamic import, but we can’t help that.
-}) as Effect.Effect<never, unknown, void>);
+// TS rightfully thinks that this effect has `unknown` requirements,
+// probably due to dynamic import, so we have to cast.
+}) as Effect.Effect<FileSystem.FileSystem, PlatformError, void>);
 
 
 /** @deprecated for cases requiring private data exclusion use other site templates. */
