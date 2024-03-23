@@ -11,3 +11,28 @@
     text-align: left;
   }
 }
+
+.appWrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-flow: column nowrap;
+
+  .mainViewWrapper {
+    flex: 1;
+    display: flex;
+    flex-flow: column nowrap;
+  }
+
+
+  .statusBar {
+    height: 40px;
+    flex: 0;
+    > :first-child {
+      display: flex;
+      flex-flow: row nowrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+  }
+}
