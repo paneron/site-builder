@@ -16,6 +16,7 @@ export const PaneronDataset = S.struct({
 });
 
 
+// TODO: Shouldn’t be here, really. The goal is register-independent
 export const RegisterItem = S.struct({
   id: S.UUID,
   data: S.record(S.string, S.unknown),
