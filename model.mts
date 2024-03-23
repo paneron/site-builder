@@ -25,6 +25,14 @@ export const RegisterItem = S.struct({
 });
 
 
+export function getExtensionURLs(extID: S.Schema.To<typeof PaneronDataset>['type']['id']) {
+  const root = `https://extensions.paneron.org/e/${extID}`;
+  return {
+    esbuiltSource: `${root}/build.js`,
+    packageJson:  `${root}/package.json`,
+  };
+}
+
 export function getExtensionURL(extID: S.Schema.To<typeof PaneronDataset>['type']['id']): string {
   return `https://extensions.paneron.org/e/${extID}/build.js`;
 }
