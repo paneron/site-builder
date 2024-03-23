@@ -8,8 +8,10 @@ import * as ReactDOM from 'react-dom/client';
 
 import { Effect } from 'effect';
 import * as BrowserHttp from '@effect/platform-browser/HttpClient';
+import * as S from '@effect/schema/Schema';
 
-import { NonIdealState, Spinner, Button } from '@blueprintjs/core';
+import { PopoverInteractionKind, NonIdealState, Spinner, Button, Tag } from '@blueprintjs/core';
+import { Tooltip2 as Tooltip } from '@blueprintjs/popover2';
 
 import MathJax from 'react-mathjax2';
 
@@ -26,7 +28,7 @@ import './site.css';
 import ErrorBoundary from '@riboseinc/paneron-extension-kit/widgets/ErrorBoundary.js';
 import type { RendererPlugin, DatasetContext } from '@riboseinc/paneron-extension-kit/types/index.js';
 
-import { repeatWhileLoading, loadExtensionAndDataset } from './extension-loader.js';
+import { BasicExtensionMeta, repeatWhileLoading, loadExtensionAndDataset } from './extension-loader.js';
 import { getExtensionContext } from './extension-context.js';
 
 
@@ -68,7 +70,7 @@ function loadApp (ignoreCache = true) {
       { username: dataset.manifest?.forUsername ?? undefined },
     );
     container.render(
-      <App View={plugin.mainView!} ctx={ctx} />,
+      <App View={ext.mainView!} ctx={ctx} extMeta={extInfo} />,
     );
   }).
   catch(e => {
@@ -101,16 +103,40 @@ function loadApp (ignoreCache = true) {
   });
 }
 
+import pkg from './package.json';
+const spaTemplateVersion = pkg.version ?? 'N/A';
+const deps = pkg.dependencies;
+
 const App: React.FC<{
   View: NonNullable<RendererPlugin["mainView"]>,
+  extMeta: S.Schema.To<typeof BasicExtensionMeta>,
   ctx: DatasetContext,
-}> = function ({ View, ctx }) {
+}> = function ({ View, extMeta, ctx }) {
   return (
     <React.StrictMode>
       <ErrorBoundary viewName="main dataset view">
-        <MathJax.Context options={MATHJAX_OPTS} script={MATHJAX_SCRIPT_PATH}>
-          <View {...ctx} />
-        </MathJax.Context>
+        <div className="appWrapper">
+          <div className="mainViewWrapper">
+            <MathJax.Context options={MATHJAX_OPTS} script={MATHJAX_SCRIPT_PATH}>
+              <View {...ctx} />
+            </MathJax.Context>
+          </div>
+          <Tag className="statusBar">
+            <Tooltip
+                minimal
+                placement="top-start"
+                interactionKind={PopoverInteractionKind.HOVER}
+                content={<>
+                  RegistryKit: {deps['@riboseinc/paneron-registry-kit']}
+                  <br />
+                  ExtensionKit: {deps['@riboseinc/paneron-extension-kit']}
+                </>}>
+              <span>Paneron Web v{spaTemplateVersion}</span>
+            </Tooltip>
+            •
+            <span>{extMeta.name} v{extMeta.version}</span>
+          </Tag>
+        </div>
       </ErrorBoundary>
     </React.StrictMode>
   );
