@@ -61,7 +61,7 @@ function loadApp (ignoreCache = true) {
     Effect.provide(BrowserHttp.client.layer),
     Effect.runPromise,
   ).
-  then(([plugin, dataset]) => {
+  then(([{ extInfo, ext }, dataset]) => {
     leaveLoadingState();
     const ctx = getExtensionContext(
       dataset.data,

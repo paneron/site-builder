@@ -18,6 +18,14 @@ let completedWorkUnits = 0;
 let workStage: 'fetching' | 'processing' = 'fetching';
 
 
+export const BasicExtensionMeta = S.struct({
+  name: S.string,
+  author: S.struct({ name: S.string, email: S.string }),
+  description: S.string,
+  version: S.string,
+});
+
+
 let repeatTimeout: null | ReturnType<Window["setTimeout"]> = null;
 export function repeatWhileLoading(func: (done: number, total: number, stage: typeof workStage) => void) {
   repeatTimeout = setTimeout(
@@ -148,15 +156,22 @@ export function loadExtensionAndDataset(
     [
       Console.withTime("load plugin")
         (Effect.gen(function * (_) {
-          const [, code] = yield * _(
+          const [, extInfo, extCode] = yield * _(
             Effect.all([
               Console.withTime("set up import map")
                 (Effect.tryPromise(() => setUpExtensionImportMap())),
+              Console.withTime("fetch & decode package.json")
+                (pipe(
+                  fetchOne('./package.json'),
+                  Effect.flatMap(packageJsonRaw =>
+                    S.parse(S.parseJson(BasicExtensionMeta))(packageJsonRaw),
+                  ),
+                )),
               Console.withTime("fetch extension.js")
                 (fetchOne('./extension.js')),
             ]),
           );
-          const blob = new Blob([code], { type: 'text/javascript' });
+          const blob = new Blob([extCode], { type: 'text/javascript' });
           const url = URL.createObjectURL(blob);
           Effect.logDebug("importing plugin");
           const { 'default': maybePluginPromise } = yield * _(
@@ -167,7 +182,7 @@ export function loadExtensionAndDataset(
           const _plugin: any = yield * _(Effect.tryPromise(() => maybePluginPromise));
           if (_plugin.mainView) {
             Effect.logDebug("got plugin");
-            return _plugin as RendererPlugin;
+            return { extInfo, ext: _plugin as RendererPlugin };
           } else {
             Effect.logError("not a valid plugin");
             throw Effect.fail("obtained extension does not expose `mainView`");
