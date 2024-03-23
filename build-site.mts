@@ -31,7 +31,7 @@ import {
   readdirRecursive,
 } from './util/index.mjs';
 import { debouncedWatcher } from './util/watch2.mjs';
-import { getExtensionURL, PaneronDataset } from './model.mjs';
+import { getExtensionURLs, PaneronDataset } from './model.mjs';
 
 
 // We will need to access this package’s
@@ -104,20 +104,33 @@ Effect.gen(function * (_) {
     Effect.flatMap(S.parse(PaneronDataset)),
   );
 
-  const extensionURL = getExtensionURL(data.type.id);
-  const extensionPathInOutdir = join(outdir, 'extension.js');
+  const extensionURLs = getExtensionURLs(data.type.id);
 
-  const extensionCode = yield * _(
-    Console.withTime(`Fetch extension code for ${extensionURL} to ${extensionPathInOutdir}`)(
-      pipe(
-        Effect.tryPromise(() => fetch(extensionURL)),
-        Effect.flatMap(resp => Effect.tryPromise(() => resp.text())),
-        Effect.flatMap(S.parse(S.string)),
-      )
-    ),
+  const packageJsonOut = join(outdir, 'package.json');
+  const esbuiltSourceOut = join(outdir, 'extension.js');
+
+  yield * _(
+    Effect.all([
+      Console.withTime(`Fetch extension code from ${extensionURLs.esbuiltSource} to ${esbuiltSourceOut}`)(
+        pipe(
+          Effect.tryPromise(() => fetch(extensionURLs.esbuiltSource)),
+          Effect.flatMap(resp => Effect.tryPromise(() => resp.text())),
+          Effect.flatMap(S.parse(S.string)),
+          Effect.flatMap(source =>
+            fs.writeFileString(join(outdir, 'extension.js'), source)),
+        )
+      ),
+      Console.withTime(`Fetch package.json from ${extensionURLs.packageJson} to ${packageJsonOut}`)(
+        pipe(
+          Effect.tryPromise(() => fetch(extensionURLs.packageJson)),
+          Effect.flatMap(resp => Effect.tryPromise(() => resp.text())),
+          Effect.flatMap(S.parse(S.string)),
+          Effect.flatMap(source =>
+            fs.writeFileString(join(outdir, 'package.json'), source)),
+        )
+      ),
+    ]),
   );
-
-  yield * _(fs.writeFileString(extensionPathInOutdir, extensionCode));
 
   //yield * _(Effect.tryPromise(() =>
   //  esbuild({
