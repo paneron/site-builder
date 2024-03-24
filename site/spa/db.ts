@@ -8,10 +8,11 @@ let db: Promise<IDBDatabase> | null = null;
 let dbVersion: number | null = null;
 
 
-// API
-// ===
+// Effectful API
+// =============
 
-export const getDB = (
+// XXX: Move to Effect layer/service
+export const getDBEffect = (
   dbName: string,
   version: number,
   stores: Readonly<Record<string, IDBObjectStoreParameters>>,
@@ -36,34 +37,56 @@ export const getDB = (
   });
 
 
-export function getItem<T>(
+export function getItemEffect<T>(
   db: IDBDatabase,
   storeName: string,
   key: IDBValidKey,
   schema: S.Schema<T>,
 ) {
   return Effect.gen(function * (_) {
-    const obj = yield * _(Effect.tryPromise(() => _getItem(db, storeName, key)));
+    const obj = yield * _(Effect.tryPromise(() => getItem(db, storeName, key)));
     return yield * _(S.parse(schema)(obj));
   });
 }
 
-export function storeItem<T>(
+export function storeItemEffect<T>(
   db: IDBDatabase,
   storeName: string,
   item: T,
 ) {
   return Effect.tryPromise(async () => {
-    await _storeItem(db, storeName, item);
+    await storeItem(db, storeName, item);
     return item;
   })
 }
 
 
-// Internals
-// =========
+// Raw non-effect versions
+// =======================
 
-function _getItem(
+export const getDB = async (
+  dbName: string,
+  version: number,
+  stores: Readonly<Record<string, IDBObjectStoreParameters>>,
+  /** Force recreate (delete DB first). */
+  recreate?: boolean,
+): Promise<IDBDatabase> =>
+  new Promise((resolve, reject) => {
+    function createDB() {
+      console.debug("Creating indexed DB", dbName);
+      _getDB(dbName, version, stores).then(resolve, reject);
+    };
+    if (recreate) {
+      console.debug("Deleting indexed DB", dbName);
+      const req = indexedDB.deleteDatabase(dbName);
+      req.onerror = reject;
+      req.onsuccess = () => _getDB(dbName, version, stores).then(resolve, reject);
+    } else {
+      createDB();
+    }
+  });
+
+export function getItem(
   db: IDBDatabase,
   storeName: string,
   key: IDBValidKey,
@@ -80,7 +103,7 @@ function _getItem(
   });
 }
 
-function _storeItem(
+export function storeItem(
   db: IDBDatabase,
   storeName: string,
   val: unknown,
@@ -124,7 +147,6 @@ function createStore(
 }
 
 
-// XXX: Move to Effect layer/service
 function _getDB(
   dbName: string,
   version: number,

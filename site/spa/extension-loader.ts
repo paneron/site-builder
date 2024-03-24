@@ -10,7 +10,7 @@ import { isObject } from '@riboseinc/paneron-extension-kit/util';
 import type { RendererPlugin } from '@riboseinc/paneron-extension-kit/types/index.js';
 
 import { DatasetSchema, ManifestSchema } from './dataset';
-import { getDB, storeItem, getItem } from './db';
+import { getDBEffect, storeItemEffect, getItemEffect } from './db';
 
 
 let totalWorkUnits = 0;
@@ -207,7 +207,7 @@ export function loadExtensionAndDataset(
           //   }),
           // );
 
-          const db = yield * _(getDB('cache', 1, {
+          const db = yield * _(getDBEffect('cache', 1, {
             fileCache: { keyPath: 'filePath' },
             misc: { keyPath: 'id' },
             dataset: { keyPath: 'objPath' },
@@ -220,7 +220,7 @@ export function loadExtensionAndDataset(
           yield * _(Effect.log("Obtaining parsed data, trying cache first"));
 
           const { data, manifest } = yield * _(
-            getItem(
+            getItemEffect(
               db,
               STORE_NAME,
               PARSED_DATASET_KEY,
@@ -240,7 +240,7 @@ export function loadExtensionAndDataset(
               loadDataFull(),
               Effect.tap(() => Effect.log("Downloaded data")),
               Effect.flatMap(({ manifest, data }) =>
-                storeItem(db, STORE_NAME, { id: PARSED_DATASET_KEY, data, manifest })
+                storeItemEffect(db, STORE_NAME, { id: PARSED_DATASET_KEY, data, manifest })
               ),
               Effect.tap(() => Effect.log("Cached downloaded data")),
             )),
