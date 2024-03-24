@@ -339,7 +339,11 @@ function makeValueHook<I extends unknown[], O>(valueGetter: (...args: I) => O):
 (...args: I) => (typeof VALUE_HOOK_STUB) & { value: O } {
   return function (...args) {
     const value = valueGetter(...args)
-    return { ...VALUE_HOOK_STUB, value };
+    const argMemo = args.sort().map(a => JSON.stringify(a)).join(',');
+    //console.debug("value hook args memo", argMemo);
+    return React.useMemo(
+      () => ({ ...VALUE_HOOK_STUB, value }),
+      [argMemo]);
   }
 }
 
