@@ -4,7 +4,7 @@ import { Effect } from 'effect';
 import * as S from '@effect/schema/Schema';
 
 
-let db: Promise<IDBDatabase> | null = null;
+let dbs: Record<string, Promise<IDBDatabase> | null> = {};
 let dbVersion: number | null = null;
 
 
@@ -152,7 +152,7 @@ function _getDB(
   version: number,
   stores: Readonly<Record<string, IDBObjectStoreParameters>>,
 ): Promise<IDBDatabase> {
-  db ??= new Promise((resolve, reject) => {
+  dbs[dbName] ??= new Promise((resolve, reject) => {
 
     if (dbVersion !== null && dbVersion !== version) {
       reject("DB was created with another version");
@@ -185,7 +185,7 @@ function _getDB(
 
   });
 
-  return db;
+  return dbs[dbName]!;
 }
 
 function getStore(db: IDBDatabase, storeName: string, write = false) {
