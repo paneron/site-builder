@@ -30,6 +30,7 @@ import type { RendererPlugin, DatasetContext } from '@riboseinc/paneron-extensio
 
 import { BasicExtensionMeta, repeatWhileLoading, loadExtensionAndDataset } from './extension-loader.js';
 import { getExtensionContext } from './extension-context.js';
+import { getDBEffect, getItemEffect, storeItem } from './db.js';
 
 
 console.debug("Hello World");
@@ -45,7 +46,12 @@ const byteFormatter = Intl.NumberFormat(navigator.language, {
 });
 
 
-loadApp();
+loadApp(false);
+
+const SettingsSchema = S.union(
+  S.undefined, // when blank slate
+  S.struct({ key: S.literal('settings'), value: S.record(S.string, S.unknown) }),
+);
 
 function loadApp (ignoreCache = true) {
   const leaveLoadingState = repeatWhileLoading(function renderLoader(done, total, stage) {
@@ -57,17 +63,47 @@ function loadApp (ignoreCache = true) {
       />,
     );
   });
+  
+  Effect.all([
 
-  loadExtensionAndDataset(ignoreCache).
+    loadExtensionAndDataset(ignoreCache),
+
+    // Get settings DB & settings object
+    getDBEffect('settings', 1, {
+      settings: { keyPath: 'key' },
+    }, true).pipe(
+      Effect.flatMap((settingsDB) =>
+        getItemEffect(
+          settingsDB,
+          'settings', // store
+          'settings', // key
+          SettingsSchema,
+        ).pipe(
+          Effect.flatMap(result =>
+            Effect.succeed(
+              [settingsDB, result?.value ?? {}] as [IDBDatabase, Record<string, unknown>]
+            )
+          ),
+        )
+      ),
+    ),
+  ]).
   pipe(
     Effect.provide(BrowserHttp.client.layer),
     Effect.runPromise,
   ).
-  then(([{ extInfo, ext }, dataset]) => {
+  then(([[{ extInfo, ext }, dataset], [settingsDB, settings]]) => {
     leaveLoadingState();
     const ctx = getExtensionContext(
       dataset.data,
-      { username: dataset.manifest?.forUsername ?? undefined },
+      {
+        username: dataset.manifest?.forUsername ?? undefined,
+        getSettings: () => settings,
+        updateSetting: async (key, value) => {
+          settings[key] = value;
+          await storeItem(settingsDB, 'settings', { key: 'settings', value: settings })
+        },
+      },
     );
     container.render(
       <App View={ext.mainView!} ctx={ctx} extMeta={extInfo} />,

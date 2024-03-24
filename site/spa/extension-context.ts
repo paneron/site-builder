@@ -18,7 +18,11 @@ const GLOBAL_SETTINGS = {
 
 export function getExtensionContext(
   data: Dataset,
-  opts?: { username?: string | undefined },
+  opts?: {
+    username?: string | undefined;
+    getSettings?: () => Record<string, unknown>;
+    updateSetting?: (key: string, value: unknown) => Promise<void>
+  },
 ): DatasetContext {
 
   const ctx: DatasetContext = {
@@ -35,6 +39,15 @@ export function getExtensionContext(
         value: { settings: GLOBAL_SETTINGS, },
       } as const;
     },
+
+    updateSetting: async function ({ key, value }) {
+      await opts?.updateSetting?.(key, value);
+      return { success: true };
+    },
+
+    useSettings: makeValueHook(function () {
+      return { settings: opts?.getSettings?.() ?? {} };
+    }),
 
     usePersistentDatasetStateReducer: (...opts) => {
       const effectiveOpts:
@@ -71,11 +84,6 @@ export function getExtensionContext(
         value: opts?.username ? { username: opts.username } : {},
       }), [opts?.username]);
     },
-
-    useSettings: makeValueHook(function () {
-      // XXX: Implement useSettings with some local storage
-      return { settings: {} };
-    }),
 
     useMapReducedData: makeValueHook(function ({ chains }) {
       return mapReduceChains(data, chains) as any;
