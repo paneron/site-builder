@@ -28,9 +28,17 @@
   .statusBar {
     height: 40px;
     flex: 0;
-    > :first-child {
+    display: flex;
+
+    .versionsTooltipWrapper {
+      display: unset;
+      justify-self: flex-end;
+    }
+
+    .versions {
       display: flex;
       flex-flow: row nowrap;
+      justify-self: flex-end;
       gap: 10px;
       justify-content: flex-end;
     }

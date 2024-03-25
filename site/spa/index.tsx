@@ -28,7 +28,7 @@ import './site.css';
 import ErrorBoundary from '@riboseinc/paneron-extension-kit/widgets/ErrorBoundary.js';
 import type { RendererPlugin, DatasetContext } from '@riboseinc/paneron-extension-kit/types/index.js';
 
-import { BasicExtensionMeta, repeatWhileLoading, loadExtensionAndDataset } from './extension-loader.js';
+import { repeatWhileLoading, loadExtensionAndDataset } from './extension-loader.js';
 import { getExtensionContext } from './extension-context.js';
 import { getDBEffect, getItemEffect, storeItem } from './db.js';
 
@@ -105,8 +105,43 @@ function loadApp (ignoreCache = true) {
         },
       },
     );
+    const versionBar = (
+      <Tooltip
+          minimal
+          placement="top-end"
+          interactionKind={PopoverInteractionKind.HOVER}
+          className="versionsTooltipWrapper"
+          content={<>
+            Versions:
+            <br />
+            Paneron Web {formatDepVer(spaTemplateVersion)}
+            <br />
+            ExtensionKit {formatDepVer(deps['@riboseinc/paneron-extension-kit'])}
+            <br />
+            RegistryKit {formatDepVer(deps['@riboseinc/paneron-registry-kit'])}
+            <br />
+            Extension {extInfo.name} {formatDepVer(extInfo.version)}
+          </>}>
+        <span className="versions">
+          <span>{extInfo.name} {formatDepVer(extInfo.version)}</span>
+          •
+          <span>RK {formatDepVer(deps['@riboseinc/paneron-registry-kit'])}</span>
+          •
+          <span>EK {formatDepVer(deps['@riboseinc/paneron-extension-kit'])}</span>
+          •
+          <span>PW {formatDepVer(spaTemplateVersion)}</span>
+        </span>
+      </Tooltip>
+    );
     container.render(
-      <App View={ext.mainView!} ctx={ctx} extMeta={extInfo} />,
+      <div className="appWrapper">
+        <div className="mainViewWrapper">
+          <App View={ext.mainView!} ctx={ctx} />,
+        </div>
+        <Tag className="statusBar">
+          {versionBar}
+        </Tag>
+      </div>
     );
   }).
   catch(e => {
@@ -143,36 +178,20 @@ import pkg from './package.json';
 const spaTemplateVersion = pkg.version ?? 'N/A';
 const deps = pkg.dependencies;
 
+function formatDepVer(rawVersion: string) {
+  return !rawVersion.startsWith('file:') ? `v${rawVersion}` : 'LOCAL';
+}
+
 const App: React.FC<{
   View: NonNullable<RendererPlugin["mainView"]>,
-  extMeta: S.Schema.To<typeof BasicExtensionMeta>,
   ctx: DatasetContext,
-}> = function ({ View, extMeta, ctx }) {
+}> = function ({ View, ctx }) {
   return (
     <React.StrictMode>
       <ErrorBoundary viewName="main dataset view">
-        <div className="appWrapper">
-          <div className="mainViewWrapper">
-            <MathJax.Context options={MATHJAX_OPTS} script={MATHJAX_SCRIPT_PATH}>
-              <View {...ctx} />
-            </MathJax.Context>
-          </div>
-          <Tag className="statusBar">
-            <Tooltip
-                minimal
-                placement="top-start"
-                interactionKind={PopoverInteractionKind.HOVER}
-                content={<>
-                  RegistryKit: {deps['@riboseinc/paneron-registry-kit']}
-                  <br />
-                  ExtensionKit: {deps['@riboseinc/paneron-extension-kit']}
-                </>}>
-              <span>Paneron Web v{spaTemplateVersion}</span>
-            </Tooltip>
-            •
-            <span>{extMeta.name} v{extMeta.version}</span>
-          </Tag>
-        </div>
+        <MathJax.Context options={MATHJAX_OPTS} script={MATHJAX_SCRIPT_PATH}>
+          <View {...ctx} />
+        </MathJax.Context>
       </ErrorBoundary>
     </React.StrictMode>
   );
