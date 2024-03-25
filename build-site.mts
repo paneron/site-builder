@@ -47,6 +47,7 @@ const scaffoldOutdir = ({
   outdir,
   datadir,
   siteTemplatePath,
+  devModeExtensionDirectory,
 }: S.Schema.To<typeof SiteBuildConfigSchema>) =>
 Effect.gen(function * (_) {
   const fs = yield * _(FileSystem.FileSystem);
@@ -74,7 +75,7 @@ Effect.gen(function * (_) {
   yield * _(Effect.all([
     scaffoldTemplate(siteTemplatePath, outdir),
     Console.withTime(`Fetch extension JS ${outdir}`)(
-      fetchExtension(datadir, outdir)
+      fetchExtension(datadir, outdir, { devModeExtensionDirectory })
     ),
   ], { concurrency: 4 }));
 });
@@ -92,7 +93,11 @@ Effect.gen(function * (_) {
 });
 
 
-const fetchExtension = (datadir: string, outdir: string) =>
+const fetchExtension = (
+  datadir: string,
+  outdir: string,
+  opts?: { devModeExtensionDirectory?: string | undefined },
+) =>
 Effect.gen(function * (_) {
   const fs = yield * _(FileSystem.FileSystem);
 
@@ -104,7 +109,7 @@ Effect.gen(function * (_) {
     Effect.flatMap(S.parse(PaneronDataset)),
   );
 
-  const extensionURLs = getExtensionURLs(data.type.id);
+  const extensionURLs = getExtensionURLs(data.type.id, opts?.devModeExtensionDirectory);
 
   const packageJsonOut = join(outdir, 'package.json');
   const esbuiltSourceOut = join(outdir, 'extension.js');
@@ -113,8 +118,7 @@ Effect.gen(function * (_) {
     Effect.all([
       Console.withTime(`Fetch extension code from ${extensionURLs.esbuiltSource} to ${esbuiltSourceOut}`)(
         pipe(
-          Effect.tryPromise(() => fetch(extensionURLs.esbuiltSource)),
-          Effect.flatMap(resp => Effect.tryPromise(() => resp.text())),
+          fetchMaybeLocal(extensionURLs.esbuiltSource),
           Effect.flatMap(S.parse(S.string)),
           Effect.flatMap(source =>
             fs.writeFileString(join(outdir, 'extension.js'), source)),
@@ -122,8 +126,7 @@ Effect.gen(function * (_) {
       ),
       Console.withTime(`Fetch package.json from ${extensionURLs.packageJson} to ${packageJsonOut}`)(
         pipe(
-          Effect.tryPromise(() => fetch(extensionURLs.packageJson)),
-          Effect.flatMap(resp => Effect.tryPromise(() => resp.text())),
+          fetchMaybeLocal(extensionURLs.packageJson),
           Effect.flatMap(S.parse(S.string)),
           Effect.flatMap(source =>
             fs.writeFileString(join(outdir, 'package.json'), source)),
@@ -142,6 +145,18 @@ Effect.gen(function * (_) {
   //    bundle: true,
   //  })
   //));
+});
+
+
+const fetchMaybeLocal = (url: string) => Effect.gen(function * (_) {
+  const fs = yield * _(FileSystem.FileSystem);
+  const result = (!url.startsWith('file://'))
+    ? yield *_(
+        Effect.tryPromise(() => fetch(url)),
+        Effect.flatMap(resp => Effect.tryPromise(() => resp.text())),
+      )
+    : yield * _(fs.readFileString(url.split('file://')[1]!));
+  return result;
 });
 
 
@@ -251,7 +266,11 @@ function shouldIncludeObjectInIndex(
 const buildFull = (opts: S.Schema.To<typeof SiteBuildConfigSchema>) => pipe(
   scaffoldOutdir(opts),
   Effect.andThen(() => Effect.all([
-    fetchExtension(opts.datadir, opts.outdir),
+    fetchExtension(
+      opts.datadir,
+      opts.outdir,
+      { devModeExtensionDirectory: opts.devModeExtensionDirectory },
+    ),
     generateData(opts),
     runExtensionBuild(opts),
   ], { concurrency: 2 })),

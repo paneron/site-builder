@@ -25,8 +25,8 @@ export const RegisterItem = S.struct({
 });
 
 
-export function getExtensionURLs(extID: S.Schema.To<typeof PaneronDataset>['type']['id']) {
-  const root = `https://extensions.paneron.org/e/${extID}`;
+export function getExtensionURLs(extID: S.Schema.To<typeof PaneronDataset>['type']['id'], rootOverride?: string) {
+  const root = rootOverride ?? `https://extensions.paneron.org/e/${extID}`;
   return {
     esbuiltSource: `${root}/build.js`,
     packageJson:  `${root}/package.json`,

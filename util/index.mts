@@ -125,6 +125,8 @@ export const siteBuildOptions = {
   // TODO: instead of passing --dataversion, calculate it based on datadir state?
   dataVersion: Options.text('dataversion').pipe(Options.optional),
 
+  devModeExtensionDirectory: Options.text('devexturl').pipe(Options.optional),
+
   siteTemplateName: Options.choice('template', CONTRIB_SITE_TEMPLATES).pipe(
     Options.withDefault(CONTRIB_SITE_TEMPLATES[0])),
 
@@ -137,6 +139,8 @@ export const SiteBuildConfigSchema = S.struct({
   dataVersion: S.optional(S.string.pipe(S.nonEmpty())),
   forUsername: S.optional(S.string.pipe(S.nonEmpty())),
   siteTemplatePath: S.string.pipe(S.nonEmpty()),
+
+  devModeExtensionDirectory: S.optional(S.string.pipe(S.nonEmpty())),
 }).pipe(
   S.extend(ReportingConfigSchema),
   S.extend(DatasetBuildConfigSchema),
@@ -148,11 +152,19 @@ export function parseSiteBuildConfig(
   rawOpts: Types.Simplify<Command_.ParseConfig<typeof siteBuildOptions>>,
   packageRoot: string,
 ) {
-  const { outdir, siteTemplateName, datadir, forUsername, dataVersion, ...baseOpts } = rawOpts;
+  const {
+    outdir,
+    siteTemplateName,
+    datadir,
+    devModeExtensionDirectory,
+    forUsername,
+    dataVersion,
+    ...baseOpts } = rawOpts;
   return S.parseSync(SiteBuildConfigSchema)({
     outdir,
     siteTemplatePath: getPathToSiteTemplateDist(siteTemplateName, packageRoot),
     forUsername: unpackOption(forUsername),
+    devModeExtensionDirectory: unpackOption(devModeExtensionDirectory),
     dataVersion: unpackOption(dataVersion),
     ...parseDatasetBuildOptions({ datadir }),
     ...parseReportingConfig(baseOpts),
