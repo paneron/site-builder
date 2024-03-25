@@ -136,7 +136,7 @@ function loadApp (ignoreCache = true) {
     container.render(
       <div className="appWrapper">
         <div className="mainViewWrapper">
-          <App View={ext.mainView!} ctx={ctx} />,
+          <App View={ext.mainView!} ctx={ctx} />
         </div>
         <Tag className="statusBar">
           {versionBar}
