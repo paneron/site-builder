@@ -8,8 +8,8 @@ export const buildSite: SiteBuilder = (opts) =>
     Effect.logDebug(`What’s up, ${opts.outdir} ${opts.packageRoot}`),
     pipe(
       readdirRecursive(opts.datadir),
-      Effect.andThen(dirs =>
-        Effect.logDebug(`First 10 dir entries: ${JSON.stringify(dirs.slice(0, 10))}`)
-      ),
+      //Effect.andThen(dirs =>
+      //  Effect.logDebug(`First 10 dir entries: ${JSON.stringify(dirs.slice(0, 10))}`)
+      //),
     ),
   ]);
