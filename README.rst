@@ -16,6 +16,7 @@ More complete option overview::
       [--debug | --verbose] \
       [--datadir path/to/register] \
       [--dataversion (git rev-parse --short HEAD)] \
+      [--devextpath /path/to/local/extension] \
       [--forusername <username>] \
       [watch [--serve] [--watch-template]]
 
