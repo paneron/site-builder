@@ -27,3 +27,24 @@ It would:
   and place them under ``outdir`` where expected.
 
 Uses Node 20.11.2.
+
+
+Development
+-----------
+
+Note that build is handled by esbuild, while TSC is still used
+for typechecking. Type errors shouldn’t be ignored, but a type error
+may still result in a valid build (depends on specifics).
+
+Important scripts:
+
+- Root package’s ``build-self`` script compiles site builder
+- site/spa’s ``clean-build`` script compiles front-end code
+
+Release
+~~~~~~~
+
+- Remember to run the important scripts before testing & publishing
+
+- Run ``npm publish`` from the root
+  (no need to change into a separate “dist” dir)
