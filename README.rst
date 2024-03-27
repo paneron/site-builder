@@ -18,7 +18,7 @@ More complete option overview::
       [--dataversion (git rev-parse --short HEAD)] \
       [--devextpath /path/to/local/extension] \
       [--forusername <username>] \
-      [watch [--serve] [--watch-template]]
+      [watch [--serve] [--watch-template] [--port 12345]]
 
 It would:
 
