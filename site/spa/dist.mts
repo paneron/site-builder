@@ -15,6 +15,8 @@ const FILES = [
   ['../../common/mathjax/config/AM_HTMLorMML.js', 'mathjax/config/AM_HTMLorMML.js'],
   ['../../common/mathjax/extensions/MathMenu.js', 'mathjax/extensions/MathMenu.js'],
   ['../../common/mathjax/extensions/MathZoom.js', 'mathjax/extensions/MathZoom.js'],
+  ['../../common/mathjax/jax/output/HTML-CSS/jax.js', 'mathjax/jax/output/HTML-CSS/jax.js'],
+  ['../../common/mathjax/jax/element/mml/optable/LetterlikeSymbols.js', 'mathjax/jax/element/mml/optable/LetterlikeSymbols.js'],
 ] as const;
 
 
