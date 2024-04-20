@@ -1,12 +1,13 @@
 /** Builds template’s JS. */
 
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
 import { build as esbuild } from 'esbuild';
 
 import { Console, Effect } from 'effect';
 import { FileSystem } from '@effect/platform-node';
 
 import { type ReportingOptions } from '../../util/index.mjs';
+import { readdirRecursive } from '../../util/index.mjs';
 
 
 const FILES = [
@@ -27,13 +28,25 @@ export const distSPA = (opts: ReportingOptions & { outdir: string, packageRoot: 
     Effect.gen(function * (_) {
       const fs = yield * _(FileSystem.FileSystem);
       for (const [sourceRelativeFilepath, outRelativeFilepath] of FILES) {
-        yield * _(
-          fs.copy(
-            join(opts.packageRoot, sourceRelativeFilepath),
-            join(opts.outdir, outRelativeFilepath),
-            { overwrite: true },
-          ),
-        );
+        const stat = yield * _(fs.stat(sourceRelativeFilepath));
+        if (stat.type === 'Directory') {
+          const paths = yield * _(readdirRecursive(sourceRelativeFilepath));
+          for (const relPath of paths) {
+            yield * _(fs.copy(
+              join(opts.packageRoot, sourceRelativeFilepath, relPath),
+              join(opts.outdir, outRelativeFilepath, relPath),
+              { overwrite: true },
+            ));
+          }
+        } else {
+          yield * _(
+            fs.copy(
+              join(opts.packageRoot, sourceRelativeFilepath),
+              join(opts.outdir, outRelativeFilepath),
+              { overwrite: true },
+            ),
+          );
+        }
       }
     })
   ),
