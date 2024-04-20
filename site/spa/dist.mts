@@ -12,12 +12,7 @@ import { readdirRecursive } from '../../util/index.mjs';
 
 const FILES = [
   ['index.html', 'index.html'],
-  ['../../common/mathjax/MathJax.js', 'mathjax/MathJax.js'],
-  ['../../common/mathjax/config/AM_HTMLorMML.js', 'mathjax/config/AM_HTMLorMML.js'],
-  ['../../common/mathjax/extensions/MathMenu.js', 'mathjax/extensions/MathMenu.js'],
-  ['../../common/mathjax/extensions/MathZoom.js', 'mathjax/extensions/MathZoom.js'],
-  ['../../common/mathjax/jax/output/HTML-CSS/jax.js', 'mathjax/jax/output/HTML-CSS/jax.js'],
-  ['../../common/mathjax/jax/element/mml/optable/LetterlikeSymbols.js', 'mathjax/jax/element/mml/optable/LetterlikeSymbols.js'],
+  ['../../common/mathjax', 'mathjax'],
 ] as const;
 
 
