@@ -218,11 +218,15 @@ function Loader(
 }
 
 
-const MATHJAX_SCRIPT_PATH = './mathjax/MathJax.js?config=AM_HTMLorMML';
+const MATHJAX_SCRIPT_PATH = './mathjax/MathJax.js?config=TeX-MML-AM_CHTML-full';
 const MATHJAX_OPTS = {
   asciimath2jax: {
     useMathMLspacing: true,
     delimiters: [["`","`"]],
     preview: "none",
   },
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    processEscapes: true
+  }
 } as const;
