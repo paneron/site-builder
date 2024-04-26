@@ -141,7 +141,7 @@ function listPathsCached(
   if (!CACHE[query]) {
     const runnableQuery = getRunnableSimpleQuery(query);
     CACHE[query] = {
-      objPaths: listPathsMatchingSimpleQuery(d, runnableQuery)
+      objPaths: listPathsMatchingSimpleQuery(d, runnableQuery),
     };
   }
   return CACHE[query]!.objPaths;
