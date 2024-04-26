@@ -32,7 +32,7 @@ import {
   readdirRecursive,
 } from './util/index.mjs';
 import { debouncedWatcher } from './util/watch2.mjs';
-import { getExtensionURLs, PaneronDataset } from './model.mjs';
+import { getExtensionURLs, RegisterItem, RegisterMeta, Proposal, PaneronDataset } from './model.mjs';
 
 
 // We will need to access this package’s
@@ -177,7 +177,8 @@ Effect.gen(function * (_) {
     map(path => pipe(
       fs.readFileString(join(datadir, path)),
       Effect.map(parseYAML),
-      //Effect.flatMap(S.parse(RegisterItem)),
+      Effect.flatMap(S.decodeUnknown(S.Union(PaneronDataset, RegisterMeta, RegisterItem, Proposal), { onExcessProperty: "preserve" })),
+      // TODO: Shouldn’t match registry-specific items?
       Effect.flatMap(S.decodeUnknown(S.Record(S.String, S.Unknown))),
       // Catches Schema.parse failures. We do nothing with non register items.
       Effect.catchTag(

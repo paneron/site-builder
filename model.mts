@@ -16,12 +16,25 @@ export const PaneronDataset = S.Struct({
 });
 
 
+export const RegisterMeta = S.Struct({
+  name: S.String,
+  contentSummary: S.String,
+});
+
+
 // TODO: Shouldn’t be here, really. The goal is register-independent
 export const RegisterItem = S.Struct({
   id: S.UUID,
   data: S.Record(S.String, S.Unknown),
   dateAccepted: S.Date,
   status: S.Literal('submitted', 'valid', 'superseded', 'retired', 'invalid'),
+});
+
+export const Proposal = S.Struct({
+  id: S.UUID,
+  state: S.String,
+  timeDisposed: S.optional(S.Union(S.Date, S.Null)),
+  timeProposed: S.optional(S.Union(S.Date, S.Null)),
 });
 
 
