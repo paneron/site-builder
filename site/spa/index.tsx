@@ -89,7 +89,8 @@ function loadApp (ignoreCache = true) {
     ),
   ]).
   pipe(
-    Effect.provide(BrowserHttp.client.layer),
+    Effect.scoped,
+    Effect.provide(BrowserHttp.layerXMLHttpRequest),
     Effect.runPromise,
   ).
   then(([[{ extInfo, ext }, dataset], [settingsDB, settings]]) => {
