@@ -321,7 +321,7 @@ type ReduceFunc = (accumulator: unknown, current: unknown) => void
 
 function getObjectData(data: Dataset, objectPaths: string[]):
 Record<string, Record<string, unknown> | null> {
-  const d= objectPaths.
+  const d = objectPaths.
     map(objPath => ({
       [objPath]:
         (data[objPath] as Record<string, unknown>)
