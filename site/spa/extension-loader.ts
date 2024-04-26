@@ -318,10 +318,13 @@ function parseData(val: unknown, _seen?: WeakSet<any>) {
 
 /** If string is a valid ISO date, returns Date; otherwise the string itself. */
 function maybeDate(val: string): Date | string {
+  if (!val.endsWith('Z') || val.indexOf('T') < 0) {
+    return val;
+  }
   try {
     const date = _parseDate(val);
     const fullISO = date.toISOString();
-    if (fullISO === val || fullISO.split('T')[0] === val) {
+    if (fullISO === val) {
       return date;
     } else {
       return val;
