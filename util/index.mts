@@ -4,7 +4,7 @@ import { readFile, watch } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { fstatSync } from 'node:fs';
 
-import { pipe, Effect, type Types, Option, LogLevel as EffectLogLevel} from 'effect';
+import { pipe, Effect, type Types, Option, LogLevel as EffectLogLevel } from 'effect';
 import { FileSystem } from '@effect/platform';
 import type { PlatformError } from '@effect/platform/Error';
 import type { Command } from '@effect/cli/Command';
