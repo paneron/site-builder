@@ -9,7 +9,7 @@
 import { resolve, join } from 'node:path';
 
 import { Logger, Effect } from 'effect';
-import { NodeContext, Runtime } from '@effect/platform-node';
+import { NodeContext, NodeRuntime } from '@effect/platform-node';
 import { Command } from '@effect/cli';
 import { build as esbuild } from 'esbuild';
 
@@ -52,7 +52,7 @@ Effect.
   suspend(() => main(process.argv.slice(2))).
   pipe(
     Effect.provide(NodeContext.layer),
-    Runtime.runMain);
+    NodeRuntime.runMain);
 
 
 /**

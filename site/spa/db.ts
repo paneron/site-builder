@@ -45,7 +45,7 @@ export function getItemEffect<T>(
 ) {
   return Effect.gen(function * (_) {
     const obj = yield * _(Effect.tryPromise(() => getItem(db, storeName, key)));
-    return yield * _(S.parse(schema)(obj));
+    return yield * _(S.decodeUnknown(schema)(obj));
   });
 }
 

@@ -9,7 +9,7 @@
 import { resolve, join } from 'node:path';
 
 import { Logger, Effect } from 'effect';
-import { NodeContext, Runtime } from '@effect/platform-node';
+import { NodeContext, NodeRuntime } from '@effect/platform-node';
 import { Command } from '@effect/cli';
 import { build as esbuild } from 'esbuild';
 
@@ -57,7 +57,7 @@ Effect.
   suspend(() => main(process.argv.slice(2))).
   pipe(
     Effect.provide(NodeContext.layer),
-    Runtime.runMain);
+    NodeRuntime.runMain);
 
 
 /**
@@ -111,7 +111,7 @@ async function buildSiteBuilder(opts: ReportingOptions) {
 //  * Currently, that just involves running esbuild against JS.
 //  */
 // async function buildSiteTemplate(
-//   opts: BaseBuildOptions & { templateName: S.Schema.To<typeof ContribSiteTemplateName> },
+//   opts: BaseBuildOptions & { templateName: S.Schema.Type<typeof ContribSiteTemplateName> },
 // ) {
 //   //const siteRoot = join(PACKAGE_ROOT, 'site', opts.templateName);
 //   const siteRoot = join(PACKAGE_ROOT, 'site-app');

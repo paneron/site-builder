@@ -13,4 +13,4 @@ export const CONTRIB_SITE_TEMPLATES = Object.freeze([
 /**
  * Site template name. A template determines how the built website looks.
  */
-export const ContribSiteTemplateName = S.literal(...CONTRIB_SITE_TEMPLATES);
+export const ContribSiteTemplateName = S.Literal(...CONTRIB_SITE_TEMPLATES);

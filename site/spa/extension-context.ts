@@ -178,9 +178,9 @@ function listPathsMatchingSimpleQuery(
   return keyer ? Object.keys(keyed).sort().map(key => keyed[key]!) : objPaths;
 }
 
-const SimpleQuery = S.struct({
-  predicateString: S.string,
-  keyerString: S.optional(S.union(S.string, S.undefined)),
+const SimpleQuery = S.Struct({
+  predicateString: S.String,
+  keyerString: S.optional(S.Union(S.String, S.Undefined)),
 });
 
 interface RunnableSimpleQuery {
@@ -189,12 +189,12 @@ interface RunnableSimpleQuery {
 }
 
 function getSimpleQueryKey(predicateString: string, keyerString?: string): string {
-  const query = S.parseSync(SimpleQuery)({ predicateString, keyerString });
+  const query = S.decodeUnknownSync(SimpleQuery)({ predicateString, keyerString });
   return JSON.stringify(query);
 }
 
 function getRunnableSimpleQuery(queryKey: string): RunnableSimpleQuery {
-  const query = S.parseSync(SimpleQuery)(JSON.parse(queryKey));
+  const query = S.decodeUnknownSync(SimpleQuery)(JSON.parse(queryKey));
 
   const keyerFunc = query.keyerString
     ? deserializeKeyer(query.keyerString)

@@ -5,8 +5,8 @@ import { createServer } from 'node:http';
 import { fstatSync } from 'node:fs';
 
 import { pipe, Effect, type Types, Option, LogLevel as EffectLogLevel} from 'effect';
-import { FileSystem } from '@effect/platform-node';
-import type { PlatformError } from '@effect/platform-node/Error';
+import { FileSystem } from '@effect/platform';
+import type { PlatformError } from '@effect/platform/Error';
 import type { Command } from '@effect/cli/Command';
 import { Options } from '@effect/cli';
 import * as S from '@effect/schema/Schema';
@@ -37,8 +37,8 @@ export type SiteBuilder = (
 // Reporting options
 // =================
 
-export const LogLevelSchema = S.literal('debug', 'info', 'error', 'silent');
-export type LogLevel = S.Schema.To<typeof LogLevelSchema>
+export const LogLevelSchema = S.Literal('debug', 'info', 'error', 'silent');
+export type LogLevel = S.Schema.Type<typeof LogLevelSchema>
 
 export const EFFECT_LOG_LEVELS: { [key in LogLevel]: EffectLogLevel.LogLevel } = {
   'debug': EffectLogLevel.Debug,
@@ -47,10 +47,10 @@ export const EFFECT_LOG_LEVELS: { [key in LogLevel]: EffectLogLevel.LogLevel } =
   'silent': EffectLogLevel.None,
 } as const;
 
-export const ReportingConfigSchema = S.struct({
+export const ReportingConfigSchema = S.Struct({
   logLevel: LogLevelSchema,
 });
-export interface ReportingOptions extends S.Schema.To<typeof ReportingConfigSchema> {}
+export interface ReportingOptions extends S.Schema.Type<typeof ReportingConfigSchema> {}
 
 export const reportingOptions = {
   verbose: Options.boolean("verbose").pipe(Options.withAlias("v")),
@@ -60,7 +60,7 @@ export const reportingOptions = {
 export function parseReportingConfig(
   values: Types.Simplify<Command.ParseConfig<typeof reportingOptions>>,
 ) {
-  return S.parseSync(ReportingConfigSchema)({
+  return S.decodeUnknownSync(ReportingConfigSchema)({
     logLevel: values.debug
       ? 'debug'
       : values.verbose
@@ -74,8 +74,8 @@ export function parseReportingConfig(
 //   verbose: S.union(S.boolean, S.undefined),
 // });
 // export const ReportingConfigFromCLIArgs: S.Schema<
-//   S.Schema.To<typeof ReportingCLIArgSchema>,
-//   S.Schema.To<typeof ReportingConfigSchema>> =
+//   S.Schema.Type<typeof ReportingCLIArgSchema>,
+//   S.Schema.Type<typeof ReportingConfigSchema>> =
 // S.transform(
 //   ReportingCLIArgSchema,
 //   ReportingConfigSchema,
@@ -96,10 +96,10 @@ export function parseReportingConfig(
 // Dataset build options
 // =====================
 
-export const DatasetBuildConfigSchema = S.struct({
-  datadir: S.string.pipe(S.nonEmpty()),
+export const DatasetBuildConfigSchema = S.Struct({
+  datadir: S.String.pipe(S.nonEmpty()),
 });
-export interface DatasetBuildOptions extends S.Schema.To<typeof DatasetBuildConfigSchema> {}
+export interface DatasetBuildOptions extends S.Schema.Type<typeof DatasetBuildConfigSchema> {}
 
 export const datasetBuildOptions = {
   datadir: Options.directory('datadir', { exists: 'yes' }).pipe(
@@ -109,7 +109,7 @@ export const datasetBuildOptions = {
 export function parseDatasetBuildOptions(
   { datadir }: Types.Simplify<Command.ParseConfig<typeof datasetBuildOptions>>,
 ) {
-  return S.parseSync(DatasetBuildConfigSchema)({
+  return S.decodeUnknownSync(DatasetBuildConfigSchema)({
     datadir: Option.isNone(datadir) ? process.cwd() : datadir.value,
   });
 }
@@ -134,19 +134,19 @@ export const siteBuildOptions = {
   ...datasetBuildOptions,
 } as const;
 
-export const SiteBuildConfigSchema = S.struct({
-  outdir: S.string.pipe(S.nonEmpty()),
-  dataVersion: S.optional(S.string.pipe(S.nonEmpty())),
-  forUsername: S.optional(S.string.pipe(S.nonEmpty())),
-  siteTemplatePath: S.string.pipe(S.nonEmpty()),
+export const SiteBuildConfigSchema = S.Struct({
+  outdir: S.String.pipe(S.nonEmpty()),
+  dataVersion: S.optional(S.String.pipe(S.nonEmpty())),
+  forUsername: S.optional(S.String.pipe(S.nonEmpty())),
+  siteTemplatePath: S.String.pipe(S.nonEmpty()),
 
-  devModeExtensionDirectory: S.optional(S.string.pipe(S.nonEmpty())),
+  devModeExtensionDirectory: S.optional(S.String.pipe(S.nonEmpty())),
 }).pipe(
   S.extend(ReportingConfigSchema),
   S.extend(DatasetBuildConfigSchema),
 );
 
-export interface SiteBuildOptions extends S.Schema.To<typeof SiteBuildConfigSchema> {}
+export interface SiteBuildOptions extends S.Schema.Type<typeof SiteBuildConfigSchema> {}
 
 export function parseSiteBuildConfig(
   rawOpts: Types.Simplify<Command_.ParseConfig<typeof siteBuildOptions>>,
@@ -160,7 +160,7 @@ export function parseSiteBuildConfig(
     forUsername,
     dataVersion,
     ...baseOpts } = rawOpts;
-  return S.parseSync(SiteBuildConfigSchema)({
+  return S.decodeUnknownSync(SiteBuildConfigSchema)({
     outdir,
     siteTemplatePath: getPathToSiteTemplateDist(siteTemplateName, packageRoot),
     forUsername: unpackOption(forUsername),
@@ -173,7 +173,7 @@ export function parseSiteBuildConfig(
 
 /** Returns absolute path to given contrib site template’s dist directory. */
 function getPathToSiteTemplateDist(
-  templateName: S.Schema.To<typeof ContribSiteTemplateName>,
+  templateName: S.Schema.Type<typeof ContribSiteTemplateName>,
   packageRoot: string,
 ) {
   return join(packageRoot, 'site', templateName, 'dist');
@@ -379,7 +379,7 @@ export const readdirRecursive = (
    */
   relativeTo?: string,
 ):
-Effect.Effect<FileSystem.FileSystem, PlatformError, readonly string[]> =>
+Effect.Effect<readonly string[], PlatformError, FileSystem.FileSystem> =>
 Effect.gen(function * (_) {
   const fs = yield * _(FileSystem.FileSystem);
 

@@ -18,11 +18,11 @@ let completedWorkUnits = 0;
 let workStage: 'fetching' | 'processing' = 'fetching';
 
 
-export const BasicExtensionMeta = S.struct({
-  name: S.string,
-  author: S.struct({ name: S.string, email: S.string }),
-  description: S.string,
-  version: S.string,
+export const BasicExtensionMeta = S.Struct({
+  name: S.String,
+  author: S.Struct({ name: S.String, email: S.String }),
+  description: S.String,
+  version: S.String,
 });
 
 
@@ -112,8 +112,8 @@ function loadDataFull() {
       const [manifest, data] = yield * _(
         Console.withTime("parse data.json & manifest.json")
           (Effect.all([
-            S.parse(S.parseJson(ManifestSchema))(manifestJSON),
-            S.parse(S.parseJson(DatasetSchema))(dataJSON),
+            S.decodeUnknown(S.parseJson(ManifestSchema))(manifestJSON),
+            S.decodeUnknown(S.parseJson(DatasetSchema))(dataJSON),
           ], { concurrency: 5 })),
       );
       workStage = 'processing';
@@ -138,7 +138,7 @@ function loadDataFull() {
                 (prev, curr) => ({ ...prev, ...curr }),
               ),
             ),
-            Effect.flatMap(d => S.parse(DatasetSchema)(d)),
+            Effect.flatMap(d => S.decodeUnknown(DatasetSchema)(d)),
           )),
       );
       return { manifest, data: dataParsed };
@@ -164,7 +164,7 @@ export function loadExtensionAndDataset(
                 (pipe(
                   fetchOne('./package.json'),
                   Effect.flatMap(packageJsonRaw =>
-                    S.parse(S.parseJson(BasicExtensionMeta))(packageJsonRaw),
+                    S.decodeUnknown(S.parseJson(BasicExtensionMeta))(packageJsonRaw),
                   ),
                 )),
               Console.withTime("fetch extension.js")
@@ -189,7 +189,7 @@ export function loadExtensionAndDataset(
           }
         })),
       Console.withTime("load data")
-        (Effect.scoped(Effect.gen(function * (_) {
+        (Effect.gen(function * (_) {
 
           const dbVersion = 1;
           // const dbVersion = yield * _(
@@ -224,8 +224,8 @@ export function loadExtensionAndDataset(
               db,
               STORE_NAME,
               PARSED_DATASET_KEY,
-              S.struct({
-                id: S.literal(PARSED_DATASET_KEY),
+              S.Struct({
+                id: S.Literal(PARSED_DATASET_KEY),
                 data: DatasetSchema,
                 manifest: ManifestSchema,
               }),
@@ -250,7 +250,7 @@ export function loadExtensionAndDataset(
           yield * _(Effect.log("Obtained parsed data"));
 
           return { data, manifest };
-        }))),
+        })),
     ],
     { concurrency: 5 },
   );
@@ -330,4 +330,4 @@ function maybeDate(val: string): Date | string {
     return val;
   }
 }
-const _parseDate = S.parseSync(S.Date);
+const _parseDate = S.decodeUnknownSync(S.Date);

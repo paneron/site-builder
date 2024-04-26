@@ -16,8 +16,9 @@ import { parse as parseYAML } from 'yaml';
 
 import { pipe, Runtime, Console, Stream, Effect, Layer, Logger, Option } from 'effect';
 import * as S from '@effect/schema/Schema';
-import { FileSystem, NodeContext, Runtime as PlatformRuntime } from '@effect/platform-node';
-import type { PlatformError } from '@effect/platform-node/Error';
+import { NodeContext, NodeRuntime } from '@effect/platform-node';
+import type { PlatformError } from '@effect/platform/Error';
+import { FileSystem } from '@effect/platform';
 import { Options, Command } from '@effect/cli';
 
 import {
@@ -48,7 +49,7 @@ const scaffoldOutdir = ({
   datadir,
   siteTemplatePath,
   devModeExtensionDirectory,
-}: S.Schema.To<typeof SiteBuildConfigSchema>) =>
+}: S.Schema.Type<typeof SiteBuildConfigSchema>) =>
 Effect.gen(function * (_) {
   const fs = yield * _(FileSystem.FileSystem);
 
@@ -106,7 +107,7 @@ Effect.gen(function * (_) {
   const data = yield * _(
     fs.readFileString(datasetMetaPath),
     Effect.map(parseYAML),
-    Effect.flatMap(S.parse(PaneronDataset)),
+    Effect.flatMap(f => S.decodeUnknown(PaneronDataset)(f)),
   );
 
   const extensionURLs = getExtensionURLs(data.type.id, opts?.devModeExtensionDirectory);
@@ -119,7 +120,7 @@ Effect.gen(function * (_) {
       Console.withTime(`Fetch extension code from ${extensionURLs.esbuiltSource} to ${esbuiltSourceOut}`)(
         pipe(
           fetchMaybeLocal(extensionURLs.esbuiltSource),
-          Effect.flatMap(S.parse(S.string)),
+          Effect.flatMap(S.decodeUnknown(S.String)),
           Effect.flatMap(source =>
             fs.writeFileString(join(outdir, 'extension.js'), source)),
         )
@@ -127,7 +128,7 @@ Effect.gen(function * (_) {
       Console.withTime(`Fetch package.json from ${extensionURLs.packageJson} to ${packageJsonOut}`)(
         pipe(
           fetchMaybeLocal(extensionURLs.packageJson),
-          Effect.flatMap(S.parse(S.string)),
+          Effect.flatMap(S.decodeUnknown(S.String)),
           Effect.flatMap(source =>
             fs.writeFileString(join(outdir, 'package.json'), source)),
         )
@@ -161,7 +162,7 @@ const fetchMaybeLocal = (url: string) => Effect.gen(function * (_) {
 
 
 const generateData =
-({ datadir, outdir, forUsername, dataVersion }: S.Schema.To<typeof SiteBuildConfigSchema>) =>
+({ datadir, outdir, forUsername, dataVersion }: S.Schema.Type<typeof SiteBuildConfigSchema>) =>
 Effect.gen(function * (_) {
   const fs = yield * _(FileSystem.FileSystem);
 
@@ -176,8 +177,8 @@ Effect.gen(function * (_) {
     map(path => pipe(
       fs.readFileString(join(datadir, path)),
       Effect.map(parseYAML),
-      Effect.flatMap(S.parse(S.record(S.string, S.unknown))),
       //Effect.flatMap(S.parse(RegisterItem)),
+      Effect.flatMap(S.decodeUnknown(S.Record(S.String, S.Unknown))),
       // Catches Schema.parse failures. We do nothing with non register items.
       Effect.catchTag(
         "ParseError",
@@ -246,7 +247,7 @@ const runExtensionBuild = (opts: SiteBuildOptions) => (Effect.gen(function * (_)
 
 // TS rightfully thinks that this effect has `unknown` requirements,
 // probably due to dynamic import, so we have to cast.
-}) as Effect.Effect<FileSystem.FileSystem, PlatformError, void>);
+}) as Effect.Effect<FileSystem.FileSystem, PlatformError, never>);
 
 
 /** @deprecated for cases requiring private data exclusion use other site templates. */
@@ -263,7 +264,7 @@ function shouldIncludeObjectInIndex(
 }
 
 
-const buildFull = (opts: S.Schema.To<typeof SiteBuildConfigSchema>) => pipe(
+const buildFull = (opts: S.Schema.Type<typeof SiteBuildConfigSchema>) => pipe(
   scaffoldOutdir(opts),
   Effect.andThen(() => Effect.all([
     fetchExtension(
@@ -402,16 +403,16 @@ const main = build.
   );
 
 Effect.
-  suspend(() => main(process.argv.slice(2))).
+  suspend(() => main(process.argv)).
   pipe(
     Effect.provide(NodeContext.layer),
-    PlatformRuntime.runMain,
+    NodeRuntime.runMain,
   );
 
 
 const clearDirectoryContents =
 (directoryPath: string):
-Effect.Effect<FileSystem.FileSystem, PlatformError, void> =>
+Effect.Effect<void, PlatformError, FileSystem.FileSystem> =>
   Effect.gen(function * (_) {
     const fs = yield * _(FileSystem.FileSystem);
     const dirContents = yield * _(fs.readDirectory(directoryPath));

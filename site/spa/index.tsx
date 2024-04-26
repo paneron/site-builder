@@ -7,7 +7,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 
 import { Effect } from 'effect';
-import * as BrowserHttp from '@effect/platform-browser/HttpClient';
+import * as BrowserHttp from '@effect/platform-browser/BrowserHttpClient';
 import * as S from '@effect/schema/Schema';
 
 import { PopoverInteractionKind, NonIdealState, Spinner, Button, Tag } from '@blueprintjs/core';
@@ -48,9 +48,9 @@ const byteFormatter = Intl.NumberFormat(navigator.language, {
 
 loadApp(false);
 
-const SettingsSchema = S.union(
-  S.undefined, // when blank slate
-  S.struct({ key: S.literal('settings'), value: S.record(S.string, S.unknown) }),
+const SettingsSchema = S.Union(
+  S.Undefined, // when blank slate
+  S.Struct({ key: S.Literal('settings'), value: S.Record(S.String, S.Unknown) }),
 );
 
 function loadApp (ignoreCache = true) {

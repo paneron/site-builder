@@ -4,7 +4,7 @@ import { join, dirname } from 'node:path';
 import { build as esbuild } from 'esbuild';
 
 import { Console, Effect } from 'effect';
-import { FileSystem } from '@effect/platform-node';
+import { FileSystem } from '@effect/platform';
 
 import { type ReportingOptions } from '../../util/index.mjs';
 import { readdirRecursive } from '../../util/index.mjs';

@@ -1,15 +1,15 @@
 import * as S from '@effect/schema/Schema';
 
 
-export const DatasetSchema = S.record(S.string, S.record(S.string, S.unknown));
+export const DatasetSchema = S.Record(S.String, S.Record(S.String, S.Unknown));
 //export const ManifestSchema = S.record(S.string, S.string);
 
 
-export const ManifestSchema = S.struct({
-  dataVersion: S.optional(S.union(S.string.pipe(S.nonEmpty()), S.undefined)),
+export const ManifestSchema = S.Struct({
+  dataVersion: S.optional(S.Union(S.String.pipe(S.nonEmpty()), S.Undefined)),
 
   // TODO: Should go away at some point.
-  forUsername: S.optional(S.union(S.string.pipe(S.nonEmpty()), S.undefined)),
+  forUsername: S.optional(S.Union(S.String.pipe(S.nonEmpty()), S.Undefined)),
 });
 
 export type Dataset = Record<string, Record<string, unknown>>;
