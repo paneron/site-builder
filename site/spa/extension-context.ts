@@ -277,16 +277,21 @@ function mapReduceChains(data: Dataset, chains: Hooks.Data.MapReduceChains) {
     }
 
     let final;
-    if (c.reduceFunc) {
-      const reduceFunc = getReduceFunc(c.reduceFunc);
+    const mappedItems = Object.values(mapped);
+    if (mappedItems.length && mappedItems.length > 0) {
+      if (c.reduceFunc) {
+        const reduceFunc = getReduceFunc(c.reduceFunc);
 
-      // TODO: Provide initialValue, or otherwise work around the issue where
-      // reduce() is not invoked when mappedData contains only one element.
-      // See example where “callback is not invoked”: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce#edge_cases
+        // TODO: Provide initialValue, or otherwise work around the issue where
+        // reduce() is not invoked when mappedData contains only one element.
+        // See example where “callback is not invoked”: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce#edge_cases
 
-      final = Object.values(mapped).reduce(reduceFunc);
+        final = mappedItems.reduce(reduceFunc);
+      } else {
+        final = mappedItems || [];
+      }
     } else {
-      final = Object.values(mapped) || [];
+      final = {}
     }
 
     return { [cID]: final };
