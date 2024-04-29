@@ -485,7 +485,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ],\
       [\
         "date-fns",\
-        "npm:2.22.1"\
+        "npm:2.30.0"\
+      ],\
+      [\
+        "date-fns-tz",\
+        "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:2.0.1"\
       ],\
       [\
         "debug",\
@@ -1336,6 +1340,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@babel-runtime-npm-7.23.7-9691b86096-eba85bd24d.zip/node_modules/@babel/runtime/",\
           "packageDependencies": [\
             ["@babel/runtime", "npm:7.23.7"],\
+            ["regenerator-runtime", "npm:0.14.1"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:7.24.4", {\
+          "packageLocation": "./.yarn/cache/@babel-runtime-npm-7.24.4-1a974e2dd0-2f27d4c0ff.zip/node_modules/@babel/runtime/",\
+          "packageDependencies": [\
+            ["@babel/runtime", "npm:7.24.4"],\
             ["regenerator-runtime", "npm:0.14.1"]\
           ],\
           "linkType": "HARD"\
@@ -3127,10 +3139,33 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["date-fns", [\
-        ["npm:2.22.1", {\
-          "packageLocation": "./.yarn/cache/date-fns-npm-2.22.1-cc0cbadceb-7ff97cd605.zip/node_modules/date-fns/",\
+        ["npm:2.30.0", {\
+          "packageLocation": "./.yarn/cache/date-fns-npm-2.30.0-895c790e0f-f7be015232.zip/node_modules/date-fns/",\
           "packageDependencies": [\
-            ["date-fns", "npm:2.22.1"]\
+            ["date-fns", "npm:2.30.0"],\
+            ["@babel/runtime", "npm:7.24.4"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["date-fns-tz", [\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/cache/date-fns-tz-npm-2.0.1-e8e605b668-2d2bb3d67f.zip/node_modules/date-fns-tz/",\
+          "packageDependencies": [\
+            ["date-fns-tz", "npm:2.0.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:2.0.1", {\
+          "packageLocation": "./.yarn/__virtual__/date-fns-tz-virtual-7df04f1105/0/cache/date-fns-tz-npm-2.0.1-e8e605b668-2d2bb3d67f.zip/node_modules/date-fns-tz/",\
+          "packageDependencies": [\
+            ["date-fns-tz", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:2.0.1"],\
+            ["@types/date-fns", null],\
+            ["date-fns", "npm:2.30.0"]\
+          ],\
+          "packagePeers": [\
+            "@types/date-fns",\
+            "date-fns"\
           ],\
           "linkType": "HARD"\
         }]\
@@ -5179,7 +5214,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:20.11.0"],\
             ["@types/react", "npm:18.2.46"],\
             ["@types/react-dom", "npm:18.2.18"],\
-            ["date-fns", "npm:2.22.1"],\
+            ["date-fns", "npm:2.30.0"],\
+            ["date-fns-tz", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:2.0.1"],\
             ["effect", "npm:2.4.19"],\
             ["esbuild", "npm:0.19.9"],\
             ["fast-check", "npm:3.15.0"],\
