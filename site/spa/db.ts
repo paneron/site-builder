@@ -111,7 +111,7 @@ export function storeItem(
   return new Promise((resolve, reject) => {
     try {
       const store = getStore(db, storeName, true);
-      const req = store.add(val);
+      const req = store.put(val);
       req.onerror = function (evt) { reject(getErrorCode(evt)); };
       req.onsuccess = () => resolve();
     } catch (e) {
