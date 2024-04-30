@@ -30,7 +30,7 @@ import type { RendererPlugin, DatasetContext } from '@riboseinc/paneron-extensio
 
 import { repeatWhileLoading, loadExtensionAndDataset } from './extension-loader.js';
 import { getExtensionContext } from './extension-context.js';
-import { getDBEffect, getItemEffect, storeItem } from './db.js';
+import { getDBEffect, getItemEffect, getItem, storeItem } from './db.js';
 
 
 console.debug("Hello World");
@@ -71,6 +71,7 @@ function loadApp (ignoreCache = true) {
     // Get settings DB & settings object
     getDBEffect('settings', 1, {
       settings: { keyPath: 'key' },
+      state: { keyPath: 'key' },
     }, true).pipe(
       Effect.flatMap((settingsDB) =>
         getItemEffect(
@@ -102,8 +103,17 @@ function loadApp (ignoreCache = true) {
         getSettings: () => settings,
         updateSetting: async (key, value) => {
           settings[key] = value;
-          await storeItem(settingsDB, 'settings', { key: 'settings', value: settings })
+          await storeItem(settingsDB, 'settings', { key: 'settings', value: settings });
         },
+        getState: async (key: string) => {
+          const got = await getItem(settingsDB, 'state', key) as undefined | { value?: unknown };
+          console.debug("State: get", key, got?.value ?? undefined);
+          return got?.value ?? undefined;
+        },
+        storeState: (key: string, value: unknown) => {
+          console.debug("State: store", key, value);
+          storeItem(settingsDB, 'state', { key, value });
+        }
       },
     );
     const versionBar = (

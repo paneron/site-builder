@@ -22,6 +22,8 @@ export function getExtensionContext(
     username?: string | undefined;
     getSettings?: () => Record<string, unknown>;
     updateSetting?: (key: string, value: unknown) => Promise<void>
+    getState?: (key: string) => Promise<unknown>
+    storeState?: (key: string, value: unknown) => void
   },
 ): DatasetContext {
 
@@ -64,9 +66,12 @@ export function getExtensionContext(
       ]), [...[...Array(6).keys()].map(k => args[k])]);
 
       // XXX
-      const alwaysLoadInitialState = React.useCallback((async () => opts[4]), [opts[4]]);
+      const alwaysLoadInitialState = React.useCallback((async () => args[4]), [args[4]]);
 
-      return usePersistentStateReducer(noOp, alwaysLoadInitialState, ...effectiveOpts);
+      return usePersistentStateReducer(
+        opts?.storeState ?? noOp,
+        opts?.getState ?? alwaysLoadInitialState,
+        ...effectiveOpts);
     },
 
     useObjectData: makeValueHook(function ({ objectPaths, nounLabel }) {
