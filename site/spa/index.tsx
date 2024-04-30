@@ -72,7 +72,7 @@ function loadApp (ignoreCache = true) {
     getDBEffect('settings', 1, {
       settings: { keyPath: 'key' },
       state: { keyPath: 'key' },
-    }, true).pipe(
+    }, false).pipe(
       Effect.flatMap((settingsDB) =>
         getItemEffect(
           settingsDB,
