@@ -49,19 +49,19 @@ export function getExtensionContext(
       return { settings: opts?.getSettings?.() ?? {} };
     }),
 
-    usePersistentDatasetStateReducer: (...opts) => {
+    usePersistentDatasetStateReducer: (...args) => {
       const effectiveOpts:
       Parameters<PersistentStateReducerHook<any, any>> =
       React.useMemo((() => [
-        // opts[0] is the storage key in the list of positional parameters.
+        // args[0] is the storage key in the list of positional parameters.
         // Extension code should specify locally scoped key,
         // and this takes care of additionally scoping it by repository and dataset.
-        opts[0],
+        args[0],
 
-        opts[1], opts[2],
+        args[1], args[2],
 
-        opts[3], opts[4], opts[5],
-      ]), [...[...Array(6).keys()].map(k => opts[k])]);
+        args[3], args[4], args[5],
+      ]), [...[...Array(6).keys()].map(k => args[k])]);
 
       // XXX
       const alwaysLoadInitialState = React.useCallback((async () => opts[4]), [opts[4]]);
