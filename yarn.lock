@@ -1060,15 +1060,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@riboseinc/paneron-extension-kit@npm:2.2.22":
-  version: 2.2.22
-  resolution: "@riboseinc/paneron-extension-kit@npm:2.2.22"
+"@riboseinc/paneron-extension-kit@npm:2.2.23":
+  version: 2.2.23
+  resolution: "@riboseinc/paneron-extension-kit@npm:2.2.23"
   peerDependencies:
     "@paneron/libmmel": ~0.1.3
     "@riboseinc/isogit-lfs": 0.2.0
     immer: ^9.0.2
     react-helmet: ^6.1.0
-  checksum: cc2e2a82514726faa2d66663e3c4aeb0ac39ef1bdf6e26fc9f5857f887056633281e42d75222084ce5f9041dd67d8a3ecf46bf4b81a646780d50b31004ec0b2c
+  checksum: a74c9779aeffe261fa609889628286ce6ccfd4028dfa8d6659b9348991eecff2c299bcc2d814252ec8ccd99bf676fa82b0386f8d7996e2ce9c6c56f6347b213f
   languageName: node
   linkType: hard
 
@@ -3224,7 +3224,7 @@ __metadata:
     "@effect/typeclass": ~0.22.0
     "@emotion/react": 11.10.6
     "@emotion/styled": 11.10.6
-    "@riboseinc/paneron-extension-kit": 2.2.22
+    "@riboseinc/paneron-extension-kit": 2.2.23
     "@riboseinc/paneron-registry-kit": 2.2.36
     "@types/node": 20
     "@types/react": 18
