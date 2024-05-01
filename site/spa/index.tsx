@@ -27,6 +27,7 @@ import './site.css';
 
 import ErrorBoundary from '@riboseinc/paneron-extension-kit/widgets/ErrorBoundary.js';
 import type { RendererPlugin, DatasetContext } from '@riboseinc/paneron-extension-kit/types/index.js';
+import { BP4_RESET_CSS } from '@riboseinc/paneron-extension-kit/util';
 
 import { repeatWhileLoading, loadExtensionAndDataset } from './extension-loader.js';
 import { getExtensionContext } from './extension-context.js';
@@ -35,6 +36,11 @@ import { getDBEffect, getItemEffect, getItem, storeItem } from './db.js';
 
 console.debug("Hello World");
 
+
+// FIXME: Not sustainable and can mess up CSP
+const style = document.createElement("style");
+style.textContent = BP4_RESET_CSS;
+document.head.appendChild(style);
 
 const container = ReactDOM.createRoot(document.getElementById('app')!);
 
