@@ -29,6 +29,13 @@
     height: 40px;
     flex: 0;
     display: flex;
+    justify-content: flex-end;
+
+    z-index: 25;
+
+    /* May just be a workaround for obsolete skew. */
+    margin-right: -15px;
+    margin-left: -15px;
 
     .versionsTooltipWrapper {
       display: unset;
@@ -36,11 +43,14 @@
     }
 
     .versions {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-self: flex-end;
-      gap: 10px;
-      justify-content: flex-end;
+     justify-self: flex-end;
+
+     .bp4-button-text {
+       display: flex;
+       flex-flow: row nowrap;
+       gap: 10px;
+       justify-content: flex-end;
+     }
     }
   }
 }

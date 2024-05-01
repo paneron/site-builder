@@ -10,7 +10,7 @@ import { Effect } from 'effect';
 import * as BrowserHttp from '@effect/platform-browser/BrowserHttpClient';
 import * as S from '@effect/schema/Schema';
 
-import { PopoverInteractionKind, NonIdealState, Spinner, Button, Tag } from '@blueprintjs/core';
+import { PopoverInteractionKind, NonIdealState, Spinner, Classes, Button } from '@blueprintjs/core';
 import { Tooltip2 as Tooltip } from '@blueprintjs/popover2';
 
 import MathJax from 'react-mathjax2';
@@ -27,6 +27,7 @@ import './site.css';
 
 import ErrorBoundary from '@riboseinc/paneron-extension-kit/widgets/ErrorBoundary.js';
 import type { RendererPlugin, DatasetContext } from '@riboseinc/paneron-extension-kit/types/index.js';
+import Navbar, { NavbarButton } from '@riboseinc/paneron-extension-kit/widgets/Navbar2';
 import { BP4_RESET_CSS } from '@riboseinc/paneron-extension-kit/util';
 
 import { repeatWhileLoading, loadExtensionAndDataset } from './extension-loader.js';
@@ -37,12 +38,15 @@ import { getDBEffect, getItemEffect, getItem, storeItem } from './db.js';
 console.debug("Hello World");
 
 
+const EMPTY_ARRAY = [];
+
 // FIXME: Not sustainable and can mess up CSP
 const style = document.createElement("style");
 style.textContent = BP4_RESET_CSS;
 document.head.appendChild(style);
 
 const container = ReactDOM.createRoot(document.getElementById('app')!);
+
 
 const byteFormatter = Intl.NumberFormat(navigator.language, {
   notation: "compact",
@@ -139,15 +143,19 @@ function loadApp (ignoreCache = true) {
             <br />
             Extension {extInfo.name} {formatDepVer(extInfo.version)}
           </>}>
-        <span className="versions">
-          <span>{extInfo.name} {formatDepVer(extInfo.version)}</span>
-          •
-          <span>RK {formatDepVer(deps['@riboseinc/paneron-registry-kit'])}</span>
-          •
-          <span>EK {formatDepVer(deps['@riboseinc/paneron-extension-kit'])}</span>
-          •
-          <span>PW {formatDepVer(spaTemplateVersion)}</span>
-        </span>
+        <NavbarButton
+          className="versions"
+          disabled
+          text={<>
+            <span>{extInfo.name} {formatDepVer(extInfo.version)}</span>
+            •
+            <span>RK {formatDepVer(deps['@riboseinc/paneron-registry-kit'])}</span>
+            •
+            <span>EK {formatDepVer(deps['@riboseinc/paneron-extension-kit'])}</span>
+            •
+            <span>PW {formatDepVer(spaTemplateVersion)}</span>
+          </>}>
+        </NavbarButton>
       </Tooltip>
     );
     container.render(
@@ -155,9 +163,11 @@ function loadApp (ignoreCache = true) {
         <div className="mainViewWrapper">
           <App View={ext.mainView!} ctx={ctx} />
         </div>
-        <Tag className="statusBar">
+        <Navbar
+            className={`statusBar ${Classes.ELEVATION_2}`}
+            breadcrumbs={EMPTY_ARRAY}>
           {versionBar}
-        </Tag>
+        </Navbar>
       </div>
     );
   }).
