@@ -26,6 +26,7 @@ import './base.css';
 import './site.css';
 
 import ErrorBoundary from '@riboseinc/paneron-extension-kit/widgets/ErrorBoundary.js';
+import DL, { DLEntry } from '@riboseinc/paneron-extension-kit/widgets/DL.js';
 import type { RendererPlugin, DatasetContext } from '@riboseinc/paneron-extension-kit/types/index.js';
 import Navbar, { NavbarButton } from '@riboseinc/paneron-extension-kit/widgets/Navbar2';
 import { BP4_RESET_CSS } from '@riboseinc/paneron-extension-kit/util';
@@ -133,15 +134,13 @@ function loadApp (ignoreCache = true) {
           interactionKind={PopoverInteractionKind.HOVER}
           className="versionsTooltipWrapper"
           content={<>
-            Versions:
-            <br />
-            Paneron Web {formatDepVer(spaTemplateVersion)}
-            <br />
-            ExtensionKit {formatDepVer(deps['@riboseinc/paneron-extension-kit'])}
-            <br />
-            RegistryKit {formatDepVer(deps['@riboseinc/paneron-registry-kit'])}
-            <br />
-            Extension {extInfo.name} {formatDepVer(extInfo.version)}
+            Using versions:
+            <DL>
+              <DLEntry term="Paneron Web" definition={formatDepVer(spaTemplateVersion)} />
+              <DLEntry term="ExtensionKit" definition={formatDepVer(deps['@riboseinc/paneron-extension-kit'])} />
+              <DLEntry term="RegistryKit" definition={formatDepVer(deps['@riboseinc/paneron-registry-kit'])} />
+              <DLEntry term={<>Extension {extInfo.name}</>} definition={formatDepVer(extInfo.version)} />
+            </DL>
           </>}>
         <NavbarButton
           className="versions"
@@ -206,7 +205,7 @@ const spaTemplateVersion = pkg.version ?? 'N/A';
 const deps = pkg.dependencies;
 
 function formatDepVer(rawVersion: string) {
-  return !rawVersion.startsWith('file:') ? `v${rawVersion}` : 'LOCAL';
+  return !rawVersion.startsWith('file:') ? rawVersion : 'unreleased (file)';
 }
 
 const App: React.FC<{
