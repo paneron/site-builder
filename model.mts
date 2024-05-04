@@ -1,6 +1,14 @@
 import * as S from '@effect/schema/Schema';
 
 
+export const BasicExtensionMeta = S.Struct({
+  name: S.String,
+  author: S.Struct({ name: S.String, email: S.String }),
+  description: S.String,
+  version: S.String,
+});
+
+
 export const PaneronDataset = S.Struct({
   title: S.String,
   type: S.Struct({

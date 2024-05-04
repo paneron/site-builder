@@ -18,14 +18,6 @@ let completedWorkUnits = 0;
 let workStage: 'fetching' | 'processing' = 'fetching';
 
 
-export const BasicExtensionMeta = S.Struct({
-  name: S.String,
-  author: S.Struct({ name: S.String, email: S.String }),
-  description: S.String,
-  version: S.String,
-});
-
-
 let repeatTimeout: null | ReturnType<Window["setTimeout"]> = null;
 export function repeatWhileLoading(func: (done: number, total: number, stage: typeof workStage) => void) {
   repeatTimeout = setTimeout(
@@ -162,9 +154,12 @@ export function loadExtensionAndDataset(
                 (Effect.tryPromise(() => setUpExtensionImportMap())),
               Console.withTime("fetch & decode package.json")
                 (pipe(
-                  fetchOne('./package.json'),
-                  Effect.flatMap(packageJsonRaw =>
-                    S.decodeUnknown(S.parseJson(BasicExtensionMeta))(packageJsonRaw),
+                  Effect.all([
+                    fetchOne('./package.json'),
+                    Effect.tryPromise(() => import('../../model.mjs')),
+                  ]),
+                  Effect.flatMap(([packageJsonRaw, models]) =>
+                    S.decodeUnknown(S.parseJson(models.BasicExtensionMeta))(packageJsonRaw),
                   ),
                 )),
               Console.withTime("fetch extension.js")
