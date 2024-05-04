@@ -32,7 +32,7 @@ import {
   readdirRecursive,
 } from './util/index.mjs';
 import { debouncedWatcher } from './util/watch2.mjs';
-import { getExtensionURLs, RegisterItem, RegisterMeta, Proposal, PaneronDataset } from './model.mjs';
+import { getExtensionURLs, BasicExtensionMeta, RegisterItem, RegisterMeta, Proposal, PaneronDataset } from './model.mjs';
 
 
 // We will need to access this package’s
@@ -110,7 +110,8 @@ Effect.gen(function * (_) {
     Effect.flatMap(f => S.decodeUnknown(PaneronDataset)(f)),
   );
 
-  const extensionURLs = getExtensionURLs(data.type.id, opts?.devModeExtensionDirectory);
+  const devModeExtensionDir = opts?.devModeExtensionDirectory;
+  const extensionURLs = getExtensionURLs(data.type.id, devModeExtensionDir);
 
   const packageJsonOut = join(outdir, 'package.json');
   const esbuiltSourceOut = join(outdir, 'extension.js');
@@ -129,6 +130,15 @@ Effect.gen(function * (_) {
         pipe(
           fetchMaybeLocal(extensionURLs.packageJson),
           Effect.flatMap(S.decodeUnknown(S.String)),
+          Effect.flatMap(S.decodeUnknown(S.parseJson(BasicExtensionMeta))),
+          Effect.tap(extInfo => Effect.logDebug(`Read extension data: ${JSON.stringify(extInfo)}`)),
+          Effect.map(basicExtMeta => JSON.stringify({
+            ...basicExtMeta,
+            version: devModeExtensionDir
+              ? `file:${devModeExtensionDir}`
+              : basicExtMeta.version,
+          })),
+          Effect.tap(extInfo => Effect.logDebug(`Extension data to write: ${JSON.stringify(extInfo)}`)),
           Effect.flatMap(source =>
             fs.writeFileString(join(outdir, 'package.json'), source)),
         )
