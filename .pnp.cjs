@@ -341,11 +341,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ],\
       [\
         "@riboseinc/paneron-extension-kit",\
-        "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:2.2.24"\
+        "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:2.2.27"\
       ],\
       [\
         "@riboseinc/paneron-registry-kit",\
-        "npm:2.2.36"\
+        "npm:2.2.38"\
       ],\
       [\
         "@types/dom4",\
@@ -2692,17 +2692,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@riboseinc/paneron-extension-kit", [\
-        ["npm:2.2.24", {\
-          "packageLocation": "./.yarn/cache/@riboseinc-paneron-extension-kit-npm-2.2.24-19fd0d8d36-5f5ecba9ab.zip/node_modules/@riboseinc/paneron-extension-kit/",\
+        ["npm:2.2.27", {\
+          "packageLocation": "./.yarn/cache/@riboseinc-paneron-extension-kit-npm-2.2.27-61f2b57d31-ac74f1597c.zip/node_modules/@riboseinc/paneron-extension-kit/",\
           "packageDependencies": [\
-            ["@riboseinc/paneron-extension-kit", "npm:2.2.24"]\
+            ["@riboseinc/paneron-extension-kit", "npm:2.2.27"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:2.2.24", {\
-          "packageLocation": "./.yarn/__virtual__/@riboseinc-paneron-extension-kit-virtual-6f63d89417/0/cache/@riboseinc-paneron-extension-kit-npm-2.2.24-19fd0d8d36-5f5ecba9ab.zip/node_modules/@riboseinc/paneron-extension-kit/",\
+        ["virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:2.2.27", {\
+          "packageLocation": "./.yarn/__virtual__/@riboseinc-paneron-extension-kit-virtual-5dece40ff6/0/cache/@riboseinc-paneron-extension-kit-npm-2.2.27-61f2b57d31-ac74f1597c.zip/node_modules/@riboseinc/paneron-extension-kit/",\
           "packageDependencies": [\
-            ["@riboseinc/paneron-extension-kit", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:2.2.24"],\
+            ["@riboseinc/paneron-extension-kit", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:2.2.27"],\
             ["@paneron/libmmel", null],\
             ["@riboseinc/isogit-lfs", null],\
             ["@types/immer", null],\
@@ -2726,10 +2726,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@riboseinc/paneron-registry-kit", [\
-        ["npm:2.2.36", {\
-          "packageLocation": "./.yarn/cache/@riboseinc-paneron-registry-kit-npm-2.2.36-29e8b398b4-afa8866f1f.zip/node_modules/@riboseinc/paneron-registry-kit/",\
+        ["npm:2.2.38", {\
+          "packageLocation": "./.yarn/cache/@riboseinc-paneron-registry-kit-npm-2.2.38-dc433c9567-796d0aebfa.zip/node_modules/@riboseinc/paneron-registry-kit/",\
           "packageDependencies": [\
-            ["@riboseinc/paneron-registry-kit", "npm:2.2.36"]\
+            ["@riboseinc/paneron-registry-kit", "npm:2.2.38"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -5209,8 +5209,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@effect/typeclass", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.22.23"],\
             ["@emotion/react", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:11.10.6"],\
             ["@emotion/styled", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:11.10.6"],\
-            ["@riboseinc/paneron-extension-kit", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:2.2.24"],\
-            ["@riboseinc/paneron-registry-kit", "npm:2.2.36"],\
+            ["@riboseinc/paneron-extension-kit", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:2.2.27"],\
+            ["@riboseinc/paneron-registry-kit", "npm:2.2.38"],\
             ["@types/node", "npm:20.11.0"],\
             ["@types/react", "npm:18.2.46"],\
             ["@types/react-dom", "npm:18.2.18"],\
