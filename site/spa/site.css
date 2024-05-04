@@ -31,7 +31,7 @@
     display: flex;
     justify-content: flex-end;
 
-    z-index: 25;
+    z-index: 19;
 
     /* May just be a workaround for obsolete skew. */
     margin-right: -15px;
