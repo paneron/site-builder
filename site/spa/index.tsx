@@ -118,11 +118,11 @@ function loadApp (ignoreCache = true) {
         },
         getState: async (key: string) => {
           const got = await getItem(settingsDB, 'state', key) as undefined | { value?: unknown };
-          console.debug("State: get", key, got?.value ?? undefined);
+          //console.debug("State: get", key, got?.value ?? undefined);
           return got?.value ?? undefined;
         },
         storeState: (key: string, value: unknown) => {
-          console.debug("State: store", key, value);
+          //console.debug("State: store", key, value);
           storeItem(settingsDB, 'state', { key, value });
         }
       },
