@@ -32,7 +32,14 @@ import {
   readdirRecursive,
 } from './util/index.mjs';
 import { debouncedWatcher } from './util/watch2.mjs';
-import { getExtensionURLs, BasicExtensionMeta, RegisterItem, RegisterMeta, Proposal, PaneronDataset } from './model.mjs';
+import {
+  getExtensionURLs,
+  BasicExtensionMeta,
+  RegisterItem,
+  RegisterMeta,
+  Proposal,
+  PaneronDataset,
+} from './model.mjs';
 
 
 // We will need to access this package’s

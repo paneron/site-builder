@@ -46,7 +46,10 @@ export const Proposal = S.Struct({
 });
 
 
-export function getExtensionURLs(extID: S.Schema.Type<typeof PaneronDataset>['type']['id'], rootOverride?: string) {
+export function getExtensionURLs(
+  extID: S.Schema.Type<typeof PaneronDataset>['type']['id'],
+  rootOverride?: string,
+) {
   const root = rootOverride ?? `https://extensions.paneron.org/e/${extID}`;
   return {
     esbuiltSource: `${root}/extension.js`,
@@ -54,6 +57,8 @@ export function getExtensionURLs(extID: S.Schema.Type<typeof PaneronDataset>['ty
   };
 }
 
-export function getExtensionURL(extID: S.Schema.Type<typeof PaneronDataset>['type']['id']): string {
+export function getExtensionURL(
+  extID: S.Schema.Type<typeof PaneronDataset>['type']['id'],
+): string {
   return `https://extensions.paneron.org/e/${extID}/build.js`;
 }
