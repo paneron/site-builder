@@ -144,10 +144,17 @@ function listPathsCached(
   query: string,
 ): string[] {
   if (!CACHE[query]) {
-    const runnableQuery = getRunnableSimpleQuery(query);
-    CACHE[query] = {
-      objPaths: listPathsMatchingSimpleQuery(d, runnableQuery),
-    };
+    try {
+      const runnableQuery = getRunnableSimpleQuery(query);
+      CACHE[query] = {
+        objPaths: listPathsMatchingSimpleQuery(d, runnableQuery),
+      };
+    } catch (e) {
+      console.error("Failed to create a query—check syntax?", query.replace('\n', ' '), e);
+      CACHE[query] = {
+        objPaths: [],
+      };
+    }
   }
   return CACHE[query]!.objPaths;
 }
