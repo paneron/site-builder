@@ -309,7 +309,7 @@ const build = Command.
     ),
   ).
   pipe(
-    Command.withDescription('asdf'),
+    Command.withDescription('build site'),
   );
 
 const watch = Command.
@@ -408,7 +408,7 @@ const watch = Command.
         })
   ).
   pipe(
-    Command.withDescription('do the watchin’'),
+    Command.withDescription('watch for changes'),
   );
 
 const main = build.
