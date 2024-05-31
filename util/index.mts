@@ -31,7 +31,7 @@ export type SiteBuilder = (
     /** Path to the package on filesystem. */
     packageRoot: string;
   },
-) => Effect.Effect<FileSystem.FileSystem, PlatformError, void>
+) => Effect.Effect<void, PlatformError, FileSystem.FileSystem>
 
 
 // Reporting options
