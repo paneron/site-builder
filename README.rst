@@ -32,6 +32,10 @@ Uses Node 20.11.2.
 Development
 -----------
 
+Tested on:
+
+- Node 20.11.2
+
 Note that build is handled by esbuild, while TSC is still used
 for typechecking. Type errors shouldn’t be ignored, but a type error
 may still result in a valid build (depends on specifics).
