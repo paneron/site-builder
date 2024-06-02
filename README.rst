@@ -48,7 +48,7 @@ Important scripts:
 
   .. important::
   
-     This package uses Yarn PnP, but in ``loose`` mode
+     This repository uses Yarn PnP, but in ``loose`` mode
      for the sake of ``spa`` package build script.
      Since ExtensionKit and RegistryKit import packages
      that they list only in ``devDependencies``,
