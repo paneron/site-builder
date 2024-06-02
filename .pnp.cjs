@@ -345,7 +345,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ],\
       [\
         "@riboseinc/paneron-registry-kit",\
-        "npm:2.2.44"\
+        "npm:2.2.46"\
       ],\
       [\
         "@types/dom4",\

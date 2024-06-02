@@ -43,20 +43,17 @@ may still result in a valid build (depends on specifics).
 Important scripts:
 
 - Root package’s ``build-self`` script compiles site builder
+
 - site/spa’s ``clean-build`` script compiles front-end code
 
-.. important::
-
-   This package uses Yarn PnP. However, recently running ``yarn``
-   seems to remove ``fallbackPool`` entries from ``.pnp.cjs``,
-   which would trip the ``build-self`` script
-   of the ``site/spa`` subpackage (which runs esbuild),
-   because ExtensionKit and RegistryKit import packages
-   that they list only in ``devDependencies``.
-
-   The temporary workaround is to NOT commit the entire
-   updated ``.pnp.cjs``: discard changes in ``fallbackPool``
-   and only commit the changes that don’t affect ``fallbackPool``.
+  .. important::
+  
+     This package uses Yarn PnP, but in ``loose`` mode
+     for the sake of ``spa`` package build script.
+     Since ExtensionKit and RegistryKit import packages
+     that they list only in ``devDependencies``,
+     in strict mode esbuild would fail with an error
+     for every such import when bundling SPA for client-side.
 
 Release
 ~~~~~~~
