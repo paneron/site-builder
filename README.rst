@@ -52,7 +52,8 @@ Important scripts:
      for the sake of ``spa`` package build script.
      Since ExtensionKit and RegistryKit import packages
      that they list only in ``devDependencies``,
-     in strict mode esbuild would fail with an error
+     in strict mode esbuild would fail with
+     an `error <https://stackoverflow.com/questions/76015181/the-yarn-plugnplay-manifest-forbids-importing-xyz-here-because-its-not-list>`_
      for every such import when bundling SPA for client-side.
 
 Release
