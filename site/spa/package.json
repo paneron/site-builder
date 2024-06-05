@@ -22,7 +22,7 @@
     "@emotion/react": "11.10.6",
     "@emotion/styled": "11.10.6",
     "@riboseinc/paneron-extension-kit": "2.2.29",
-    "@riboseinc/paneron-registry-kit": "2.2.47",
+    "@riboseinc/paneron-registry-kit": "2.2.48",
     "@types/react": "18",
     "@types/react-dom": "18",
     "date-fns": "2.30.0",
