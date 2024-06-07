@@ -1072,10 +1072,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@riboseinc/paneron-registry-kit@npm:2.2.48":
-  version: 2.2.48
-  resolution: "@riboseinc/paneron-registry-kit@npm:2.2.48"
-  checksum: 35c595479da1125af9602bc479ce45a0b76baa42c19b884793958d9280210062e93e7d35ab9d4ab945b62254967443c69abdefc71c48ce317fbae7c588a11e5d
+"@riboseinc/paneron-registry-kit@npm:2.2.49":
+  version: 2.2.49
+  resolution: "@riboseinc/paneron-registry-kit@npm:2.2.49"
+  checksum: dba6effea10746829fdafa1021df04ef744be748f028a760bd4704402a03b6ac40a91b10405482a9500c2e1b68e5153dd984c0f1312bc037348b6ca11fcdc552
   languageName: node
   linkType: hard
 
@@ -3225,7 +3225,7 @@ __metadata:
     "@emotion/react": 11.10.6
     "@emotion/styled": 11.10.6
     "@riboseinc/paneron-extension-kit": 2.2.29
-    "@riboseinc/paneron-registry-kit": 2.2.48
+    "@riboseinc/paneron-registry-kit": 2.2.49
     "@types/node": 20
     "@types/react": 18
     "@types/react-dom": 18
