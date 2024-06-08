@@ -223,15 +223,15 @@ Effect.gen(function * (_) {
 
 const runExtensionBuild = (opts: SiteBuildOptions) => (Effect.gen(function * (_) {
 
-  const extensionBuildScriptPath = join(
+  const templateBuildScriptPath = join(
     opts.siteTemplatePath,
     '..', // Step one directory up, since siteTemplatePath goes to dist
     'build-site.mjs',
   );
 
   const builder = yield * _(
-    Console.withTime(`Importing site builder from ${extensionBuildScriptPath}`)(
-      Effect.tryPromise(() => import(extensionBuildScriptPath))
+    Console.withTime(`Importing site builder from ${templateBuildScriptPath}`)(
+      Effect.tryPromise(() => import(templateBuildScriptPath))
     ),
     Effect.tapError(err => Effect.logError(`Failed to import site builder: ${String(err)}`)),
   );
