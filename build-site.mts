@@ -223,6 +223,8 @@ Effect.gen(function * (_) {
 
 const runExtensionBuild = (opts: SiteBuildOptions) => (Effect.gen(function * (_) {
 
+  // Template-specific build
+
   const templateBuildScriptPath = join(
     opts.siteTemplatePath,
     '..', // Step one directory up, since siteTemplatePath goes to dist
@@ -243,6 +245,9 @@ const runExtensionBuild = (opts: SiteBuildOptions) => (Effect.gen(function * (_)
     Effect.tapError(err => Effect.logDebug(`Failed to run extension build script: ${String(err)}`)),
   );
 
+  // Extension build (?)
+  // We don’t really run “extension build” per se yet.
+  //
   //return yield * _(Effect.succeed(null));
   // Another option is to shell out, e.g. with execSync:
   //
