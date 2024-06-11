@@ -19,7 +19,6 @@ import {
   reportingOptions,
   EFFECT_LOG_LEVELS,
 } from '../../util/index.mjs';
-//import { ContribSiteTemplateName, CONTRIB_SITE_TEMPLATES } from './site/index.mjs';
 
 
 const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
@@ -86,7 +85,6 @@ async function buildSiteBuilder(opts: ReportingOptions) {
     treeShaking: true,
     sourcemap: false,
     platform: 'node',
-    //publicPath: 'https://convertor.glossarist.org/',
     outfile: 'build-site.mjs',
 
     // The hope was that this could allow to call esbuild in bundled site builder,

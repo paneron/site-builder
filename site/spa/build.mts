@@ -1,6 +1,6 @@
 /** Builds template’s JS, wrapping ./dist.mts. */
 
-// XXX: Should be generalized
+// XXX: Should be generalized & moved up
 
 import { resolve, join } from 'node:path';
 
@@ -14,7 +14,6 @@ import {
   EFFECT_LOG_LEVELS,
 } from '../../util/index.mjs';
 import { debouncedWatcher } from '../../util/watch2.mjs';
-//import { ContribSiteTemplateName, CONTRIB_SITE_TEMPLATES } from './site/index.mjs';
 
 import { distSPA } from './dist.mjs';
 
@@ -32,7 +31,6 @@ const dist = Command.
     reportingOptions,
     (rawOpts) => Effect.gen(function * (_) {
       const opts = yield * _(Effect.try(() => parseReportingConfig(rawOpts)));
-      //yield * _(Effect.tryPromise(() => buildSiteBuilder(opts)));
       yield * _(
         distSPA({ ...opts, packageRoot: PACKAGE_ROOT, outdir: OUTDIR }),
         Effect.tap(Effect.logDebug("Done building.")),
