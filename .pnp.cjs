@@ -80,6 +80,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:4.9.12"\
       ],\
       [\
+        "@blueprintjs/table",\
+        "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:4.10.12"\
+      ],\
+      [\
         "@effect/cli",\
         "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.35.31"\
       ],\
@@ -345,7 +349,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ],\
       [\
         "@riboseinc/paneron-registry-kit",\
-        "npm:2.2.49"\
+        "npm:2.2.50"\
       ],\
       [\
         "@types/dom4",\
@@ -992,6 +996,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:6.1.0"\
       ],\
       [\
+        "react-innertext",\
+        "virtual:373cf1887e56f07922309c07d03efe4578cfb27a2e1396e00e5da276dda120febf53367811b5943e872b3aa191a7a75161762f25f6c4a1efb22115bfea5cb373#npm:1.1.5"\
+      ],\
+      [\
         "react-is",\
         "npm:16.13.1"\
       ],\
@@ -1582,6 +1590,38 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["classnames", "npm:2.5.1"],\
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:18.2.0"],\
+            ["tslib", "npm:2.5.3"]\
+          ],\
+          "packagePeers": [\
+            "@types/react-dom",\
+            "@types/react",\
+            "react-dom",\
+            "react"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@blueprintjs/table", [\
+        ["npm:4.10.12", {\
+          "packageLocation": "./.yarn/cache/@blueprintjs-table-npm-4.10.12-aab03bb661-f38c20fe0c.zip/node_modules/@blueprintjs/table/",\
+          "packageDependencies": [\
+            ["@blueprintjs/table", "npm:4.10.12"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:4.10.12", {\
+          "packageLocation": "./.yarn/__virtual__/@blueprintjs-table-virtual-373cf1887e/0/cache/@blueprintjs-table-npm-4.10.12-aab03bb661-f38c20fe0c.zip/node_modules/@blueprintjs/table/",\
+          "packageDependencies": [\
+            ["@blueprintjs/table", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:4.10.12"],\
+            ["@blueprintjs/core", "virtual:5797a995819f15b02548971bfa3ed26e0b6455551e7341c4efefd9db291bf5a751ddf437aeee9cc550b65e1b73683c198547b7183a09e5d72efa1b07d769ed1c#npm:4.20.2"],\
+            ["@blueprintjs/popover2", "virtual:639caaa2a8981aa19b4632eaf23895a3ac23a4cfaf69e7fd1e41ba162b1b6bc35b190e9547cc3ae5fc88340819c59550d4766dbde0d4276b5965a9fc342020c1#npm:1.14.11"],\
+            ["@types/react", "npm:18.2.46"],\
+            ["@types/react-dom", "npm:18.2.18"],\
+            ["classnames", "npm:2.5.1"],\
+            ["prop-types", "npm:15.8.1"],\
+            ["react", "npm:18.2.0"],\
+            ["react-dom", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:18.2.0"],\
+            ["react-innertext", "virtual:373cf1887e56f07922309c07d03efe4578cfb27a2e1396e00e5da276dda120febf53367811b5943e872b3aa191a7a75161762f25f6c4a1efb22115bfea5cb373#npm:1.1.5"],\
             ["tslib", "npm:2.5.3"]\
           ],\
           "packagePeers": [\
@@ -2726,10 +2766,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@riboseinc/paneron-registry-kit", [\
-        ["npm:2.2.49", {\
-          "packageLocation": "./.yarn/cache/@riboseinc-paneron-registry-kit-npm-2.2.49-9253398672-dba6effea1.zip/node_modules/@riboseinc/paneron-registry-kit/",\
+        ["npm:2.2.50", {\
+          "packageLocation": "./.yarn/cache/@riboseinc-paneron-registry-kit-npm-2.2.50-20ca59c85d-0f9c2f8433.zip/node_modules/@riboseinc/paneron-registry-kit/",\
           "packageDependencies": [\
-            ["@riboseinc/paneron-registry-kit", "npm:2.2.49"]\
+            ["@riboseinc/paneron-registry-kit", "npm:2.2.50"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -4629,6 +4669,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["react-innertext", [\
+        ["npm:1.1.5", {\
+          "packageLocation": "./.yarn/cache/react-innertext-npm-1.1.5-50613b71c6-01c9c8a5a4.zip/node_modules/react-innertext/",\
+          "packageDependencies": [\
+            ["react-innertext", "npm:1.1.5"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:373cf1887e56f07922309c07d03efe4578cfb27a2e1396e00e5da276dda120febf53367811b5943e872b3aa191a7a75161762f25f6c4a1efb22115bfea5cb373#npm:1.1.5", {\
+          "packageLocation": "./.yarn/__virtual__/react-innertext-virtual-744c1649e7/0/cache/react-innertext-npm-1.1.5-50613b71c6-01c9c8a5a4.zip/node_modules/react-innertext/",\
+          "packageDependencies": [\
+            ["react-innertext", "virtual:373cf1887e56f07922309c07d03efe4578cfb27a2e1396e00e5da276dda120febf53367811b5943e872b3aa191a7a75161762f25f6c4a1efb22115bfea5cb373#npm:1.1.5"],\
+            ["@types/react", "npm:18.2.46"],\
+            ["react", "npm:18.2.0"]\
+          ],\
+          "packagePeers": [\
+            "@types/react",\
+            "react"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["react-is", [\
         ["npm:16.13.1", {\
           "packageLocation": "./.yarn/cache/react-is-npm-16.13.1-a9b9382b4f-f7a19ac349.zip/node_modules/react-is/",\
@@ -5199,6 +5261,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blueprintjs/icons", "npm:4.14.5"],\
             ["@blueprintjs/popover2", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:1.13.12"],\
             ["@blueprintjs/select", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:4.9.12"],\
+            ["@blueprintjs/table", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:4.10.12"],\
             ["@effect/cli", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.35.31"],\
             ["@effect/platform", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.48.29"],\
             ["@effect/platform-browser", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:0.30.12"],\
@@ -5210,7 +5273,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@emotion/react", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:11.10.6"],\
             ["@emotion/styled", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:11.10.6"],\
             ["@riboseinc/paneron-extension-kit", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:2.2.29"],\
-            ["@riboseinc/paneron-registry-kit", "npm:2.2.49"],\
+            ["@riboseinc/paneron-registry-kit", "npm:2.2.50"],\
             ["@types/node", "npm:20.11.0"],\
             ["@types/react", "npm:18.2.46"],\
             ["@types/react-dom", "npm:18.2.18"],\

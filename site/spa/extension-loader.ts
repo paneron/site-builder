@@ -40,6 +40,7 @@ async function getExtensionImports(): Promise<Record<string, unknown>> {
     '@blueprintjs/core': (await import('@blueprintjs/core')),
     '@blueprintjs/popover2': (await import('@blueprintjs/popover2')),
     '@blueprintjs/select': (await import('@blueprintjs/select')),
+    '@blueprintjs/table': (await import('@blueprintjs/table')),
     // 'react-mathjax2': await import('react-mathjax2'),
     // 'liquidjs': await import('liquidjs'),
     // 'js-yaml': await import('js-yaml'),

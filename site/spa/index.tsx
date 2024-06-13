@@ -10,7 +10,7 @@ import { Effect } from 'effect';
 import * as BrowserHttp from '@effect/platform-browser/BrowserHttpClient';
 import * as S from '@effect/schema/Schema';
 
-import { PopoverInteractionKind, NonIdealState, Spinner, Classes, Button } from '@blueprintjs/core';
+import { HotkeysProvider, PopoverInteractionKind, NonIdealState, Spinner, Classes, Button } from '@blueprintjs/core';
 import { Tooltip2 as Tooltip } from '@blueprintjs/popover2';
 
 import MathJax from 'react-mathjax2';
@@ -21,6 +21,7 @@ import MathJax from 'react-mathjax2';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
 import '@blueprintjs/popover2/lib/css/blueprint-popover2.css';
+import '@blueprintjs/table/lib/css/table.css';
 import 'react-resizable/css/styles.css';
 import './base.css';
 import './site.css';
@@ -215,9 +216,11 @@ const App: React.FC<{
   return (
     <React.StrictMode>
       <ErrorBoundary viewName="main dataset view">
-        <MathJax.Context options={MATHJAX_OPTS} script={MATHJAX_SCRIPT_PATH}>
-          <View {...ctx} />
-        </MathJax.Context>
+        <HotkeysProvider>
+          <MathJax.Context options={MATHJAX_OPTS} script={MATHJAX_SCRIPT_PATH}>
+            <View {...ctx} />
+          </MathJax.Context>
+        </HotkeysProvider>
       </ErrorBoundary>
     </React.StrictMode>
   );

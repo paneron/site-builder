@@ -208,7 +208,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@blueprintjs/popover2@npm:^1.13.12":
+"@blueprintjs/popover2@npm:^1.13.12, @blueprintjs/popover2@npm:^1.14.11":
   version: 1.14.11
   resolution: "@blueprintjs/popover2@npm:1.14.11"
   dependencies:
@@ -246,6 +246,27 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 5079317b93f444b89b7eede6bfe7d1c10d2936a08b88e9f853ad14ed4099295c8a8bf8727770308e25ff6ad943d36c303d9353d1a82e1def988e39fd14533487
+  languageName: node
+  linkType: hard
+
+"@blueprintjs/table@npm:4.10.12":
+  version: 4.10.12
+  resolution: "@blueprintjs/table@npm:4.10.12"
+  dependencies:
+    "@blueprintjs/core": ^4.20.2
+    "@blueprintjs/popover2": ^1.14.11
+    classnames: ^2.3.1
+    prop-types: ^15.7.2
+    react-innertext: ^1.1.5
+    tslib: ~2.5.0
+  peerDependencies:
+    "@types/react": ^16.14.32 || 17 || 18
+    react: ^16.8 || 17 || 18
+    react-dom: ^16.8 || 17 || 18
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: f38c20fe0c88bd1aa5a1fcd7b2c72c2678e47e9f44cf461c5ec81570a2a7c9035d918a4a026c530e1b6f2f6c304b22763674923f832baa60fc95cd4dabc82e8f
   languageName: node
   linkType: hard
 
@@ -1072,10 +1093,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@riboseinc/paneron-registry-kit@npm:2.2.49":
-  version: 2.2.49
-  resolution: "@riboseinc/paneron-registry-kit@npm:2.2.49"
-  checksum: dba6effea10746829fdafa1021df04ef744be748f028a760bd4704402a03b6ac40a91b10405482a9500c2e1b68e5153dd984c0f1312bc037348b6ca11fcdc552
+"@riboseinc/paneron-registry-kit@npm:2.2.50":
+  version: 2.2.50
+  resolution: "@riboseinc/paneron-registry-kit@npm:2.2.50"
+  checksum: 0f9c2f84335d14ad258227da1b53fd0e9935442ad748dff65c95da6456da7c2bd61d3c706954d8ae84974c66b6a45dd0ef1b6d54a829d73f579d5a369f3c4e34
   languageName: node
   linkType: hard
 
@@ -2763,6 +2784,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-innertext@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "react-innertext@npm:1.1.5"
+  peerDependencies:
+    "@types/react": ">=0.0.0 <=99"
+    react: ">=0.0.0 <=99"
+  checksum: 01c9c8a5a471f03965b9d69c8bee02d420fd3a607b678004f0bdee098c9bccb3e2eae8460c90b1d180d2a8d544a3ddb09b8c2a11e5aa8b3a077733e2d9c25c2c
+  languageName: node
+  linkType: hard
+
 "react-is@npm:^16.13.1, react-is@npm:^16.6.3, react-is@npm:^16.7.0":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
@@ -3214,6 +3245,7 @@ __metadata:
     "@blueprintjs/icons": 4.14.5
     "@blueprintjs/popover2": 1.13.12
     "@blueprintjs/select": 4.9.12
+    "@blueprintjs/table": 4.10.12
     "@effect/cli": ~0.35.0
     "@effect/platform": ~0.48.0
     "@effect/platform-browser": ^0.30.0
@@ -3225,7 +3257,7 @@ __metadata:
     "@emotion/react": 11.10.6
     "@emotion/styled": 11.10.6
     "@riboseinc/paneron-extension-kit": 2.2.29
-    "@riboseinc/paneron-registry-kit": 2.2.49
+    "@riboseinc/paneron-registry-kit": 2.2.50
     "@types/node": 20
     "@types/react": 18
     "@types/react-dom": 18
