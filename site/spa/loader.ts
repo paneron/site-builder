@@ -138,7 +138,6 @@ loadAsset<typeof assetSrcs[number]>(
       const { bar: progressEl, label: statusEl } = createProgress(assetSrc);
       const done = done_[idx];
       const total = total_[idx];
-      console.debug(idx, assetSrc, done, total);
       if (done < total) {
         progressEl.setAttribute('max', String(total));
         progressEl.setAttribute('value', String(done));
