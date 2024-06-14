@@ -66,6 +66,7 @@ export function getExtensionContext(
       ]), [...[...Array(6).keys()].map(k => args[k])]);
 
       // XXX
+      // Stopgap?
       const alwaysLoadInitialState = React.useCallback((async () => args[4]), [args[4]]);
 
       return usePersistentStateReducer(
