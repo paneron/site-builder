@@ -272,6 +272,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "npm:8.0.2"\
       ],\
       [\
+        "@jsonurl/jsonurl",\
+        "npm:1.1.7"\
+      ],\
+      [\
         "@juggle/resize-observer",\
         "npm:3.4.0"\
       ],\
@@ -2519,6 +2523,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
               "wrap-ansi",\
               "npm:7.0.0"\
             ]]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@jsonurl/jsonurl", [\
+        ["npm:1.1.7", {\
+          "packageLocation": "./.yarn/cache/@jsonurl-jsonurl-npm-1.1.7-98d63abb82-796a83667c.zip/node_modules/@jsonurl/jsonurl/",\
+          "packageDependencies": [\
+            ["@jsonurl/jsonurl", "npm:1.1.7"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -5272,6 +5285,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@effect/typeclass", "virtual:451d72f446110050489e290ae9802292221c2971d34941d07d6753ee84b474fe9bb6e19b466941cc5a4584321417e56d7472931b83d8d899d720cdac37894d01#npm:0.22.23"],\
             ["@emotion/react", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:11.10.6"],\
             ["@emotion/styled", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:11.10.6"],\
+            ["@jsonurl/jsonurl", "npm:1.1.7"],\
             ["@riboseinc/paneron-extension-kit", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:2.2.29"],\
             ["@riboseinc/paneron-registry-kit", "npm:2.2.51"],\
             ["@types/node", "npm:20.11.0"],\

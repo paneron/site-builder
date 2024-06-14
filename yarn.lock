@@ -881,6 +881,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jsonurl/jsonurl@npm:^1.1.7":
+  version: 1.1.7
+  resolution: "@jsonurl/jsonurl@npm:1.1.7"
+  checksum: 796a83667cb24c8914729f99550c753f6f371b1c755bb48cd500e0c7068ffc80d1692dd36b49ccc5f9afbd0958b29f41514f3491e59a8e1e201c9f3736923422
+  languageName: node
+  linkType: hard
+
 "@juggle/resize-observer@npm:^3.4.0":
   version: 3.4.0
   resolution: "@juggle/resize-observer@npm:3.4.0"
@@ -3256,6 +3263,7 @@ __metadata:
     "@effect/typeclass": ~0.22.0
     "@emotion/react": 11.10.6
     "@emotion/styled": 11.10.6
+    "@jsonurl/jsonurl": ^1.1.7
     "@riboseinc/paneron-extension-kit": 2.2.29
     "@riboseinc/paneron-registry-kit": 2.2.51
     "@types/node": 20

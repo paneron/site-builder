@@ -13,6 +13,8 @@ import * as S from '@effect/schema/Schema';
 import { HotkeysProvider, PopoverInteractionKind, NonIdealState, Spinner, Classes, Button } from '@blueprintjs/core';
 import { Tooltip2 as Tooltip } from '@blueprintjs/popover2';
 
+import JsonURL from '@jsonurl/jsonurl';
+
 import MathJax from 'react-mathjax2';
 
 //import './normalize.css';
@@ -34,7 +36,7 @@ import { BP4_RESET_CSS } from '@riboseinc/paneron-extension-kit/util';
 
 import { repeatWhileLoading, loadExtensionAndDataset } from './extension-loader.js';
 import { getExtensionContext } from './extension-context.js';
-import { getDBEffect, getItemEffect, getItem, storeItem } from './db.js';
+import { getDBEffect, getItemEffect, storeItem } from './db.js';
 
 
 console.debug("Hello World");
@@ -64,6 +66,8 @@ const SettingsSchema = S.Union(
   S.Undefined, // when blank slate
   S.Struct({ key: S.Literal('settings'), value: S.Record(S.String, S.Unknown) }),
 );
+
+const StoredState = S.Record(S.String, S.Unknown);
 
 function loadApp (ignoreCache = true) {
   const leaveLoadingState = repeatWhileLoading(function renderLoader(done, total, stage) {
@@ -118,13 +122,15 @@ function loadApp (ignoreCache = true) {
           await storeItem(settingsDB, 'settings', { key: 'settings', value: settings });
         },
         getState: async (key: string) => {
-          const got = await getItem(settingsDB, 'state', key) as undefined | { value?: unknown };
-          //console.debug("State: get", key, got?.value ?? undefined);
-          return got?.value ?? undefined;
+          return getStoredState()[key] ?? undefined;
+          //const got = await getItem(settingsDB, 'state', key) as undefined | { value?: unknown };
+          ////console.debug("State: get", key, got?.value ?? undefined);
+          //return got?.value ?? undefined;
         },
         storeState: (key: string, value: unknown) => {
+          setStoredState({ ...getStoredState(), [key]: value });
           //console.debug("State: store", key, value);
-          storeItem(settingsDB, 'state', { key, value });
+          //storeItem(settingsDB, 'state', { key, value });
         }
       },
     );
@@ -259,3 +265,47 @@ const MATHJAX_OPTS = {
     processEscapes: true
   },
 } as const;
+
+
+// State utils
+
+/**
+ * Retrieves full stored state from location hash,
+ * if it can’t be deserialized then location hash overwritten to empty.
+ */
+function getStoredState(): Record<string, unknown> {
+  let parsed: unknown;
+  try {
+
+    parsed = JsonURL.parse(
+      window.location.hash.slice(1),
+      { AQF: true, noEmptyComposite: true },
+    );
+  } catch (e) {
+    console.error("State: Failed to deserialize stored state", e, window.location.hash);
+    window.location.hash = '';
+    return {};
+  }
+  try {
+    return S.decodeUnknownSync(StoredState)(parsed);
+  } catch (e) {
+    console.error("State: Deserialized state did not validate", e, parsed);
+    window.location.hash = '';
+    return {};
+  }
+}
+function setStoredState(state: Record<string, unknown>) {
+  let serializedState: string | undefined;
+  try {
+    serializedState = JsonURL.stringify(
+      state,
+      { AQF: true, noEmptyComposite: true, ignoreUndefinedObjectMembers: true });
+  } catch (e) {
+    console.error("State: Failed to serialize state; not storing", e, state);
+  }
+  if (serializedState !== undefined) {
+    window.location.hash = serializedState;
+  } else {
+    console.error("State: Failed to serialize state (got undefined); not storing", state);
+  }
+}

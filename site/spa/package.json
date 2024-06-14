@@ -22,6 +22,7 @@
     "@effect/platform-browser": "^0.30.0",
     "@emotion/react": "11.10.6",
     "@emotion/styled": "11.10.6",
+    "@jsonurl/jsonurl": "^1.1.7",
     "@riboseinc/paneron-extension-kit": "2.2.29",
     "@riboseinc/paneron-registry-kit": "2.2.51",
     "@types/react": "18",
