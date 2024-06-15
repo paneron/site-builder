@@ -276,7 +276,6 @@ const MATHJAX_OPTS = {
 function getStoredState(): Record<string, unknown> {
   let parsed: unknown;
   try {
-
     parsed = JsonURL.parse(
       window.location.hash.slice(1),
       { AQF: true, noEmptyComposite: true },
