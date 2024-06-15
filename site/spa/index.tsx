@@ -284,7 +284,7 @@ function getStoredState(): S.Schema.Type<typeof StoredState> {
         lz.decompressFromEncodedURIComponent(hashData.state),
         { noEmptyComposite: true });
     } catch (e) {
-      console.error("State: Failed to deserialize stored state", e, hashData.state);
+      console.error("State: Failed to decompress or deserialize stored state", e, hashData.state);
       setStoredState({});
       return {};
     }
