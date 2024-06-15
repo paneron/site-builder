@@ -812,6 +812,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "npm:10.2.1"\
       ],\
       [\
+        "lz-string",\
+        "npm:1.5.0"\
+      ],\
+      [\
         "make-fetch-happen",\
         "npm:13.0.0"\
       ],\
@@ -4102,6 +4106,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["lz-string", [\
+        ["npm:1.5.0", {\
+          "packageLocation": "./.yarn/cache/lz-string-npm-1.5.0-3860794e30-1ee98b4580.zip/node_modules/lz-string/",\
+          "packageDependencies": [\
+            ["lz-string", "npm:1.5.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["make-fetch-happen", [\
         ["npm:13.0.0", {\
           "packageLocation": "./.yarn/cache/make-fetch-happen-npm-13.0.0-f87a92bb87-7c7a6d381c.zip/node_modules/make-fetch-happen/",\
@@ -5300,6 +5313,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["immutability-helper", "npm:3.1.1"],\
             ["import-mapper", "npm:0.0.4"],\
             ["liquidjs", "npm:9.25.0"],\
+            ["lz-string", "npm:1.5.0"],\
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:18.2.0"],\
             ["react-helmet", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:6.1.0"],\

@@ -14,6 +14,7 @@ import { HotkeysProvider, PopoverInteractionKind, NonIdealState, Spinner, Classe
 import { Tooltip2 as Tooltip } from '@blueprintjs/popover2';
 
 import JsonURL from '@jsonurl/jsonurl';
+import lz from 'lz-string';
 
 import MathJax from 'react-mathjax2';
 
@@ -271,40 +272,90 @@ const StoredState = S.Record(S.String, S.Unknown);
 
 /**
  * Retrieves full stored state from location hash,
- * if it can’t be deserialized then location hash overwritten to empty.
+ * if it can’t be deserialized then state is overwritten to empty.
  */
-function getStoredState(): Record<string, unknown> {
-  let parsed: unknown;
-  try {
-    parsed = JsonURL.parse(
-      window.location.hash.slice(1),
-      { AQF: true, noEmptyComposite: true },
-    );
-  } catch (e) {
-    console.error("State: Failed to deserialize stored state", e, window.location.hash);
-    window.location.hash = '';
-    return {};
-  }
-  try {
-    return S.decodeUnknownSync(StoredState)(parsed);
-  } catch (e) {
-    console.error("State: Deserialized state did not validate", e, parsed);
-    window.location.hash = '';
+function getStoredState(): S.Schema.Type<typeof StoredState> {
+  const hashData = getHashData();
+
+  if (hashData.state) {
+    let stateDeserialized: unknown;
+    try {
+      stateDeserialized = JsonURL.parse(
+        lz.decompressFromEncodedURIComponent(hashData.state),
+        { noEmptyComposite: true });
+    } catch (e) {
+      console.error("State: Failed to deserialize stored state", e, hashData.state);
+      setStoredState({});
+      return {};
+    }
+    try {
+      return S.decodeUnknownSync(StoredState)(stateDeserialized);
+    } catch (e) {
+      console.error("State: Deserialized state did not validate", e, stateDeserialized);
+      setStoredState({});
+      return {};
+    }
+  } else {
     return {};
   }
 }
-function setStoredState(state: Record<string, unknown>) {
+
+function setStoredState(state: S.Schema.Type<typeof StoredState>) {
   let serializedState: string | undefined;
   try {
     serializedState = JsonURL.stringify(
       state,
-      { AQF: true, noEmptyComposite: true, ignoreUndefinedObjectMembers: true });
+      { noEmptyComposite: true, ignoreUndefinedObjectMembers: true });
   } catch (e) {
     console.error("State: Failed to serialize state; not storing", e, state);
+    return;
   }
-  if (serializedState !== undefined) {
-    window.location.hash = serializedState;
+  if (serializedState === undefined) {
+    console.error("State: Failed to serialize state: obtained undefined; not storing", state);
+    return;
+  }
+  try {
+    storeHashData({
+      ...getHashData(),
+      state: lz.compressToEncodedURIComponent(serializedState),
+    });
+  } catch (e) {
+    console.error("State: Failed to store URI fragment", e, serializedState);
+    return;
+  }
+}
+
+
+// Hash fragment utils
+
+const HashData = S.Struct({ state: S.Any });
+
+function getHashData(): S.Schema.Type<typeof HashData> {
+  const hash = window.location.hash.slice(1);
+  if (!hash) {
+    return { state: undefined };
+  }
+  try {
+    const hashDeserialized = JsonURL.parse(
+      hash,
+      { noEmptyComposite: true, AQF: true });
+    return S.decodeUnknownSync(HashData)(hashDeserialized);
+  } catch (e) {
+    console.error("Failed to obtain hash data", e);
+    window.location.hash = '';
+    return { state: undefined };
+    
+  }
+}
+
+function storeHashData(hashData: S.Schema.Type<typeof HashData>) {
+  const stringified = JsonURL.stringify(
+    hashData,
+    { noEmptyComposite: true, AQF: true, ignoreUndefinedObjectMembers: true },
+  );
+  if (stringified) {
+    window.location.hash = stringified;
   } else {
-    console.error("State: Failed to serialize state (got undefined); not storing", state);
+    throw new Error("Unable to obtain URI fragment (obtained undefined)");
   }
 }
