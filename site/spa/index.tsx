@@ -67,8 +67,6 @@ const SettingsSchema = S.Union(
   S.Struct({ key: S.Literal('settings'), value: S.Record(S.String, S.Unknown) }),
 );
 
-const StoredState = S.Record(S.String, S.Unknown);
-
 function loadApp (ignoreCache = true) {
   const leaveLoadingState = repeatWhileLoading(function renderLoader(done, total, stage) {
     container.render(
@@ -268,6 +266,8 @@ const MATHJAX_OPTS = {
 
 
 // State utils
+
+const StoredState = S.Record(S.String, S.Unknown);
 
 /**
  * Retrieves full stored state from location hash,
