@@ -190,6 +190,6 @@ function _getDB(
 
 function getStore(db: IDBDatabase, storeName: string, write = false) {
   return db.
-      transaction(storeName, write ? 'readwrite' : 'readonly').
-      objectStore(storeName);
+    transaction(storeName, write ? 'readwrite' : 'readonly').
+    objectStore(storeName);
 };
