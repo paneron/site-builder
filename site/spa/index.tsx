@@ -346,7 +346,7 @@ function getHashData(): S.Schema.Type<typeof HashData> {
       { noEmptyComposite: true, AQF: true });
     return S.decodeUnknownSync(HashData)(hashDeserialized);
   } catch (e) {
-    console.error("Failed to obtain hash data", e);
+    console.error("Failed to deserialize URI fragment data, or its shape is invalid; resetting", e);
     window.location.hash = '';
     return { state: undefined };
     
@@ -361,6 +361,6 @@ function storeHashData(hashData: S.Schema.Type<typeof HashData>) {
   if (stringified) {
     window.location.hash = stringified;
   } else {
-    throw new Error("Unable to obtain URI fragment (obtained undefined)");
+    throw new Error("Unable to serialize URI fragment (obtained undefined)");
   }
 }
