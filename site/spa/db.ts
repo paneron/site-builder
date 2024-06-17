@@ -193,3 +193,39 @@ function getStore(db: IDBDatabase, storeName: string, write = false) {
     transaction(storeName, write ? 'readwrite' : 'readonly').
     objectStore(storeName);
 };
+
+export async function getAllItems(
+  db: IDBDatabase,
+  storeName: string,
+  options?: { andDelete?: boolean },
+): Promise<Record<string, unknown>> {
+  return new Promise((resolve, reject) => {
+
+    const request = db.
+      transaction(storeName, options?.andDelete ? 'readwrite' : 'readonly').
+      objectStore(storeName).
+      openCursor();
+
+    const result: Record<string, unknown> = {};
+
+    request.onerror = function handleDBCursorError (evt) {
+      const errCode = (evt.target as { errorCode?: string })?.errorCode;
+      console.error("indexedDB cursor error", errCode);
+      reject(errCode);
+    };
+    request.onsuccess = function handleDBCursorSuccess (evt) {
+      let cursor = (evt.target as any)?.result as IDBCursorWithValue | null;
+      if (cursor) {
+        let value = cursor.value;
+        result[value.key] = value.value;
+        if (options?.andDelete) {
+          cursor.delete();
+        }
+        cursor.continue();
+      } else {
+        resolve(result);
+      }
+    };
+
+  });
+}
