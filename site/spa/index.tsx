@@ -330,6 +330,11 @@ function setStoredState(state: S.Schema.Type<typeof StoredState>) {
 
 const HashData = S.Struct({ state: S.Any });
 
+/**
+ * Returns deserialized URI fragment data.
+ * Doesn’t throw.
+ * If URI fragment looks nonsensical, resets it to empty automatically.
+ */
 function getHashData(): S.Schema.Type<typeof HashData> {
   const hash = window.location.hash.slice(1);
   if (!hash) {
