@@ -349,7 +349,6 @@ function getHashData(): S.Schema.Type<typeof HashData> {
     console.error("Failed to deserialize URI fragment data, or its shape is invalid; resetting", e);
     window.location.hash = '';
     return { state: undefined };
-    
   }
 }
 
