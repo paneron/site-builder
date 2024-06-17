@@ -153,6 +153,7 @@ export function loadExtensionAndDataset(
 ) {
   totalWorkUnits = 0;
   completedWorkUnits = 0;
+  workStage = 'fetching';
   return Effect.all(
     [
       Console.withTime("load plugin")
