@@ -65,6 +65,8 @@ async function getExtensionImports(): Promise<Record<string, unknown>> {
   };
 }
 
+let registered = false;
+
 /**
  * Uses importMapper to make select dependencies available within code
  * that was dynamically `import()`ed from an object URL
@@ -72,6 +74,10 @@ async function getExtensionImports(): Promise<Record<string, unknown>> {
  */
 async function setUpExtensionImportMap() {
   const deps = await getExtensionImports();
+
+  if (registered) {
+    return deps;
+  }
 
   const imports: Record<string, string> = {};
   for (const [moduleID, moduleData] of Object.entries(deps)) {
@@ -87,6 +93,8 @@ async function setUpExtensionImportMap() {
 
   const mapper = new ImportMapper(imports);
   mapper.register();
+
+  registered = true;
 
   return deps;
 }
