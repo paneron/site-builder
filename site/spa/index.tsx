@@ -37,7 +37,7 @@ import { BP4_RESET_CSS } from '@riboseinc/paneron-extension-kit/util';
 
 import { repeatWhileLoading, loadExtensionAndDataset } from './extension-loader.js';
 import { getExtensionContext } from './extension-context.js';
-import { getDBEffect, getItemEffect, storeItem } from './db.js';
+import { getDBEffect, getItemEffect, getItem, getAllItems, storeItem } from './db.js';
 
 
 console.debug("Hello World");
@@ -50,8 +50,6 @@ const style = document.createElement("style");
 style.textContent = BP4_RESET_CSS;
 document.head.appendChild(style);
 
-const container = ReactDOM.createRoot(document.getElementById('app')!);
-
 
 const byteFormatter = Intl.NumberFormat(navigator.language, {
   notation: "compact",
@@ -60,6 +58,7 @@ const byteFormatter = Intl.NumberFormat(navigator.language, {
   unitDisplay: "narrow",
 });
 
+let container: ReactDOM.Root | undefined = makeReactRoot();
 
 loadApp(false);
 
@@ -68,18 +67,22 @@ const SettingsSchema = S.Union(
   S.Struct({ key: S.Literal('settings'), value: S.Record(S.String, S.Unknown) }),
 );
 
-function loadApp (ignoreCache = true) {
-  const leaveLoadingState = repeatWhileLoading(function renderLoader(done, total, stage) {
-    container.render(
-      <Loader
-        done={done < total ? done : undefined}
-        total={total > done ? total : undefined}
-        stage={stage}
-      />,
-    );
-  });
-  
-  Effect.all([
+function makeReactRoot() {
+  return ReactDOM.createRoot(document.getElementById('app')!);
+}
+
+const leaveLoadingState = repeatWhileLoading(function renderLoader(done, total, stage) {
+  container!.render(
+    <Loader
+      done={done < total ? done : undefined}
+      total={total > done ? total : undefined}
+      stage={stage}
+    />,
+  );
+});
+
+async function loadApp (ignoreCache = true) {
+  return Effect.all([
 
     loadExtensionAndDataset(ignoreCache),
 
@@ -109,6 +112,11 @@ function loadApp (ignoreCache = true) {
     Effect.provide(BrowserHttp.layerXMLHttpRequest),
     Effect.runPromise,
   ).
+  then(([[ext, ds], [settingsDB, settings]]) => {
+    return maybeMigrateStateFromURIFragment(settingsDB).then(() =>
+      [[ext, ds], [settingsDB, settings]] as const
+    );
+  }).
   then(([[{ extInfo, ext }, dataset], [settingsDB, settings]]) => {
     leaveLoadingState();
     const ctx = getExtensionContext(
@@ -121,15 +129,14 @@ function loadApp (ignoreCache = true) {
           await storeItem(settingsDB, 'settings', { key: 'settings', value: settings });
         },
         getState: async (key: string) => {
-          return getStoredState()[key] ?? undefined;
-          //const got = await getItem(settingsDB, 'state', key) as undefined | { value?: unknown };
-          ////console.debug("State: get", key, got?.value ?? undefined);
-          //return got?.value ?? undefined;
+          const state = await getItem(settingsDB, 'state', key) as undefined | { value?: unknown };
+          //console.debug("State: get", key, state ?? undefined);
+          return state?.value ?? undefined;
         },
         storeState: (key: string, value: unknown) => {
-          setStoredState({ ...getStoredState(), [key]: value });
+          //setStoredState({ ...getStoredState(), [key]: value });
           //console.debug("State: store", key, value);
-          //storeItem(settingsDB, 'state', { key, value });
+          storeItem(settingsDB, 'state', { key, value });
         }
       },
     );
@@ -163,7 +170,23 @@ function loadApp (ignoreCache = true) {
         </NavbarButton>
       </Tooltip>
     );
-    container.render(
+
+    // eek
+    // Necessary so that calling loadApp() again in future
+    // restarts rendering from scratch. That is required to make
+    // state changes have effect (e.g., if the user pastes URL with a hash,
+    // or if user clicks the button to reset GUI state).
+    //
+    // This is because many components down the tree
+    // will attempt to load state on mount.
+    //
+    // It may be worth adopting an architecture where
+    // state can be passed to root component as a prop,
+    // causing the entire component tree to update appropriately.
+
+    container?.unmount();
+    container = makeReactRoot();
+    container!.render(
       <div className="appWrapper">
         <div className="mainViewWrapper">
           <App View={ext.mainView!} ctx={ctx} />
@@ -171,15 +194,37 @@ function loadApp (ignoreCache = true) {
         <Navbar
             className={`statusBar ${Classes.ELEVATION_2}`}
             breadcrumbs={EMPTY_ARRAY}>
+
+          <NavbarButton
+            text="Copy link to this view"
+            icon='link'
+            onClick={() => copyLinkToCurrentView(settingsDB)}
+          />
+
           {versionBar}
+
+          <NavbarButton
+            text="Reset interface"
+            onClick={() => resetView(settingsDB)}
+          />
+
         </Navbar>
       </div>
     );
+
+    function handleHashChange(evt: HashChangeEvent) {
+      //console.debug("Handling hashchange");
+      window.removeEventListener('hashchange', handleHashChange);
+      maybeMigrateStateFromURIFragment(settingsDB, evt.newURL.split('#')[1]).
+        then(() => loadApp(false));
+    }
+
+    window.addEventListener('hashchange', handleHashChange);
   }).
   catch(e => {
     console.error("Failed to load", e);
     leaveLoadingState();
-    container.render(
+    container!.render(
       <NonIdealState
         icon="heart-broken"
         title="Failed to load extension or dataset"
@@ -270,59 +315,93 @@ const MATHJAX_OPTS = {
 
 const StoredState = S.Record(S.String, S.Unknown);
 
+async function copyLinkToCurrentView(db: IDBDatabase) {
+  let uriFragment: string;
+  try {
+    const state = S.decodeUnknownSync(StoredState)(await getAllItems(db, 'state'));
+    uriFragment = uriFragment = getHashFragment({
+      ...getHashData(),
+      state: getStateAsURIFragment(state),
+    });
+  } catch (e) {
+    console.error("Will not copy link: state didn’t validate, or could not be encoded");
+    uriFragment = '';
+  }
+  if (uriFragment !== '') {
+    await navigator.clipboard.writeText(`${document.location.origin}/#${uriFragment}`);
+  }
+}
+
+async function resetView(db: IDBDatabase) {
+  await getAllItems(db, 'state', { andDelete: true });
+  window.location.hash = getHashFragment({ ...getHashData(), state: { thisIs: 'a fake value' } });
+  resetStateInURIFragment();
+}
+
+async function maybeMigrateStateFromURIFragment(idb: IDBDatabase, uriFragment?: string): Promise<void> {
+  // If we have valid state in URI fragment upon initial load,
+  // migarte that state into IndexedDB and reset URI fragment.
+  let state: S.Schema.Type<typeof StoredState>;
+  try {
+    state = getStateFromURIFragment(uriFragment);
+  } catch (e) {
+    // TODO: Inform user that the state was bad
+    console.error("Failed to obtain app state from URI fragment", e);
+    state = {};
+  }
+  if (Object.keys(state).length >= 0) {
+    await Promise.all(
+      Object.entries(state).
+      map(([key, value]) => storeItem(idb, 'state', { key, value }))
+    );
+  }
+
+  resetStateInURIFragment();
+}
+
 /**
  * Retrieves full stored state from location hash,
  * if it can’t be deserialized then state is overwritten to empty.
+ * Doesn’t throw.
  */
-function getStoredState(): S.Schema.Type<typeof StoredState> {
-  const hashData = getHashData();
+function getStateFromURIFragment(uriFragment?: string): S.Schema.Type<typeof StoredState> {
+  const hashData = getHashData(uriFragment);
 
-  if (hashData.state) {
+  if (hashData.state !== undefined) {
     let stateDeserialized: unknown;
     try {
       stateDeserialized = JsonURL.parse(
         lz.decompressFromEncodedURIComponent(hashData.state),
         { noEmptyComposite: true });
     } catch (e) {
-      console.error("State: Failed to decompress or deserialize stored state", e, hashData.state);
-      setStoredState({});
+      console.error("State: Failed to decompress or deserialize stored state, resetting", e, hashData.state);
       return {};
     }
     try {
       return S.decodeUnknownSync(StoredState)(stateDeserialized);
     } catch (e) {
-      console.error("State: Deserialized state did not validate", e, stateDeserialized);
-      setStoredState({});
+      console.error("State: Deserialized state did not validate, resetting", e, stateDeserialized);
       return {};
     }
   } else {
+    //console.debug("State: No state in URI fragment data", hashData);
     return {};
   }
 }
 
-function setStoredState(state: S.Schema.Type<typeof StoredState>) {
-  let serializedState: string | undefined;
-  try {
-    serializedState = JsonURL.stringify(
-      state,
-      { noEmptyComposite: true, ignoreUndefinedObjectMembers: true });
-  } catch (e) {
-    console.error("State: Failed to serialize state; not storing", e, state);
-    return;
+function getStateAsURIFragment(state: S.Schema.Type<typeof StoredState>): string {
+  const serializedState = JsonURL.stringify(
+    state,
+    { noEmptyComposite: true, ignoreUndefinedObjectMembers: true });
+  if (serializedState !== undefined) {
+    return lz.compressToEncodedURIComponent(serializedState);
+  } else {
+    throw new Error("Unable to obtain state URI fragment: got undefined");
   }
-  if (serializedState === undefined) {
-    console.error("State: Failed to serialize state: obtained undefined; not storing", state);
-    return;
-  }
-  try {
-    storeHashData({
-      ...getHashData(),
-      state: lz.compressToEncodedURIComponent(serializedState),
-    });
-  } catch (e) {
-    console.error("State: Failed to store URI fragment", e, serializedState);
-    return;
-  }
+}
+
+function resetStateInURIFragment() {
+  window.location.hash = getHashFragment({ ...getHashData(), state: undefined });
 }
 
 
@@ -335,9 +414,9 @@ const HashData = S.Struct({ state: S.Any });
  * Doesn’t throw.
  * If URI fragment looks nonsensical, resets it to empty automatically.
  */
-function getHashData(): S.Schema.Type<typeof HashData> {
-  const hash = window.location.hash.slice(1);
-  if (!hash) {
+function getHashData(hashFragment?: string): S.Schema.Type<typeof HashData> {
+  const hash = hashFragment ?? window.location.hash.slice(1);
+  if (!hash.trim()) {
     return { state: undefined };
   }
   try {
@@ -352,14 +431,9 @@ function getHashData(): S.Schema.Type<typeof HashData> {
   }
 }
 
-function storeHashData(hashData: S.Schema.Type<typeof HashData>) {
-  const stringified = JsonURL.stringify(
+function getHashFragment(hashData: S.Schema.Type<typeof HashData>) {
+  return JsonURL.stringify(
     hashData,
     { noEmptyComposite: true, AQF: true, ignoreUndefinedObjectMembers: true },
-  );
-  if (stringified) {
-    window.location.hash = stringified;
-  } else {
-    throw new Error("Unable to serialize URI fragment (obtained undefined)");
-  }
+  ) ?? '';
 }
