@@ -25,10 +25,16 @@
   }
 
   .statusBar {
+    > :first-child {
+      flex: 1;
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-end;
+    }
+
     height: 40px;
     flex: 0;
     display: flex;
-    justify-content: flex-end;
 
     z-index: 19;
 
@@ -38,7 +44,8 @@
 
     .versionsTooltipWrapper {
       display: unset;
-      justify-self: flex-end;
+      flex: 1;
+      text-align: right;
     }
 
     .versions {
