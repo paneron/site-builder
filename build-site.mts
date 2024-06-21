@@ -96,7 +96,7 @@ Effect.gen(function * (_) {
     Console.withTime(`Scaffold site template from ${siteTemplatePath} into ${outdir}`)(
       fs.copy(siteTemplatePath, outdir, { overwrite: true })
     ),
-    Effect.orElse(() => Effect.logDebug("Failed to scaffold template")),
+    Effect.orElse(() => Effect.logError("Failed to scaffold template")),
   );
 });
 

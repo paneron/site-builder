@@ -278,7 +278,7 @@ function fetchOne (path: string) {
         t.status === 200
           ? Effect.succeed(t)
           : Effect.fail(`Non-200 response (${t.headers.status})`)),
-      Effect.tapError((e) => Effect.logDebug(`Failed to download ${path}: ${e}`)),
+      Effect.tapError((e) => Effect.logError(`Failed to download ${path}: ${e}`)),
       Effect.map((_) => _.stream),
       Stream.unwrap,
       Stream.tap((arr) => Effect.sync(() => {
