@@ -26,7 +26,7 @@ export const getDBEffect = (
         _getDB(dbName, version, stores).then(resolve, reject);
       };
       if (recreate) {
-        console.debug("Deleting indexed DB", dbName);
+        console.debug("Deleting indexed DB (to recreate)", dbName);
         const req = indexedDB.deleteDatabase(dbName);
         req.onerror = reject;
         req.onsuccess = () => _getDB(dbName, version, stores).then(resolve, reject);
@@ -77,7 +77,7 @@ export const getDB = async (
       _getDB(dbName, version, stores).then(resolve, reject);
     };
     if (recreate) {
-      console.debug("Deleting indexed DB", dbName);
+      console.debug("Deleting indexed DB (to recreate)", dbName);
       const req = indexedDB.deleteDatabase(dbName);
       req.onerror = reject;
       req.onsuccess = () => _getDB(dbName, version, stores).then(resolve, reject);
