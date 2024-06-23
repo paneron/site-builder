@@ -242,7 +242,7 @@ const runExtensionBuild = (opts: SiteBuildOptions) => (Effect.gen(function * (_)
     Console.withTime(`Running site builder`)(
       builder.buildSite({ ...opts, packageRoot: PACKAGE_ROOT })
     ),
-    Effect.tapError(err => Effect.logDebug(`Failed to run extension build script: ${String(err)}`)),
+    Effect.tapError(err => Effect.logError(`Failed to run extension build script: ${String(err)}`)),
   );
 
   // Extension build (?)
