@@ -306,7 +306,7 @@ const MATHJAX_OPTS = {
   },
   tex2jax: {
     inlineMath: [['$','$'], ['\\(','\\)']],
-    processEscapes: true
+    processEscapes: true,
   },
 } as const;
 
