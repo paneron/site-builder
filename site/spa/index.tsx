@@ -334,7 +334,10 @@ async function copyLinkToCurrentView(db: IDBDatabase) {
 
 async function resetView(db: IDBDatabase) {
   await getAllItems(db, 'state', { andDelete: true });
-  window.location.hash = getHashFragment({ ...getHashData(), state: { thisIs: 'a fake value' } });
+  window.location.hash = getHashFragment({
+    ...getHashData(),
+    state: { thisIs: 'a fake value' },
+  });
   resetStateInURIFragment();
 }
 
