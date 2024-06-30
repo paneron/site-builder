@@ -315,6 +315,10 @@ const MATHJAX_OPTS = {
 
 const StoredState = S.Record(S.String, S.Unknown);
 
+/**
+ * Returns a full link to view with app state,
+ * including protocol & hostname.
+ */
 async function copyLinkToCurrentView(db: IDBDatabase) {
   let uriFragment: string;
   try {
@@ -332,8 +336,18 @@ async function copyLinkToCurrentView(db: IDBDatabase) {
   }
 }
 
+/**
+ * Resets app GUI state by setting URI fragment.
+ *
+ * Sets URI fragment twice for the change to have effect:
+ * first setting state to a fake value, then to nothing.
+ *
+ * Preserves URI fragment other than state.
+ */
 async function resetView(db: IDBDatabase) {
   await getAllItems(db, 'state', { andDelete: true });
+
+  // Workaround 
   window.location.hash = getHashFragment({
     ...getHashData(),
     state: { thisIs: 'a fake value' },
@@ -341,6 +355,10 @@ async function resetView(db: IDBDatabase) {
   resetStateInURIFragment();
 }
 
+/**
+ * Transfers GUI state (if any) from URI fragment to local storage
+ * and resets the state in URI fragment.
+ */
 async function maybeMigrateStateFromURIFragment(idb: IDBDatabase, uriFragment?: string): Promise<void> {
   // If we have valid state in URI fragment upon initial load,
   // migarte that state into IndexedDB and reset URI fragment.
@@ -392,6 +410,9 @@ function getStateFromURIFragment(uriFragment?: string): S.Schema.Type<typeof Sto
   }
 }
 
+/**
+ * Returns given app state as a string suitable for URI fragment.
+ */
 function getStateAsURIFragment(state: S.Schema.Type<typeof StoredState>): string {
   const serializedState = JsonURL.stringify(
     state,
