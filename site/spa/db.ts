@@ -64,27 +64,27 @@ export function storeItemEffect<T>(
 // Raw non-effect versions
 // =======================
 
-export const getDB = async (
-  dbName: string,
-  version: number,
-  stores: Readonly<Record<string, IDBObjectStoreParameters>>,
-  /** Force recreate (delete DB first). */
-  recreate?: boolean,
-): Promise<IDBDatabase> =>
-  new Promise((resolve, reject) => {
-    function createDB() {
-      console.debug("Creating indexed DB", dbName);
-      _getDB(dbName, version, stores).then(resolve, reject);
-    };
-    if (recreate) {
-      console.debug("Deleting indexed DB (to recreate)", dbName);
-      const req = indexedDB.deleteDatabase(dbName);
-      req.onerror = reject;
-      req.onsuccess = () => _getDB(dbName, version, stores).then(resolve, reject);
-    } else {
-      createDB();
-    }
-  });
+// const getDB = async (
+//   dbName: string,
+//   version: number,
+//   stores: Readonly<Record<string, IDBObjectStoreParameters>>,
+//   /** Force recreate (delete DB first). */
+//   recreate?: boolean,
+// ): Promise<IDBDatabase> =>
+//   new Promise((resolve, reject) => {
+//     function createDB() {
+//       console.debug("Creating indexed DB", dbName);
+//       _getDB(dbName, version, stores).then(resolve, reject);
+//     };
+//     if (recreate) {
+//       console.debug("Deleting indexed DB (to recreate)", dbName);
+//       const req = indexedDB.deleteDatabase(dbName);
+//       req.onerror = reject;
+//       req.onsuccess = () => _getDB(dbName, version, stores).then(resolve, reject);
+//     } else {
+//       createDB();
+//     }
+//   });
 
 export function getItem(
   db: IDBDatabase,
