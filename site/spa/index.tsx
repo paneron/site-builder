@@ -18,7 +18,7 @@ import lz from 'lz-string';
 
 import MathJax from 'react-mathjax2';
 
-//import './normalize.css';
+import './normalize.css';
 //import 'jsondiffpatch/dist/formatters-styles/annotated.css';
 //import 'jsondiffpatch/dist/formatters-styles/html.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
