@@ -235,14 +235,14 @@ const runExtensionBuild = (opts: SiteBuildOptions) => (Effect.gen(function * (_)
     Console.withTime(`Importing site builder from ${templateBuildScriptPath}`)(
       Effect.tryPromise(() => import(templateBuildScriptPath))
     ),
-    Effect.tapError(err => Effect.logError(`Failed to import site builder: ${String(err)}`)),
+    Effect.tapError(err => Effect.logError(`Failed to import template build script: ${String(err)}`)),
   );
 
   yield * _(
     Console.withTime(`Running site builder`)(
       builder.buildSite({ ...opts, packageRoot: PACKAGE_ROOT })
     ),
-    Effect.tapError(err => Effect.logError(`Failed to run extension build script: ${String(err)}`)),
+    Effect.tapError(err => Effect.logError(`Failed to run template build script: ${String(err)}`)),
   );
 
   // Extension build (?)
