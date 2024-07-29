@@ -42,8 +42,12 @@ import {
 } from './model.mjs';
 
 
-// We will need to access this package’s
-// actual, unpacked source file location when building the site.
+/*
+ * This package’s actual unpacked source file location,
+ * needed when building the site
+ * mainly to resolve site templates
+ * (see `getPathToSiteTemplateDist()`).
+ */
 const PACKAGE_ROOT = resolve(join(import.meta.url.split('file://')[1]!, '..'));
 
 
