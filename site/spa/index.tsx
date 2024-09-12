@@ -216,7 +216,7 @@ async function loadApp (ignoreCache = true) {
       //console.debug("Handling hashchange");
       window.removeEventListener('hashchange', handleHashChange);
       maybeMigrateStateFromURIFragment(settingsDB, evt.newURL.split('#')[1]).
-        then(() => loadApp(false));
+        then(() => loadApp(true));
     }
 
     window.addEventListener('hashchange', handleHashChange);
