@@ -159,7 +159,7 @@ async function loadApp (ignoreCache = true) {
           className="versions"
           disabled
           text={<>
-            <span>{extInfo.name} {formatDepVer(extInfo.version)}</span>
+            <span>Versions: ext. {formatDepVer(extInfo.version)}</span>
             •
             <span>RK {formatDepVer(deps['@riboseinc/paneron-registry-kit'])}</span>
             •
