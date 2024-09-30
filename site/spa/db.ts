@@ -19,21 +19,29 @@ export const getDBEffect = (
   /** Force recreate (delete DB first). */
   recreate?: boolean,
 ) =>
-  Effect.tryPromise((): Promise<IDBDatabase> => {
-    return new Promise((resolve, reject) => {
-      function createDB() {
-        console.debug("Creating indexed DB", dbName);
-        _getDB(dbName, version, stores).then(resolve, reject);
-      };
-      if (recreate) {
-        console.debug("Deleting indexed DB (to recreate)", dbName);
-        const req = indexedDB.deleteDatabase(dbName);
-        req.onerror = reject;
-        req.onsuccess = () => _getDB(dbName, version, stores).then(resolve, reject);
-      } else {
-        createDB();
-      }
-    });
+  Effect.tryPromise({
+    try: (): Promise<IDBDatabase> => {
+      return new Promise((resolve, reject) => {
+        function createDB() {
+          console.debug("Creating indexed DB", dbName);
+          _getDB(dbName, version, stores).then(resolve, reject);
+        };
+        if (recreate) {
+          console.debug("Deleting indexed DB (to recreate)", dbName);
+          const req = indexedDB.deleteDatabase(dbName);
+          req.onblocked = function handleDBBlockedError (evt) {
+            const errCode = (evt.target as { errorCode?: string })?.errorCode;
+            console.error("Failed to get indexedDB: blocked by another tab", errCode);
+            reject(`Database is in use by another tab, please close it, ${errCode}`);
+          };
+          req.onerror = reject;
+          req.onsuccess = () => _getDB(dbName, version, stores).then(resolve, reject);
+        } else {
+          createDB();
+        }
+      });
+    },
+    catch: (unknown) => new Error(`${unknown}`),
   });
 
 
