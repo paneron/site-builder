@@ -203,10 +203,12 @@ async function loadApp (ignoreCache = true) {
 
           {versionBar}
 
+          {/*
           <NavbarButton
             text="Reset interface"
             onClick={() => resetView(settingsDB)}
           />
+          */}
 
         </Navbar>
       </div>
