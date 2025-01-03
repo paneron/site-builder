@@ -26,7 +26,7 @@ It would:
 * generate data indices as required by site runtime
   and place them under ``outdir`` where expected.
 
-Uses Node 20.11.2.
+Uses Node 20.11.1.
 
 
 Development
@@ -34,7 +34,7 @@ Development
 
 Tested on:
 
-- Node 20.11.2
+- Node 20.11.1
 
 Note that build is handled by esbuild, while TSC is still used
 for typechecking. Type errors shouldn’t be ignored, but a type error
