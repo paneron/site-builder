@@ -6,7 +6,10 @@ import { build as esbuild } from 'esbuild';
 import { Console, Effect } from 'effect';
 import { FileSystem } from '@effect/platform';
 
-import { type ReportingOptions } from '../../util/index.mjs';
+import type {
+  ReportingOptions,
+  InjectedResourcesOptions,
+} from '../../util/index.mjs';
 import { readdirRecursive } from '../../util/index.mjs';
 
 
@@ -16,7 +19,7 @@ const FILES = [
 ] as const;
 
 
-export const distSPA = (opts: ReportingOptions & { outdir: string, packageRoot: string }) => Effect.all([
+export const distSPA = (opts: ReportingOptions & { outdir: string, packageRoot: string } & InjectedResourcesOptions) => Effect.all([
   Effect.logDebug(`Using package root: ${opts.packageRoot}`),
   Effect.tryPromise(() => buildJSForSPA(opts)),
   Console.withTime("Copy assets")(
@@ -53,13 +56,15 @@ export const distSPA = (opts: ReportingOptions & { outdir: string, packageRoot: 
  *
  * Currently, that just involves running esbuild against JS.
  */
-async function buildJSForSPA(opts: ReportingOptions & { outdir: string, packageRoot: string }) {
+async function buildJSForSPA(opts: ReportingOptions & { outdir: string, packageRoot: string } & InjectedResourcesOptions) {
   //const siteRoot = join(opts.packageRoot, 'site', opts.templateName);
   //const siteRoot = join(opts.packageRoot, 'site-app');
   return await esbuild({
     entryPoints: [
+      ...opts.injectedEntries,
       join(opts.packageRoot, 'index.tsx'),
       join(opts.packageRoot, 'loader.ts'),
+      // TODO: modify assetSrcs in loader to load the injected resources:
       //join(opts.packageRoot, 'imports.mts'),
       //join(opts.packageRoot, 'site', 'index.tsx'),
     ],

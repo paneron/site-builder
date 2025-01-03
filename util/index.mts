@@ -28,6 +28,10 @@ export type SiteBuilder = (
   opts: SiteBuildOptions & {
     /** Where to put built static site assets. */
     outdir: string;
+    /** Any extra JS entry points to be loaded */
+    injectedEntries: string[];
+    /** Any extra asset files in the given dir to be loaded */
+    injectedAssetsDir?: string;
     /** Path to the package on filesystem. */
     packageRoot: string;
   },
@@ -117,11 +121,30 @@ export function parseDatasetBuildOptions(
 
 // Site build options
 // ==================
+export const injectedResourcesOptions = {
+  injectedEntries: Options.file('injected-entries').pipe(Options.repeated).pipe(Options.withAlias('i')),
+  injectedAssetsDir: Options.directory('injected-assets-dir').pipe(Options.optional),
+};
+
+export function parseInjectedResourcesConfig(
+  values: Types.Simplify<Command.ParseConfig<typeof injectedResourcesOptions>>,
+) {
+  return S.decodeUnknownSync(InjectedResourcesSchema)({
+    injectedEntries: values.injectedEntries ?? [],
+    injectedAssetsDir: unpackOption(values.injectedAssetsDir),
+  });
+}
+
+export const InjectedResourcesSchema = S.Struct({
+  injectedEntries: S.Array(S.String.pipe(S.nonEmpty())),
+  injectedAssetsDir: S.optional(S.String.pipe(S.nonEmpty())),
+});
+
+export interface InjectedResourcesOptions extends S.Schema.Type<typeof InjectedResourcesSchema> {}
 
 export const siteBuildOptions = {
   outdir: Options.directory('outdir'),
   forUsername: Options.text('forusername').pipe(Options.optional),
-
   // TODO: instead of passing --dataversion, calculate it based on datadir state?
   dataVersion: Options.text('dataversion').pipe(Options.optional),
 
@@ -130,6 +153,7 @@ export const siteBuildOptions = {
   siteTemplateName: Options.choice('template', CONTRIB_SITE_TEMPLATES).pipe(
     Options.withDefault(CONTRIB_SITE_TEMPLATES[0])),
 
+  ...injectedResourcesOptions,
   ...reportingOptions,
   ...datasetBuildOptions,
 } as const;
@@ -142,6 +166,7 @@ export const SiteBuildConfigSchema = S.Struct({
 
   devModeExtensionDirectory: S.optional(S.String.pipe(S.nonEmpty())),
 }).pipe(
+  S.extend(InjectedResourcesSchema),
   S.extend(ReportingConfigSchema),
   S.extend(DatasetBuildConfigSchema),
 );
@@ -154,6 +179,8 @@ export function parseSiteBuildConfig(
 ) {
   const {
     outdir,
+    injectedEntries,
+    injectedAssetsDir,
     siteTemplateName,
     datadir,
     devModeExtensionDirectory,
@@ -166,6 +193,10 @@ export function parseSiteBuildConfig(
     forUsername: unpackOption(forUsername),
     devModeExtensionDirectory: unpackOption(devModeExtensionDirectory),
     dataVersion: unpackOption(dataVersion),
+    ...parseInjectedResourcesConfig({
+      injectedEntries,
+      injectedAssetsDir,
+    }),
     ...parseDatasetBuildOptions({ datadir }),
     ...parseReportingConfig(baseOpts),
   });

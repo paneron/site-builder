@@ -10,7 +10,9 @@ import { Command } from '@effect/cli';
 
 import {
   parseReportingConfig,
+  parseInjectedResourcesConfig,
   reportingOptions,
+  injectedResourcesOptions,
   EFFECT_LOG_LEVELS,
 } from '../../util/index.mjs';
 import { debouncedWatcher } from '../../util/watch2.mjs';
@@ -28,11 +30,13 @@ console.debug("site-app build", PACKAGE_ROOT);
 const dist = Command.
   make(
     'dist',
-    reportingOptions,
+    { ...reportingOptions, ...injectedResourcesOptions },
     (rawOpts) => Effect.gen(function * (_) {
       const opts = yield * _(Effect.try(() => parseReportingConfig(rawOpts)));
+      const injectedResourcesOpts = yield * _(Effect.try(() => parseInjectedResourcesConfig(rawOpts)));
+
       yield * _(
-        distSPA({ ...opts, packageRoot: PACKAGE_ROOT, outdir: OUTDIR }),
+        distSPA({ ...opts, ...injectedResourcesOpts, packageRoot: PACKAGE_ROOT, outdir: OUTDIR }),
         Effect.tap(Effect.logDebug("Done building.")),
         Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
       );
@@ -55,9 +59,10 @@ const watch = Command.
     () => Effect.gen(function * (_) {
       const rawOpts = yield * _(dist);
       const opts = yield * _(Effect.try(() => parseReportingConfig(rawOpts)));
+      const injectedResourcesOpts = yield * _(Effect.try(() => parseInjectedResourcesConfig(rawOpts)));
 
       yield * _(
-        distSPA({ ...opts, packageRoot: PACKAGE_ROOT, outdir: OUTDIR }),
+        distSPA({ ...opts, ...injectedResourcesOpts, packageRoot: PACKAGE_ROOT, outdir: OUTDIR }),
         Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[opts.logLevel]),
       );
 

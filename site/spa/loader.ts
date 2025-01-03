@@ -129,6 +129,7 @@ const assets:
 Record<string, { bar: HTMLElement, label: HTMLElement }> =
 {} as const;
 
+// TODO: Inject injectedEntries / injectedAssetsDir from opts into assetSrcs:
 const assetSrcs = ['./index.js', './index.css'] as const;
 loadAsset<typeof assetSrcs[number]>(
   assetSrcs,
