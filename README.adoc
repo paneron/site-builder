@@ -82,6 +82,7 @@ for every such import when bundling SPA for client-side.
 package.mjs
 ----
 
+[[building-the-site-artifacts]]
 ===== Building the site artifacts
 
 [start=2]
@@ -120,6 +121,13 @@ Importing site builder from .../site/spa/build-site.mjs: 84.967ms
 Running site builder: 754.246ms
 ^C^C
 >
+----
+
+Alternatively, after link:#building-the-site-artifacts[building the site], run:
+
+[source,console]
+----
+> npx serve $OUTDIR
 ----
 
 
