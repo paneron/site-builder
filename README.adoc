@@ -58,6 +58,65 @@ https://stackoverflow.com/questions/76015181/the-yarn-plugnplay-manifest-forbids
 for every such import when bundling SPA for client-side.
 ====
 
+===== Testing with local data
+
+====== Requirements
+
+$DATADIR::  path to Paneron dataset directory (must contain `panerondataset.yaml`)
+$OUTDIR::  path to output directory.  Will be created by this tool if not exists.
+
+====== Common steps
+
+. Working from the repository root, build the site builder:
++
+[source,console]
+----
+> yarn run build-self
+> ls package.mjs
+package.mjs
+----
+
+====== Building the site artifacts
+
+[start=2]
+. Run `./build-site.mjs` with the required parameters:
++
+[source,console]
+----
+> ./build-site.mjs --datadir "$DATADIR" --outdir "$OUTDIR"
+Fetch extension code from .../extension.js to $OUTDIR/extension.js: 863.576ms
+Fetch package.json from .../package.json to $OUTDIR/package.json: 407.994ms
+Fetch extension JS $OUTDIR: 1.283s
+Scaffold site template from .../site/spa/dist into $OUTDIR: 3.027s
+Fetch extension code from .../extension.js to $OUTDIR/extension.js: 178.606ms
+Fetch package.json from .../package.json to $OUTDIR/package.json: 87.67ms
+Importing site builder from .../site/spa/build-site.mjs: 84.967ms
+Running site builder: 754.246ms
+>
+----
+
+====== Serving site with local data
+
+[start=2]
+. Run `./build-site.mjs` with the required parameters, with the `watch --serve` option.
+When done, press `Ctrl-C` to stop serving:
++
+[source,console]
+----
+> ./build-site.mjs --datadir "$DATADIR" --outdir "$OUTDIR" watch --serve --port 8080
+Fetch extension code from .../extension.js to $OUTDIR/extension.js: 863.576ms
+Fetch package.json from .../package.json to $OUTDIR/package.json: 407.994ms
+Fetch extension JS $OUTDIR: 1.283s
+Scaffold site template from .../site/spa/dist into $OUTDIR: 3.027s
+Fetch extension code from .../extension.js to $OUTDIR/extension.js: 178.606ms
+Fetch package.json from .../package.json to $OUTDIR/package.json: 87.67ms
+Importing site builder from .../site/spa/build-site.mjs: 84.967ms
+Running site builder: 754.246ms
+^C^C
+>
+----
+
+
 ==== Release
 
 * Remember to run the important scripts before testing & publishing
