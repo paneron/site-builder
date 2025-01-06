@@ -71,8 +71,6 @@ for every such import when bundling SPA for client-side.
 
 ==== Testing with local data
 
-===== Requirements
-
 ===== Common steps
 
 . Working from the repository root, build the site builder:
