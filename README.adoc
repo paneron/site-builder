@@ -1,70 +1,107 @@
 == Site builder
 
-This builds a static site for given Paneron
-https://github.com/paneron/registry-kit/[RegistryKit^] based dataset.
+This is a CLI tool to build a static site for given Paneron
+https://github.com/paneron/registry-kit/[RegistryKit^]-based dataset.
 
-Not production ready; currently under development.
+STATUS: Not production ready; currently under development.
 
-Intended to be run as:
+Tested using Node 20.11.1.
 
-[source,console]
+
+=== Quick Usage
+
+==== Building the site artifacts with local data
+
+Is is intended to be run as:
+
+[source]
 ----
-> npx @paneron/site-builder --outdir "$OUTDIR" [--datadir "$DATADIR"] [watch --serve]
+npx @paneron/site-builder [options...] --outdir "$OUTDIR"
 ----
 
-More complete option overview:
+It would:
 
-[source,console]
+* read Paneron dataset from `$DATADIR` (default: current directory),
+* place site assets under `$OUTDIR`,
+* generate data indices as required by site runtime and place them under
+`$OUTDIR` where expected.
+
+
+==== Serving the site with local data
+
+[source]
 ----
-> npx @paneron/site-builder \
-  --outdir "$OUTDIR" \
+npx @paneron/site-builder [options...] --outdir "$OUTDIR" \
+  watch [--serve] [--watch-template] [--port "$PORT"]
+----
+
+It would:
+
+* build site assets as in the above,
+* start an HTTP server under the specified `$PORT`, serving `$OUTDIR`.
+
+When done, press `Ctrl-C` twice to stop serving.
+
+
+==== Synopsis
+
+[source]
+----
+npx @paneron/site-builder --outdir "$OUTDIR" \
   [--debug | --verbose] \
   [--datadir "$DATADIR"] \
-  [--dataversion (git rev-parse --short HEAD)] \
+  [--dataversion "$GITREF"] \
   [--devextpath "$DEVEXTPATH"] \
   [--forusername "$USERNAME"] \
   [watch [--serve] [--watch-template] [--port "$PORT"]]
 ----
 
-where:
 
-$DATADIR::  path to Paneron dataset directory (must contain `panerondataset.yaml`)
-$OUTDIR::  path to output directory.  Will be created by this tool if not exists.
-$DEVEXTPATH::  path to local development extension
-$USERNAME::  username, for access to the register
-$PORT::  port number to serve the site on
+==== Options
 
+`--outdir $OUTDIR`:: (*Required*) Specify path to directory for outputs.
+Will be created by this tool if not exists.
+`--debug`:: Enable debug logging.
+`--verbose`:: Enable verbose logging.
+`--datadir $DATADIR`:: Specify path to Paneron dataset directory.
+Must contain `panerondataset.yaml`.
+Default: current directory.
+`--dataversion $GITREF`:: Specify Git ref of Paneron dataset under `$DATADIR`.
+Default: whichever ref is currently checked out,
+_i.e._ `git rev-parse --short HEAD`.
+`--devextpath $DEVEXTPATH`:: Specify path to local development extension.
+`--forusername $USERNAME`:: Specify username, for access to the register.
+`--serve`:: Serve the built site.
+`--watch-template`:: Used with `--serve`.
+Specify whether to watch for changes in the site template directory.
+`--port $PORT`:: Used with `--serve`.
+Specify port to serve the site on.
+Default: `8080`.
 
-It would:
-
-* place site assets under `$OUTDIR`,
-* generate data indices as required by site runtime and place them under
-`$OUTDIR` where expected.
-
-Uses Node 20.11.1.
 
 === Development
 
-Tested on:
-
-* Node 20.11.1
-
-Note that build is handled by esbuild, while TSC is still used for
-typechecking. Type errors shouldn’t be ignored, but a type error may
-still result in a valid build (depends on specifics).
+Note that build is handled by https://esbuild.github.io/[esbuild^],
+while https://www.typescriptlang.org/docs/handbook/compiler-options.html[TSC^]
+is still used for typechecking.
+Type errors shouldn’t be ignored,
+but a type error may still result in a valid build
+(depends on specifics).
 
 [[important-scripts]]
 ==== Important scripts
 
 * Root package’s `build-self` script compiles site builder
-* site/spa’s `clean-build` script compiles front-end code
+* link:./site/spa[`site/spa`]’s `clean-build` script compiles front-end code
 +
 [IMPORTANT]
 ====
-This repository uses https://yarnpkg.com/features/pnp[Yarn PnP^], but in `loose` mode for the sake of
-`spa` package build script. Since ExtensionKit and RegistryKit import
-packages that they list only in `devDependencies`, in strict mode
-esbuild would fail with an
+This repository uses https://yarnpkg.com/features/pnp[Yarn PnP^],
+but in `loose` mode for the sake of `spa` package build script.
+Since https://esbuild.github.io/[ExtensionKit^] and
+https://github.com/paneron/registry-kit/[RegistryKit^] import
+packages that they list only in `devDependencies`,
+in strict mode esbuild would fail with an
 https://stackoverflow.com/questions/76015181/the-yarn-plugnplay-manifest-forbids-importing-xyz-here-because-its-not-list[error]
 for every such import when bundling SPA for client-side.
 ====
@@ -73,17 +110,19 @@ for every such import when bundling SPA for client-side.
 
 ===== Common steps
 
-. Working from the repository root, build the site builder:
+. Working from the repository root, build the site builder,
+making sure `build-site.mjs` is being output and is executable:
 +
 [source,console]
 ----
 > yarn run build-self
-> ls package.mjs
-package.mjs
+> ls -l build-site.mjs
+-rwxr-xr-x@ 1 username  groupname  1943914  1 Jan 13:37 build-site.mjs
 ----
 
+
 [[building-the-site-artifacts]]
-===== Building the site artifacts
+===== Building the site artifacts with local data
 
 [start=2]
 . Run `./build-site.mjs` with the required parameters:
@@ -102,11 +141,12 @@ Running site builder: 754.246ms
 >
 ----
 
-===== Serving site with local data
+
+===== Serving the site with local data
 
 [start=2]
 . Run `./build-site.mjs` with the required parameters, with the `watch --serve` option.
-When done, press `Ctrl-C` to stop serving:
+When done, press `Ctrl-C` twice to stop serving:
 +
 [source,console]
 ----
@@ -127,7 +167,7 @@ Alternatively, after link:#building-the-site-artifacts[building the site], run:
 
 [source,console]
 ----
-> npx serve $OUTDIR
+> npx serve "$OUTDIR" [--listen "$PORT"]
 ----
 
 
@@ -137,3 +177,8 @@ Alternatively, after link:#building-the-site-artifacts[building the site], run:
 link:#important-scripts["Important scripts"] section before testing & publishing.
 * Run `npm publish` from the root (no need to change into a separate
 “dist” dir).
+
+
+==== License
+
+See link:./LICENSE[`LICENSE`^] for license information.

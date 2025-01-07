@@ -125,7 +125,7 @@ export const siteBuildOptions = {
   // TODO: instead of passing --dataversion, calculate it based on datadir state?
   dataVersion: Options.text('dataversion').pipe(Options.optional),
 
-  devModeExtensionDirectory: Options.text('devexturl').pipe(Options.optional),
+  devModeExtensionDirectory: Options.text('devextpath').pipe(Options.optional),
 
   siteTemplateName: Options.choice('template', CONTRIB_SITE_TEMPLATES).pipe(
     Options.withDefault(CONTRIB_SITE_TEMPLATES[0])),
