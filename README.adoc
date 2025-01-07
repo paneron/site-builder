@@ -53,8 +53,13 @@ npx @paneron/site-builder --outdir OUTDIR \
   [--dataversion GITREF] \
   [--devextpath DEVEXTPATH] \
   [--forusername USERNAME] \
-  [watch [--serve] [--watch-template] [--port PORT]]
+  [watch [--serve [--port PORT]] [--watch-template]]
 ----
+
+
+==== Commands
+
+`watch`:: Watch for changes in the dataset and rebuild the site.
 
 
 ==== Options
@@ -72,8 +77,9 @@ _i.e._ `git rev-parse --short HEAD`.
 `--devextpath DEVEXTPATH`:: Specify path to local development extension.
 `--forusername USERNAME`:: Specify username, for access to the register.
 `--serve`:: Serve the built site.
-`--watch-template`:: Used with `--serve`.
-Specify whether to watch for changes in the site template directory.
+`--watch-template`:: Used under `watch`.
+Specify whether to also watch for changes in the site template directory
+apart from the dataset directory.
 `--port PORT`:: Used with `--serve`.
 Specify port to serve the site on.
 Default: `8080`.
