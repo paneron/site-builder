@@ -32,7 +32,7 @@ It would:
 [source]
 ----
 npx @paneron/site-builder [options...] --outdir OUTDIR \
-  watch [--serve] [--watch-template] [--port PORT]
+  watch [--serve [--port PORT]] [--watch-template]
 ----
 
 It would:
@@ -43,7 +43,7 @@ It would:
 When done, press `Ctrl-C` twice to stop serving.
 
 
-==== Synopsis
+=== Synopsis
 
 [source]
 ----
