@@ -16,29 +16,29 @@ Is is intended to be run as:
 
 [source]
 ----
-npx @paneron/site-builder [options...] --outdir "$OUTDIR"
+npx @paneron/site-builder [options...] --outdir OUTDIR
 ----
 
 It would:
 
-* read Paneron dataset from `$DATADIR` (default: current directory),
-* place site assets under `$OUTDIR`,
+* read Paneron dataset from current directory (can be specified with `--datadir DATADIR`),
+* place site assets under `OUTDIR`,
 * generate data indices as required by site runtime and place them under
-`$OUTDIR` where expected.
+`OUTDIR` where expected.
 
 
 ==== Serving the site with local data
 
 [source]
 ----
-npx @paneron/site-builder [options...] --outdir "$OUTDIR" \
-  watch [--serve] [--watch-template] [--port "$PORT"]
+npx @paneron/site-builder [options...] --outdir OUTDIR \
+  watch [--serve] [--watch-template] [--port PORT]
 ----
 
 It would:
 
 * build site assets as in the above,
-* start an HTTP server under the specified `$PORT`, serving `$OUTDIR`.
+* start an HTTP server under the specified `PORT`, serving `OUTDIR`.
 
 When done, press `Ctrl-C` twice to stop serving.
 
@@ -47,34 +47,34 @@ When done, press `Ctrl-C` twice to stop serving.
 
 [source]
 ----
-npx @paneron/site-builder --outdir "$OUTDIR" \
+npx @paneron/site-builder --outdir OUTDIR \
   [--debug | --verbose] \
-  [--datadir "$DATADIR"] \
-  [--dataversion "$GITREF"] \
-  [--devextpath "$DEVEXTPATH"] \
-  [--forusername "$USERNAME"] \
-  [watch [--serve] [--watch-template] [--port "$PORT"]]
+  [--datadir DATADIR] \
+  [--dataversion GITREF] \
+  [--devextpath DEVEXTPATH] \
+  [--forusername USERNAME] \
+  [watch [--serve] [--watch-template] [--port PORT]]
 ----
 
 
 ==== Options
 
-`--outdir $OUTDIR`:: (*Required*) Specify path to directory for outputs.
+`--outdir OUTDIR`:: (*Required*) Specify path to directory for outputs.
 Will be created by this tool if not exists.
 `--debug`:: Enable debug logging.
 `--verbose`:: Enable verbose logging.
-`--datadir $DATADIR`:: Specify path to Paneron dataset directory.
+`--datadir DATADIR`:: Specify path to Paneron dataset directory.
 Must contain `panerondataset.yaml`.
 Default: current directory.
-`--dataversion $GITREF`:: Specify Git ref of Paneron dataset under `$DATADIR`.
+`--dataversion GITREF`:: Specify Git ref of Paneron dataset under `DATADIR`.
 Default: whichever ref is currently checked out,
 _i.e._ `git rev-parse --short HEAD`.
-`--devextpath $DEVEXTPATH`:: Specify path to local development extension.
-`--forusername $USERNAME`:: Specify username, for access to the register.
+`--devextpath DEVEXTPATH`:: Specify path to local development extension.
+`--forusername USERNAME`:: Specify username, for access to the register.
 `--serve`:: Serve the built site.
 `--watch-template`:: Used with `--serve`.
 Specify whether to watch for changes in the site template directory.
-`--port $PORT`:: Used with `--serve`.
+`--port PORT`:: Used with `--serve`.
 Specify port to serve the site on.
 Default: `8080`.
 
@@ -129,13 +129,13 @@ making sure `build-site.mjs` is being output and is executable:
 +
 [source,console]
 ----
-> ./build-site.mjs --datadir "$DATADIR" --outdir "$OUTDIR"
-Fetch extension code from .../extension.js to $OUTDIR/extension.js: 863.576ms
-Fetch package.json from .../package.json to $OUTDIR/package.json: 407.994ms
-Fetch extension JS $OUTDIR: 1.283s
-Scaffold site template from .../site/spa/dist into $OUTDIR: 3.027s
-Fetch extension code from .../extension.js to $OUTDIR/extension.js: 178.606ms
-Fetch package.json from .../package.json to $OUTDIR/package.json: 87.67ms
+> ./build-site.mjs --datadir DATADIR --outdir OUTDIR
+Fetch extension code from .../extension.js to OUTDIR/extension.js: 863.576ms
+Fetch package.json from .../package.json to OUTDIR/package.json: 407.994ms
+Fetch extension JS OUTDIR: 1.283s
+Scaffold site template from .../site/spa/dist into OUTDIR: 3.027s
+Fetch extension code from .../extension.js to OUTDIR/extension.js: 178.606ms
+Fetch package.json from .../package.json to OUTDIR/package.json: 87.67ms
 Importing site builder from .../site/spa/build-site.mjs: 84.967ms
 Running site builder: 754.246ms
 >
@@ -150,13 +150,13 @@ When done, press `Ctrl-C` twice to stop serving:
 +
 [source,console]
 ----
-> ./build-site.mjs --datadir "$DATADIR" --outdir "$OUTDIR" watch --serve --port 8080
-Fetch extension code from .../extension.js to $OUTDIR/extension.js: 863.576ms
-Fetch package.json from .../package.json to $OUTDIR/package.json: 407.994ms
-Fetch extension JS $OUTDIR: 1.283s
-Scaffold site template from .../site/spa/dist into $OUTDIR: 3.027s
-Fetch extension code from .../extension.js to $OUTDIR/extension.js: 178.606ms
-Fetch package.json from .../package.json to $OUTDIR/package.json: 87.67ms
+> ./build-site.mjs --datadir DATADIR --outdir OUTDIR watch --serve --port 8080
+Fetch extension code from .../extension.js to OUTDIR/extension.js: 863.576ms
+Fetch package.json from .../package.json to OUTDIR/package.json: 407.994ms
+Fetch extension JS OUTDIR: 1.283s
+Scaffold site template from .../site/spa/dist into OUTDIR: 3.027s
+Fetch extension code from .../extension.js to OUTDIR/extension.js: 178.606ms
+Fetch package.json from .../package.json to OUTDIR/package.json: 87.67ms
 Importing site builder from .../site/spa/build-site.mjs: 84.967ms
 Running site builder: 754.246ms
 ^C^C
@@ -167,7 +167,7 @@ Alternatively, after link:#building-the-site-artifacts[building the site], run:
 
 [source,console]
 ----
-> npx serve "$OUTDIR" [--listen "$PORT"]
+> npx serve OUTDIR [--listen PORT]
 ----
 
 
