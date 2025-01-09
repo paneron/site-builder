@@ -1,3 +1,7 @@
+:default-port: 8080
+
+[subs="attributes"]
+
 == Site builder
 
 This is a CLI tool to build a static site for given Paneron
@@ -82,7 +86,7 @@ Specify whether to also watch for changes in the site template directory
 apart from the dataset directory.
 `--port PORT`:: Used with `--serve`.
 Specify port to serve the site on.
-Default: `8080`.
+Default: `{default-port}`.
 
 
 === Development
@@ -109,7 +113,7 @@ Since https://esbuild.github.io/[ExtensionKit^] and
 https://github.com/paneron/registry-kit/[RegistryKit^] import
 packages that they list only in `devDependencies`,
 in strict mode esbuild would fail with an
-https://stackoverflow.com/questions/76015181/the-yarn-plugnplay-manifest-forbids-importing-xyz-here-because-its-not-list[error]
+https://stackoverflow.com/questions/76015181/the-yarn-plugnplay-manifest-forbids-importing-xyz-here-because-its-not-list[error^]
 for every such import when bundling SPA for client-side.
 ====
 
@@ -155,9 +159,9 @@ Running site builder: 754.246ms
 . Run `./build-site.mjs` with the required parameters, with the `watch --serve` option.
 When done, press `Ctrl-C` twice to stop serving:
 +
-[source,console]
+[source,console,subs="attributes"]
 ----
-> ./build-site.mjs --datadir DATADIR --outdir OUTDIR watch --serve --port 8080
+> ./build-site.mjs --datadir DATADIR --outdir OUTDIR watch --serve --port {default-port}
 Fetch extension code from .../extension.js to OUTDIR/extension.js: 863.576ms
 Fetch package.json from .../package.json to OUTDIR/package.json: 407.994ms
 Fetch extension JS OUTDIR: 1.283s
