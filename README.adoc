@@ -181,6 +181,18 @@ Alternatively, after link:#building-the-site-artifacts[building the site], run:
 > npx serve OUTDIR [--listen PORT]
 ----
 
+===== Summary -- Typical Development Workflow
+
+. Make changes to the site builder or the site template (link:./site/spa[`site/spa`]).
+. Run the following to compile the site builder and the site template:
++
+[source,console]
+----
+> yarn run build-self && yarn run build-template && \
+  ./build-site.mjs --datadir DATADIR --outdir OUTDIR \
+  watch --serve
+----
+. Test the site in a browser (default at link:http://localhost:{default-port}[^]).
 
 ==== Release
 
