@@ -365,6 +365,7 @@ const watch = Command.
                     //const srv = yield * _(ServerContext);
                     const runtime = yield * _(Effect.runtime<never>());
                     const runFork = Runtime.runFork(runtime);
+                    console.log(`Serving on port ${port}.  Access at http://localhost:${port}`)
                     yield * _(
                       Effect.acquireRelease(
                         Effect.sync(() => simpleServe(

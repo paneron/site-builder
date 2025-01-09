@@ -170,6 +170,7 @@ Fetch extension code from .../extension.js to OUTDIR/extension.js: 178.606ms
 Fetch package.json from .../package.json to OUTDIR/package.json: 87.67ms
 Importing site builder from .../site/spa/build-site.mjs: 84.967ms
 Running site builder: 754.246ms
+Serving on port {default-port}.  Access at http://localhost:{default-port}
 ^C^C
 >
 ----
