@@ -99,6 +99,7 @@ but a type error may still result in a valid build
 
 * Root package’s `build-self` script compiles site builder
 * link:./site/spa[`site/spa`]’s `clean-build` script compiles front-end code
+** This is also run by the root package’s `build-template` script.
 +
 [IMPORTANT]
 ====
@@ -121,7 +122,7 @@ making sure `build-site.mjs` is being output and is executable:
 +
 [source,console]
 ----
-> yarn run build-self
+> yarn run build-self ; yarn run build-template
 > ls -l build-site.mjs
 -rwxr-xr-x@ 1 username  groupname  1943914  1 Jan 13:37 build-site.mjs
 ----
