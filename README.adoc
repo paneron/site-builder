@@ -189,7 +189,7 @@ Alternatively, after link:#building-the-site-artifacts[building the site], run:
 +
 [source,console]
 ----
-> yarn run build-self && yarn run build-template && \
+> yarn run build-self && yarn run clean-build-template && \
   ./build-site.mjs --datadir DATADIR --outdir OUTDIR \
   watch --serve
 ----
