@@ -18,7 +18,8 @@
     "build-builder-builder": "yarn esbuild package.mts --packages=external --platform=node --target=node18 --minify=false --bundle --format=esm --outfile=package.mjs",
     "build-builder": "yarn node package.mjs",
     "build-self": "yarn compile; yarn clean && yarn build-builder-builder && yarn build-builder",
-    "build-template": "yarn workspace template-spa build"
+    "build-template": "yarn workspace template-spa build",
+    "clean-build-template": "yarn workspace template-spa clean-build"
   },
   "workspaces": [
     "site/spa"
