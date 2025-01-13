@@ -33,7 +33,7 @@ function loadAsset<Src extends string>(
   }
   const xhrs: { [src in Src]: XMLHttpRequest } = srcs.
     map((assetSrc: Src) => {
-      console.debug("loading dependency", assetSrc);
+      console.debug("LLLLloading dependency", assetSrc);
 
       const xhr = new XMLHttpRequest;
 
@@ -129,40 +129,58 @@ const assets:
 Record<string, { bar: HTMLElement, label: HTMLElement }> =
 {} as const;
 
-// TODO: Inject injectedEntries / injectedAssetsDir from opts into assetSrcs:
-const assetSrcs = ['./index.js', './index.css'] as const;
-loadAsset<typeof assetSrcs[number]>(
-  assetSrcs,
-  function handleProgress (done_, total_) {
-    for (const [idx, ] of total_.entries()) {
-      const assetSrc = assetSrcs[idx];
-      const { bar: progressEl, label: statusEl } = createProgress(assetSrc);
-      const done = done_[idx];
-      const total = total_[idx];
-      if (done < total) {
-        progressEl.setAttribute('max', String(total));
-        progressEl.setAttribute('value', String(done));
-      } else {
-        progressEl.removeAttribute('max');
-        progressEl.removeAttribute('value');
+const loadAssets = async () => {
+
+  // TODO: Inject injectedAssetsDir from opts into assetSrcs:
+  const injectionManifestJson = await (await fetch('/injection-manifest.json')).json();
+  console.debug('imported json', injectionManifestJson);
+
+  const { injectedEntries } = injectionManifestJson;
+  const injectedAssetsDir = injectionManifestJson.injectedAssetsDir ?? [];
+
+  const assetSrcs = [
+    ...injectedEntries,
+    ...injectedAssetsDir,
+    './index.js',
+    './index.css',
+  ] as const;
+
+  loadAsset<typeof assetSrcs[number]>(
+    assetSrcs,
+    function handleProgress (done_, total_) {
+      for (const [idx, ] of total_.entries()) {
+        const assetSrc = assetSrcs[idx];
+        console.log('Handling asset: ', assetSrc);
+        const { bar: progressEl, label: statusEl } = createProgress(assetSrc);
+        const done = done_[idx];
+        const total = total_[idx];
+        if (done < total) {
+          progressEl.setAttribute('max', String(total));
+          progressEl.setAttribute('value', String(done));
+        } else {
+          progressEl.removeAttribute('max');
+          progressEl.removeAttribute('value');
+        }
+        statusEl.innerHTML = `Loading ${assetSrc}<br/>${byteFormatter.format(done)}`;
       }
-      statusEl.innerHTML = `Loading ${assetSrc}<br/>${byteFormatter.format(done)}`;
-    }
-  },
-  function handleError (assetSrc, err) {
-    const { label: statusEl } = createProgress(assetSrc);
-    statusEl.innerHTML = `An error occurred fetching ${assetSrc}.<br />${err}.`;
-  },
-  function handleDone (src) {
-    if (src.endsWith('.js')) {
-      const tag = document.createElement('script');
-      tag.setAttribute('src', src);
-      document.head.appendChild(tag);
-    } else if (src.endsWith('.css')) {
-      const tag = document.createElement('link');
-      tag.setAttribute('href', src);
-      tag.setAttribute('rel', 'stylesheet');
-      document.head.appendChild(tag);
-    }
-  },
-);
+    },
+    function handleError (assetSrc, err) {
+      const { label: statusEl } = createProgress(assetSrc);
+      statusEl.innerHTML = `An error occurred fetching ${assetSrc}.<br />${err}.`;
+    },
+    function handleDone (src) {
+      if (src.endsWith('.js')) {
+        const tag = document.createElement('script');
+        tag.setAttribute('src', src);
+        document.head.appendChild(tag);
+      } else if (src.endsWith('.css')) {
+        const tag = document.createElement('link');
+        tag.setAttribute('href', src);
+        tag.setAttribute('rel', 'stylesheet');
+        document.head.appendChild(tag);
+      }
+    },
+  );
+};
+
+loadAssets();

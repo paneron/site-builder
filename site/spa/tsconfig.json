@@ -1,6 +1,11 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["index.tsx", "build-site.mts", "../../*.d.ts"],
+  "include": [
+    "index.tsx",
+    "build-site.mts",
+    "inject-resources.mts",
+    "../../*.d.ts"
+  ],
   "compilerOptions": {
     "verbatimModuleSyntax": false
   }

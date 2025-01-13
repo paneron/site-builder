@@ -65,6 +65,7 @@ Effect.
  */
 async function buildSiteBuilder(opts: ReportingOptions) {
   const { logLevel } = opts;
+  console.log('TOO EARLY site/spa/build-site-builder: opts', opts)
   return await esbuild({
     entryPoints: [
       join(PACKAGE_ROOT, 'build-site.mts'),

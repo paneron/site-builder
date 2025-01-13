@@ -225,6 +225,63 @@ Effect.gen(function * (_) {
 });
 
 
+// TODO: copy injectedEntries to site/spa/dist
+// TODO: copy all files and dirs from injectedAssetsDir to site/spa/dist
+const injectExtraResources = (opts: SiteBuildOptions) =>
+Effect.gen(function * (_) {
+  console.log('YOUR CHANCE IS HERE build-site/injectExtraResources: opts', opts);
+
+  const fs = yield * _(FileSystem.FileSystem);
+  const { siteTemplatePath, injectedEntries, injectedAssetsDir } = opts;
+  const outdirFullPath = resolve(opts.outdir);
+  // const outdirFullPath = siteTemplatePath;
+
+  /** Record all copied files, and output list as a manifest file. */
+  const successfullyInjectedEntries: string[] = [];
+
+  // TODO: resolve entry to full entry paths
+  for (const entry of injectedEntries) {
+    const entryFullPath = resolve(entry);
+    const entryBaseName = entry.split('/').pop();
+    const outFileFullPath = join(outdirFullPath, entryBaseName);
+    yield * _(
+      Effect.matchCause(
+        Console.withTime(`Copying injected entries from ${entryFullPath} into ${outdirFullPath} as ${outFileFullPath}`)(
+          fs.copy(entryFullPath, outFileFullPath, { overwrite: true })
+        ), {
+            onFailure: (cause) => {
+              switch (cause._tag) {
+                case "Fail":
+                  return console.warn(`Fail: ${cause.error.message}`);
+                case "Die":
+                  return console.warn(`Die: ${cause.defect}`);
+                case "Interrupt":
+                  return console.warn(`${cause.fiberId} interrupted!`);
+              }
+              return console.error("failed due to other causes");
+            },
+            onSuccess: (() => {
+              console.log('Copied!');
+              successfullyInjectedEntries.push(entryBaseName);
+            }),
+          }
+        ),
+      Effect.orElse(() => Effect.logError(`Failed to copy injected entry ${entryFullPath} to ${outdirFullPath} as ${outFileFullPath}.`)),
+    );
+  }
+
+  // Write to manifest file
+  yield * _(
+    fs.writeFileString(
+      join(outdirFullPath, "injection-manifest.json"),
+      JSON.stringify({
+        injectedEntries: successfullyInjectedEntries,
+      }, undefined, 4),
+    ),
+  );
+});
+
+
 const runExtensionBuild = (opts: SiteBuildOptions) => (Effect.gen(function * (_) {
 
   // Template-specific build
@@ -293,6 +350,7 @@ function shouldIncludeObjectInIndex(
 
 const buildFull = (opts: S.Schema.Type<typeof SiteBuildConfigSchema>) => pipe(
   scaffoldOutdir(opts),
+  // Effect.tap((stuff) => console.log('build-site/buildFull: opts:', opts, stuff)),
   Effect.andThen(() => Effect.all([
     fetchExtension(
       opts.datadir,
@@ -300,7 +358,8 @@ const buildFull = (opts: S.Schema.Type<typeof SiteBuildConfigSchema>) => pipe(
       { devModeExtensionDirectory: opts.devModeExtensionDirectory },
     ),
     generateData(opts),
-    runExtensionBuild(opts),
+    injectExtraResources(opts),
+    // runExtensionBuild(opts),
   ], { concurrency: 2 })),
 );
 
@@ -348,10 +407,12 @@ const watch = Command.
     ({ watchTemplate, ignorePrefix, serve, port }) =>
       Effect.
         gen(function * (_) {
+          console.log('GOT OPTIONS build-site/watch:')
           const rawBuildOpts = yield * _(build);
           const buildOpts =
             yield * _(Effect.try(() => parseSiteBuildConfig(rawBuildOpts, PACKAGE_ROOT)));
 
+          console.log('GOT OPTIONS build-site/watch: buildOpts', buildOpts);
           yield * _(
             buildFull(buildOpts),
             Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[buildOpts.logLevel]),
