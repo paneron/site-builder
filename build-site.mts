@@ -232,17 +232,25 @@ Effect.gen(function * (_) {
   console.log('YOUR CHANCE IS HERE build-site/injectExtraResources: opts', opts);
 
   const fs = yield * _(FileSystem.FileSystem);
-  const { siteTemplatePath, injectedEntries, injectedAssetsDir } = opts;
+  const {
+      // siteTemplatePath,
+      injectedEntries,
+      injectedAssetsDir,
+      injectedAssetsPrefix,
+    } = opts;
   const outdirFullPath = resolve(opts.outdir);
   // const outdirFullPath = siteTemplatePath;
 
   /** Record all copied files, and output list as a manifest file. */
   const successfullyInjectedEntries: string[] = [];
+  const successfullyInjectedAssets: string[] = [];
 
-  // TODO: resolve entry to full entry paths
+  // Process injectedEntries
   for (const entry of injectedEntries) {
+
+    // Resolve each entry to its full path
     const entryFullPath = resolve(entry);
-    const entryBaseName = entry.split('/').pop();
+    const entryBaseName = entry.split('/').pop() ?? '';
     const outFileFullPath = join(outdirFullPath, entryBaseName);
     yield * _(
       Effect.matchCause(
@@ -270,12 +278,37 @@ Effect.gen(function * (_) {
     );
   }
 
+  // Process injectedAssetsDir
+  if (typeof injectedAssetsDir === 'undefined') {
+    return;
+  }
+  const maybeDirStat = yield * _(fs.stat(injectedAssetsDir));
+
+  if (maybeDirStat.type === 'Directory') {
+    console.log('got dir', injectedAssetsDir);
+    const paths = yield * _(readdirRecursive(injectedAssetsDir));
+    const publicDirPrefix = injectedAssetsPrefix ?? '';
+    // Create the path segments for the public directory? Necessary?
+    const dirBaseName = injectedAssetsDir.replace(/\/*$/, '').split('/').pop() ?? '';
+
+    for (const relPath of paths) {
+      console.log('going to copy', relPath, 'to ', join(outdirFullPath, publicDirPrefix, dirBaseName, relPath));
+      yield * _(fs.copy(
+        join(injectedAssetsDir, relPath),
+        join(outdirFullPath, publicDirPrefix, dirBaseName, relPath),
+        { overwrite: true },
+      ));
+    }
+  }
+
+
   // Write to manifest file
   yield * _(
     fs.writeFileString(
       join(outdirFullPath, "injection-manifest.json"),
       JSON.stringify({
         injectedEntries: successfullyInjectedEntries,
+        injectedAssets: successfullyInjectedAssets,
       }, undefined, 4),
     ),
   );

@@ -131,16 +131,15 @@ Record<string, { bar: HTMLElement, label: HTMLElement }> =
 
 const loadAssets = async () => {
 
-  // TODO: Inject injectedAssetsDir from opts into assetSrcs:
   const injectionManifestJson = await (await fetch('/injection-manifest.json')).json();
   console.debug('imported json', injectionManifestJson);
 
   const { injectedEntries } = injectionManifestJson;
-  const injectedAssetsDir = injectionManifestJson.injectedAssetsDir ?? [];
+  const injectedAssets = injectionManifestJson.injectedAssets ?? [];
 
   const assetSrcs = [
     ...injectedEntries,
-    ...injectedAssetsDir,
+    ...injectedAssets,
     './index.js',
     './index.css',
   ] as const;

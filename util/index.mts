@@ -32,6 +32,8 @@ export type SiteBuilder = (
     injectedEntries: string[];
     /** Any extra asset files in the given dir to be loaded */
     injectedAssetsDir?: string;
+    /** Additional public (i.e. to be served) path prefix for assets listed under injectedAssetsDir */
+    injectedAssetsPrefix?: string;
     /** Path to the package on filesystem. */
     packageRoot: string;
   },
@@ -124,6 +126,7 @@ export function parseDatasetBuildOptions(
 export const injectedResourcesOptions = {
   injectedEntries: Options.file('injected-entries').pipe(Options.repeated).pipe(Options.withAlias('i')),
   injectedAssetsDir: Options.directory('injected-assets-dir').pipe(Options.optional),
+  injectedAssetsPrefix: Options.text('injected-assets-prefix').pipe(Options.optional),
 };
 
 export function parseInjectedResourcesConfig(
@@ -133,6 +136,7 @@ export function parseInjectedResourcesConfig(
   return S.decodeUnknownSync(InjectedResourcesSchema)({
     injectedEntries: values.injectedEntries ?? [],
     injectedAssetsDir: unpackOption(values.injectedAssetsDir),
+    injectedAssetsPrefix: unpackOption(values.injectedAssetsPrefix),
     // injectedAssetsDir: values.injectedAssetsDir,
   });
 }
@@ -140,6 +144,7 @@ export function parseInjectedResourcesConfig(
 export const InjectedResourcesSchema = S.Struct({
   injectedEntries: S.Array(S.String.pipe(S.nonEmpty())),
   injectedAssetsDir: S.optional(S.String.pipe(S.nonEmpty())),
+  injectedAssetsPrefix: S.optional(S.String.pipe(S.nonEmpty())),
 });
 
 export interface InjectedResourcesOptions extends S.Schema.Type<typeof InjectedResourcesSchema> {}
@@ -184,6 +189,7 @@ export function parseSiteBuildConfig(
     outdir,
     injectedEntries,
     injectedAssetsDir,
+    injectedAssetsPrefix,
     siteTemplateName,
     datadir,
     devModeExtensionDirectory,
@@ -199,6 +205,7 @@ export function parseSiteBuildConfig(
     ...parseInjectedResourcesConfig({
       injectedEntries,
       injectedAssetsDir,
+      injectedAssetsPrefix,
     }),
     ...parseDatasetBuildOptions({ datadir }),
     ...parseReportingConfig(baseOpts),
