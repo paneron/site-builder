@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "compile": "tsc --outdir compiled",
-    "clean": "rm -f ./package.mjs ./build-site.mjs",
+    "clean": "rm -rf compiled dist ./package.mjs ./build-site.mjs",
     "build-builder-builder": "yarn esbuild package.mts --packages=external --platform=node --target=node18 --minify=false --bundle --format=esm --outfile=package.mjs",
     "build-builder": "yarn node package.mjs",
     "build-self": "yarn compile; yarn clean && yarn build-builder-builder && yarn build-builder",
