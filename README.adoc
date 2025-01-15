@@ -57,6 +57,9 @@ npx @paneron/site-builder --outdir OUTDIR \
   [--dataversion GITREF] \
   [--devextpath DEVEXTPATH] \
   [--forusername USERNAME] \
+  [--injected-entries COMPILED_JAVASCRIPT_FILE]* \
+  [--injected-assets-dir WEB_ASSETS_DIR] \
+  [--injected-assets-prefix WEB_ASSETS_DIR_PREFIX] \
   [watch [--serve [--port PORT]] [--watch-template]]
 ----
 
@@ -80,6 +83,13 @@ Default: whichever ref is currently checked out,
 _i.e._ `git rev-parse --short HEAD`.
 `--devextpath DEVEXTPATH`:: Specify path to local development extension.
 `--forusername USERNAME`:: Specify username, for access to the register.
+`--injected-entries COMPILED_JAVASCRIPT_FILE`::
+Specify path to compiled JavaScript file to be loaded.
+May be specified multiple times.
+`--injected-assets-dir WEB_ASSETS_DIR`::
+Specify path to directory with web assets to be copied to the output directory.
+`--injected-assets-prefix WEB_ASSETS_DIR_PREFIX`:: Used with `--injected-assets-dir`.
+Specify prefix to be used when copying assets to the output directory.
 `--serve`:: Serve the built site.
 `--watch-template`:: Used under `watch`.
 Specify whether to also watch for changes in the site template directory
