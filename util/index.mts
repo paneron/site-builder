@@ -133,12 +133,11 @@ export const injectedResourcesOptions = {
 export function parseInjectedResourcesConfig(
   values: Types.Simplify<Command.ParseConfig<typeof injectedResourcesOptions>>,
 ) {
-  console.log('MAY GET OPTIONS util/index/parseInjectedResourcesConfig, arg: ', values);
+
   return S.decodeUnknownSync(InjectedResourcesSchema)({
     injectedEntries: values.injectedEntries ?? [],
     injectedAssetsDir: unpackOption(values.injectedAssetsDir),
     injectedAssetsPrefix: unpackOption(values.injectedAssetsPrefix),
-    // injectedAssetsDir: values.injectedAssetsDir,
   });
 }
 
@@ -185,7 +184,7 @@ export function parseSiteBuildConfig(
   rawOpts: Types.Simplify<Command_.ParseConfig<typeof siteBuildOptions>>,
   packageRoot: string,
 ) {
-  console.log('util/index: parseSiteBuildConfig, rawOpts: ', rawOpts)
+
   const {
     outdir,
     injectedEntries,

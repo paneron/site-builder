@@ -451,7 +451,7 @@ function shouldIncludeObjectInIndex(
 
 const buildFull = (opts: S.Schema.Type<typeof SiteBuildConfigSchema>) => pipe(
   scaffoldOutdir(opts),
-  // Effect.tap((stuff) => console.log('build-site/buildFull: opts:', opts, stuff)),
+
   Effect.andThen(() => Effect.all([
     fetchExtension(
       opts.datadir,
@@ -508,12 +508,10 @@ const watch = Command.
     ({ watchTemplate, ignorePrefix, serve, port }) =>
       Effect.
         gen(function * (_) {
-          console.log('GOT OPTIONS build-site/watch:')
           const rawBuildOpts = yield * _(build);
           const buildOpts =
             yield * _(Effect.try(() => parseSiteBuildConfig(rawBuildOpts, PACKAGE_ROOT)));
 
-          console.log('GOT OPTIONS build-site/watch: buildOpts', buildOpts);
           yield * _(
             buildFull(buildOpts),
             Logger.withMinimumLogLevel(EFFECT_LOG_LEVELS[buildOpts.logLevel]),
@@ -528,7 +526,6 @@ const watch = Command.
                     const runtime = yield * _(Effect.runtime<never>());
                     const runFork = Runtime.runFork(runtime);
 
-                    Console.log(`Serving on port ${port}.  Access at http://localhost:${port}`);
                     yield * _(
                       Effect.acquireRelease(
                         Effect.sync(() => {

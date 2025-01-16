@@ -33,7 +33,7 @@ function loadAsset<Src extends string>(
   }
   const xhrs: { [src in Src]: XMLHttpRequest } = srcs.
     map((assetSrc: Src) => {
-      console.debug("LLLLloading dependency", assetSrc);
+      console.debug("Loading dependency", assetSrc);
 
       const xhr = new XMLHttpRequest;
 
@@ -132,7 +132,6 @@ Record<string, { bar: HTMLElement, label: HTMLElement }> =
 const loadAssets = async () => {
 
   const injectionManifestJson = await (await fetch('/injection-manifest.json')).json();
-  console.debug('imported json', injectionManifestJson);
 
   const { injectedEntries } = injectionManifestJson;
   const injectedAssets = injectionManifestJson.injectedAssets ?? [];
