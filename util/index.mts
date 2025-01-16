@@ -376,15 +376,16 @@ export function serve(
       : requestedPath;
     const ctype = ctypes.get(extname(filename)) ?? 'application/octet-stream';
     onDebug?.(`serve: got request for ${filename} (assuming ${ctype})...`);
+    const urlDecodedFilename = decodeURI(filename);
     try {
-      const blob = await readFile(join(root, filename));
+      const blob = await readFile(join(root, urlDecodedFilename));
       resp.writeHead(200, {'Content-Type': ctype, 'Content-Length': blob.length});
       resp.write(blob, 'binary');
-      onDebug?.(`serve: returning ${join(root, filename)} as ${ctype}`);
+      onDebug?.(`serve: returning ${join(root, urlDecodedFilename)} as ${ctype}`);
     } catch (e) {
       const err = String(e);
       if (err.indexOf('ENOENT')) {
-        onError?.(`serve: ${req.url}: ${join(root, filename)} does not exist: ${err}`);
+        onError?.(`serve: ${req.url}: ${join(root, urlDecodedFilename)} does not exist: ${err}`);
         resp.writeHead(404);
       } else {
         onError?.(`serve: failed to handle request of ${req.url}: ${err}`);
