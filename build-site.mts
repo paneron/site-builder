@@ -225,84 +225,149 @@ Effect.gen(function * (_) {
 });
 
 
-// TODO: copy injectedEntries to site/spa/dist
-// TODO: copy all files and dirs from injectedAssetsDir to site/spa/dist
-const injectExtraResources = (opts: SiteBuildOptions) =>
+/**
+ * Copy injectedEntries to site/spa/dist.
+ */
+const injectEntries = (opts: SiteBuildOptions) =>
 Effect.gen(function * (_) {
-  console.log('YOUR CHANCE IS HERE build-site/injectExtraResources: opts', opts);
-
   const fs = yield * _(FileSystem.FileSystem);
   const {
-      // siteTemplatePath,
-      injectedEntries,
-      injectedAssetsDir,
-      injectedAssetsPrefix,
-    } = opts;
+    injectedEntries,
+  } = opts;
   const outdirFullPath = resolve(opts.outdir);
-  // const outdirFullPath = siteTemplatePath;
 
   /** Record all copied files, and output list as a manifest file. */
   const successfullyInjectedEntries: string[] = [];
-  const successfullyInjectedAssets: string[] = [];
 
-  // Process injectedEntries
   for (const entry of injectedEntries) {
 
     // Resolve each entry to its full path
     const entryFullPath = resolve(entry);
     const entryBaseName = entry.split('/').pop() ?? '';
+    /**
+     * Looks like it's not necessary to do mkdir_p.
+     * `fs.copy()` handles it all for us.
+     */
     const outFileFullPath = join(outdirFullPath, entryBaseName);
+
     yield * _(
       Effect.matchCause(
-        Console.withTime(`Copying injected entries from ${entryFullPath} into ${outdirFullPath} as ${outFileFullPath}`)(
+        Console.withTime(`Copying injected entry\nfrom: \u001b[1m${entryFullPath}\u001b[m\ninto: ${outdirFullPath}\n  as: ${outFileFullPath}`)(
           fs.copy(entryFullPath, outFileFullPath, { overwrite: true })
         ), {
-            onFailure: (cause) => {
-              switch (cause._tag) {
-                case "Fail":
-                  return console.warn(`Fail: ${cause.error.message}`);
-                case "Die":
-                  return console.warn(`Die: ${cause.defect}`);
-                case "Interrupt":
-                  return console.warn(`${cause.fiberId} interrupted!`);
-              }
-              return console.error("failed due to other causes");
-            },
-            onSuccess: (() => {
-              console.log('Copied!');
-              successfullyInjectedEntries.push(entryBaseName);
-            }),
-          }
-        ),
-      Effect.orElse(() => Effect.logError(`Failed to copy injected entry ${entryFullPath} to ${outdirFullPath} as ${outFileFullPath}.`)),
+          onFailure: (cause) => {
+            switch (cause._tag) {
+              case "Fail":
+                return Console.warn(`Fail: ${cause.error.message}`);
+              case "Die":
+                return Console.warn(`Die: ${cause.defect}`);
+              case "Interrupt":
+                return Console.warn(`${cause.fiberId} interrupted!`);
+            }
+            return Console.error("failed due to other causes");
+          },
+          onSuccess: (() => {
+            successfullyInjectedEntries.push(entryBaseName);
+            return Console.log('Copied!');
+          }),
+        }
+      ),
+      Effect.orElse(() => Effect.logError(`Failed to copy injected entry\n      ${entryFullPath}\n  to: ${outdirFullPath}\n  as: ${outFileFullPath}.`)),
     );
-  }
 
-  // Process injectedAssetsDir
+    return successfullyInjectedEntries;
+  }
+});
+
+/**
+ * Copy all files and dirs from injectedAssetsDir to site/spa/dist.
+ */
+const injectAssetsDir = (opts: SiteBuildOptions) =>
+Effect.gen(function * (_) {
+
+  const fs = yield * _(FileSystem.FileSystem);
+  const {
+      injectedAssetsDir,
+      injectedAssetsPrefix,
+    } = opts;
+  const outdirFullPath = resolve(opts.outdir);
+
+  /** Record all copied files, and output list as a manifest file. */
+  const successfullyInjectedAssets: string[] = [];
+
+  /** Process injectedAssetsDir */
   if (typeof injectedAssetsDir === 'undefined') {
     return;
   }
   const maybeDirStat = yield * _(fs.stat(injectedAssetsDir));
 
   if (maybeDirStat.type === 'Directory') {
-    console.log('got dir', injectedAssetsDir);
     const paths = yield * _(readdirRecursive(injectedAssetsDir));
     const publicDirPrefix = injectedAssetsPrefix ?? '';
-    // Create the path segments for the public directory? Necessary?
+    /**
+     * Looks like it's not necessary to do mkdir_p.
+     * `fs.copy()` handles it all for us.
+     */
     const dirBaseName = injectedAssetsDir.replace(/\/*$/, '').split('/').pop() ?? '';
 
     for (const relPath of paths) {
-      console.log('going to copy', relPath, 'to ', join(outdirFullPath, publicDirPrefix, dirBaseName, relPath));
-      yield * _(fs.copy(
-        join(injectedAssetsDir, relPath),
-        join(outdirFullPath, publicDirPrefix, dirBaseName, relPath),
-        { overwrite: true },
-      ));
+      const srcFile = join(injectedAssetsDir, relPath);
+      const publicFilePath = join(publicDirPrefix, dirBaseName, relPath)
+        // Replace 0 or more leading forward slashes with a single slash
+        .replace(/^\/*/, '/');
+      const destFile = join(outdirFullPath, publicFilePath);
+
+      yield * _(
+        Effect.matchCause(
+          Console.withTime(`Copying asset\nfrom: \u001b[1m${srcFile}\u001b[m\ninto: ${outdirFullPath}\n  as: ${destFile}\n(served as \u001b[1m${publicFilePath}\u001b[m)`)(
+            fs.copy(
+              srcFile,
+              destFile,
+              { overwrite: true },
+            )
+          ), {
+            onFailure: (cause) => {
+              switch (cause._tag) {
+                case "Fail":
+                  return Console.warn(`Fail: ${cause.error.message}`);
+                case "Die":
+                  return Console.warn(`Die: ${cause.defect}`);
+                case "Interrupt":
+                  return Console.warn(`${cause.fiberId} interrupted!`);
+              }
+              return Console.error("failed due to other causes");
+            },
+            onSuccess: (() => {
+              successfullyInjectedAssets.push(publicFilePath);
+              return Console.log('Copied!');
+            }),
+          }
+        ),
+        Effect.orElse(() => Effect.logError(`Failed to copy injected asset\n      ${srcFile}\n  to: ${outdirFullPath}\n  as: ${destFile}\n(served as ${publicFilePath}).`)),
+      );
     }
+    return successfullyInjectedAssets;
   }
+});
 
+/**
+ * Copy injectedEntries to site/spa/dist.
+ * Copy all files and dirs from injectedAssetsDir to site/spa/dist.
+ */
+const injectExtraResources = (opts: SiteBuildOptions) =>
+Effect.gen(function * (_) {
 
-  // Write to manifest file
+  const fs = yield * _(FileSystem.FileSystem);
+  const outdirFullPath = resolve(opts.outdir);
+
+  /** Record all copied files, and output list as a manifest file. */
+  const successfullyInjectedEntries: string[] = (yield * _(injectEntries(opts))) ?? [];
+  const successfullyInjectedAssets: string[] = (yield * _(injectAssetsDir(opts))) ?? [];
+
+  /**
+   * Write all injected public file paths to a manifest file,
+   * for loading dynamically in the client.
+   */
   yield * _(
     fs.writeFileString(
       join(outdirFullPath, "injection-manifest.json"),
