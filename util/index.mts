@@ -351,10 +351,11 @@ export async function watchAndCall(
 export function serve(
   root: string,
   port: number,
-  { signal, onDebug, onError }: {
+  { signal, onDebug, onError, onWarning }: {
     signal?: AbortSignal,
     onDebug?: (msg: string) => void,
     onError?: (msg: string) => void,
+    onWarning?: (msg: string) => void,
   },
 ) {
   onDebug?.(`serve: starting server at port ${port}...`);

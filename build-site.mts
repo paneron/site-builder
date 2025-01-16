@@ -459,15 +459,17 @@ const watch = Command.
                     //const srv = yield * _(ServerContext);
                     const runtime = yield * _(Effect.runtime<never>());
                     const runFork = Runtime.runFork(runtime);
-                    console.log(`Serving on port ${port}.  Access at http://localhost:${port}`)
+
+                    Console.log(`Serving on port ${port}.  Access at http://localhost:${port}`);
                     yield * _(
                       Effect.acquireRelease(
                         Effect.sync(() => simpleServe(
                           buildOpts.outdir,
                           port,
                           {
-                            onDebug: (msg) => runFork(Effect.logDebug(msg)),
-                            onError: (msg) => runFork(Effect.logError(msg)),
+                            onDebug: (msg: string) => runFork(Effect.logDebug(msg)),
+                            onError: (msg: string) => runFork(Effect.logError(msg)),
+                            onWarning: (msg: string) => runFork(Effect.logWarning(msg)),
                           },
                         )),
                         (srv) => Effect.sync(() => srv.close()),
