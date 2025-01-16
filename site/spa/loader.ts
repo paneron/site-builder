@@ -134,11 +134,9 @@ const loadAssets = async () => {
   const injectionManifestJson = await (await fetch('/injection-manifest.json')).json();
 
   const { injectedEntries } = injectionManifestJson;
-  const injectedAssets = injectionManifestJson.injectedAssets ?? [];
 
   const assetSrcs = [
     ...injectedEntries,
-    ...injectedAssets,
     './index.js',
     './index.css',
   ] as const;
