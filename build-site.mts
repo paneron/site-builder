@@ -251,7 +251,7 @@ Effect.gen(function * (_) {
     const outFileFullPath = join(outdirFullPath, entryBaseName);
 
     yield * _(
-      Effect.matchCause(
+      Effect.matchCauseEffect(
         Console.withTime(`Copying injected entry\nfrom: \u001b[1m${entryFullPath}\u001b[m\ninto: ${outdirFullPath}\n  as: ${outFileFullPath}`)(
           fs.copy(entryFullPath, outFileFullPath, { overwrite: true })
         ), {
@@ -277,6 +277,7 @@ Effect.gen(function * (_) {
 
     return successfullyInjectedEntries;
   }
+  return [];
 });
 
 /**
@@ -297,7 +298,7 @@ Effect.gen(function * (_) {
 
   /** Process injectedAssetsDir */
   if (typeof injectedAssetsDir === 'undefined') {
-    return;
+    return [];
   }
   const maybeDirStat = yield * _(fs.stat(injectedAssetsDir));
 
@@ -318,7 +319,7 @@ Effect.gen(function * (_) {
       const destFile = join(outdirFullPath, publicFilePath);
 
       yield * _(
-        Effect.matchCause(
+        Effect.matchCauseEffect(
           Console.withTime(`Copying asset\nfrom: \u001b[1m${srcFile}\u001b[m\ninto: ${outdirFullPath}\n  as: ${destFile}\n(served as \u001b[1m${publicFilePath}\u001b[m)`)(
             fs.copy(
               srcFile,
@@ -348,6 +349,8 @@ Effect.gen(function * (_) {
     }
     return successfullyInjectedAssets;
   }
+
+  return [];
 });
 
 /**
@@ -361,8 +364,8 @@ Effect.gen(function * (_) {
   const outdirFullPath = resolve(opts.outdir);
 
   /** Record all copied files, and output list as a manifest file. */
-  const successfullyInjectedEntries: string[] = (yield * _(injectEntries(opts))) ?? [];
-  const successfullyInjectedAssets: string[] = (yield * _(injectAssetsDir(opts))) ?? [];
+  const successfullyInjectedEntries: string[] = (yield * _(injectEntries(opts)));
+  const successfullyInjectedAssets: string[] = (yield * _(injectAssetsDir(opts)));
 
   /**
    * Write all injected public file paths to a manifest file,
@@ -528,15 +531,19 @@ const watch = Command.
                     Console.log(`Serving on port ${port}.  Access at http://localhost:${port}`);
                     yield * _(
                       Effect.acquireRelease(
-                        Effect.sync(() => simpleServe(
-                          buildOpts.outdir,
-                          port,
-                          {
-                            onDebug: (msg: string) => runFork(Effect.logDebug(msg)),
-                            onError: (msg: string) => runFork(Effect.logError(msg)),
-                            onWarning: (msg: string) => runFork(Effect.logWarning(msg)),
-                          },
-                        )),
+                        Effect.sync(() => {
+                          console.log(`Serving on port ${port}.  Access at http://localhost:${port}`);
+
+                          return simpleServe(
+                            buildOpts.outdir,
+                            port,
+                            {
+                              onDebug: (msg: string) => runFork(Effect.logDebug(msg)),
+                              onError: (msg: string) => runFork(Effect.logError(msg)),
+                              onWarning: (msg: string) => runFork(Effect.logWarning(msg)),
+                            },
+                          )
+                        }),
                         (srv) => Effect.sync(() => srv.close()),
                       ),
                     );

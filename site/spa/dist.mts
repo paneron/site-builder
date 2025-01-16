@@ -62,8 +62,6 @@ async function buildJSForSPA(opts: ReportingOptions & { outdir: string, packageR
   console.log('TOO EARLY: site/spa/dist: buildJSForSPA: opts', opts);
   return await esbuild({
     entryPoints: [
-      ...opts.injectedEntries,
-      // TODO: modify assetSrcs in loader to load the injected resources:
       join(opts.packageRoot, 'index.tsx'),
       join(opts.packageRoot, 'loader.ts'),
       //join(opts.packageRoot, 'imports.mts'),
