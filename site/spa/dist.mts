@@ -59,7 +59,7 @@ export const distSPA = (opts: ReportingOptions & { outdir: string, packageRoot: 
 async function buildJSForSPA(opts: ReportingOptions & { outdir: string, packageRoot: string } & InjectedResourcesOptions) {
   //const siteRoot = join(opts.packageRoot, 'site', opts.templateName);
   //const siteRoot = join(opts.packageRoot, 'site-app');
-  console.log('TOO EARLY: site/spa/dist: buildJSForSPA: opts', opts);
+
   return await esbuild({
     entryPoints: [
       join(opts.packageRoot, 'index.tsx'),

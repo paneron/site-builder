@@ -10,9 +10,5 @@ export const buildSite: SiteBuilder = (opts) =>
       //Effect.andThen(dirs =>
       //  Effect.logDebug(`First 10 dir entries: ${JSON.stringify(dirs.slice(0, 10))}`)
       //),
-      // (asdf) => console.log('site/spa/build-site: what is opts', opts, asdf)
     ),
-    Effect.sync(() => console.log('site/spa/build-site: what is opts', opts)),
   ]);
-// Effect.Effect<readonly string[], PlatformError, FileSystem.FileSystem> =>
-// Effect.gen(function * (_) {

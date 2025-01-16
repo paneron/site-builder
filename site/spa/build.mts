@@ -35,8 +35,6 @@ const dist = Command.
       const opts = yield * _(Effect.try(() => parseReportingConfig(rawOpts)));
       const injectedResourcesOpts = yield * _(Effect.try(() => parseInjectedResourcesConfig(rawOpts)));
 
-      console.log('TOO EARLY spa/build/dist: rawOpts', rawOpts);
-      console.log('TOO EARLY spa/build/dist: injectedResourcesOpts', injectedResourcesOpts);
       yield * _(
         distSPA({ ...opts, ...injectedResourcesOpts, packageRoot: PACKAGE_ROOT, outdir: OUTDIR }),
         Effect.tap(Effect.logDebug("Done building.")),
@@ -62,9 +60,6 @@ const watch = Command.
       const rawOpts = yield * _(dist);
       const opts = yield * _(Effect.try(() => parseReportingConfig(rawOpts)));
       const injectedResourcesOpts = yield * _(Effect.try(() => parseInjectedResourcesConfig(rawOpts)));
-
-      console.log('TOO EARLY spa/build/watch: rawOpts', rawOpts);
-      console.log('TOO EARLY spa/build/watch: injectedResourcesOpts', injectedResourcesOpts);
 
       yield * _(
         distSPA({ ...opts, ...injectedResourcesOpts, packageRoot: PACKAGE_ROOT, outdir: OUTDIR }),
