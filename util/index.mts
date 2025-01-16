@@ -366,6 +366,17 @@ export function serve(
     ['.css', 'text/css'],
     ['.json', 'application/json'],
     ['.jsonld', 'application/ld+json'],
+    ['.svg', 'image/svg+xml'],
+    ['.gif', 'image/gif'],
+    ['.jpeg', 'image/jpeg'],
+    ['.jpg', 'image/jpeg'],
+    ['.png', 'image/png'],
+    ['.ico', 'image/vnd.microsoft.icon'],
+    ['.otf', 'font/otf'],
+    ['.ttf', 'font/ttf'],
+    ['.woff', 'font/woff'],
+    ['.woff2', 'font/woff2'],
+    ['.eot', 'application/vnd.ms-fontobject'],
   ]);
 
   const server = createServer(async function handleRequest(req, resp) {
