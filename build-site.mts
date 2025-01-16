@@ -274,10 +274,9 @@ Effect.gen(function * (_) {
       ),
       Effect.orElse(() => Effect.logError(`Failed to copy injected entry\n      ${entryFullPath}\n  to: ${outdirFullPath}\n  as: ${outFileFullPath}.`)),
     );
-
-    return successfullyInjectedEntries;
   }
-  return [];
+
+  return successfullyInjectedEntries;
 });
 
 /**
