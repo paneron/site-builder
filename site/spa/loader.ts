@@ -16,7 +16,7 @@ const byteFormatter = Intl.NumberFormat(navigator.language, {
 
 const LOAD_STATUS: Record<string, { done: number, total: number }> = {};
 
-function loadAsset<Src extends string>(
+function _loadAssets<Src extends string>(
   srcs: readonly Src[],
   onProgress: (done: number[], total: number[]) => void,
   onError: (assetSrc: Src, msg?: string, resp?: XMLHttpRequest["response"]) => void,
@@ -141,7 +141,7 @@ const loadAssets = async () => {
     './index.css',
   ] as const;
 
-  loadAsset<typeof assetSrcs[number]>(
+  _loadAssets<typeof assetSrcs[number]>(
     assetSrcs,
     function handleProgress (done_, total_) {
       for (const [idx, ] of total_.entries()) {
