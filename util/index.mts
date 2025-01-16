@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { join, extname, resolve, relative } from 'node:path';
 import { parse as parseURL, fileURLToPath } from 'node:url'
 import { readFile, watch } from 'node:fs/promises';
@@ -408,12 +409,20 @@ export function serve(
     }
   });
 
-  signal?.addEventListener('abort', function abortServe() {
-    onDebug?.("serve: stopping server because of signal...");
+  const abortServe = (reason?: string) => () => {
+    onWarning?.(`serve: ${typeof reason === 'undefined' ? '' : `${reason}.  `}Stopping server...`);
     server.closeAllConnections?.();
     return new Promise((resolve, reject) =>
       server.close((err) => err ? reject(err) : resolve(void 0)));
+  };
+
+  // 130 is the exit code for SIGINT.  Keeping it alive.
+  process.on('SIGINT', () => {
+    console.warn(); // Print a new line
+    abortServe("Caught interrupt signal")().then(() => process.exit(130));
   });
+
+  signal?.addEventListener('abort', abortServe("ABORT signal received"));
 
   server.setTimeout(500);
   server.listen(port);

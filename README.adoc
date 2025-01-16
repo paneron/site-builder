@@ -44,7 +44,7 @@ It would:
 * build site assets as in the above,
 * start an HTTP server under the specified `PORT`, serving `OUTDIR`.
 
-When done, press `Ctrl-C` twice to stop serving.
+When done, press `Ctrl-C` to stop serving.
 
 
 === Synopsis
@@ -167,7 +167,7 @@ Running site builder: 754.246ms
 
 [start=2]
 . Run `./build-site.mjs` with the required parameters, with the `watch --serve` option.
-When done, press `Ctrl-C` twice to stop serving:
+When done, press `Ctrl-C` to stop serving:
 +
 [source,console,subs="attributes"]
 ----
@@ -181,7 +181,8 @@ Fetch package.json from .../package.json to OUTDIR/package.json: 87.67ms
 Importing site builder from .../site/spa/build-site.mjs: 84.967ms
 Running site builder: 754.246ms
 Serving on port {default-port}.  Access at http://localhost:{default-port}
-^C^C
+^C
+timestamp=2025-01-01T03:13:37.502Z level=WARN fiber=#3731 message="serve: Caught interrupt signal.  Stopping server..."
 >
 ----
 
