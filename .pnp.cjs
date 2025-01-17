@@ -1052,10 +1052,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "npm:3.2.2"\
       ],\
       [\
-        "react-ga4",\
-        "npm:2.1.0"\
-      ],\
-      [\
         "react-helmet",\
         "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:6.1.0"\
       ],\
@@ -4890,15 +4886,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["react-ga4", [\
-        ["npm:2.1.0", {\
-          "packageLocation": "./.yarn/cache/react-ga4-npm-2.1.0-2d2287b7a6-f7fb411414.zip/node_modules/react-ga4/",\
-          "packageDependencies": [\
-            ["react-ga4", "npm:2.1.0"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["react-helmet", [\
         ["npm:6.1.0", {\
           "packageLocation": "./.yarn/cache/react-helmet-npm-6.1.0-20fd5447ff-a4998479da.zip/node_modules/react-helmet/",\
@@ -5581,7 +5568,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lz-string", "npm:1.5.0"],\
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:18.2.0"],\
-            ["react-ga4", "npm:2.1.0"],\
             ["react-helmet", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:6.1.0"],\
             ["react-mathjax2", "npm:0.0.2"],\
             ["react-resizable", "virtual:3dd5dd780e0edb3d713803220c302ff49b2ef41811bb055852197ae4f488e15dbd9bde26d60fe23c3a284318e1057ed25ae8e86a80fc97b6e96884646c004ca3#npm:3.0.5"],\
