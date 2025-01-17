@@ -1,6 +1,6 @@
 {
   "name": "@paneron/site-builder",
-  "version": "0.0.43",
+  "version": "0.0.44",
   "packageManager": "yarn@3.6.4",
   "type": "module",
   "bin": {
