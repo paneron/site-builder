@@ -4,6 +4,28 @@
 
 == Site builder
 
+ifdef::env-github[]
+image:https://github.com/paneron/site-builder/actions/workflows/tests.yml/badge.svg[
+  "Test Status",
+  link="https://github.com/paneron/site-builder/actions/workflows/tests.yml"]
+image:https://github.com/paneron/site-builder/actions/workflows/audit.yml/badge.svg[
+  "Audit Status",
+  link="https://github.com/paneron/site-builder/actions/workflows/audit.yml"]
+
+image:https://github.com/paneron/site-builder/actions/workflows/release.yml/badge.svg[
+  "Release Status",
+  link="https://github.com/paneron/site-builder/actions/workflows/release.yml"]
+
+image:https://img.shields.io/npm/v/%40paneron%2Fsite-builder[
+  NPM release,
+  link="https://www.npmjs.com/package/@paneron/site-builder"]
+
+// image:https://img.shields.io/github/v/release/paneron/site-builder?display_name=tag&include_prereleases&sort=semver[
+//   GitHub release (latest SemVer including pre-releases),
+//   link="https://www.npmjs.com/package/@paneron/site-builder"
+// ]
+endif::[]
+
 This is a CLI tool to build a static site for given Paneron
 https://github.com/paneron/registry-kit/[RegistryKit^]-based dataset.
 

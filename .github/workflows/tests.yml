@@ -1,0 +1,43 @@
+name: tests
+
+on:
+  workflow_call:
+  push:
+    branches:
+    - main
+    - master
+    paths-ignore:
+      - '/*.sh'
+      - '/.*'
+      - '/_*'
+      - '**.adoc'
+      - '**.md'
+      - '**.nix'
+      - 'flake.lock'
+      - '.github/workflows/*.yml'
+      - '!.github/workflows/tests.yml'
+      - '!.github/workflows/lint.yml'
+      - '!.github/workflows/build.yml'
+      - '!.github/workflows/test.yml'
+      - '!.github/workflows/*-release.yml'
+  pull_request:
+    paths-ignore:
+      - '/*.sh'
+      - '/.*'
+      - '/_*'
+      - '**.adoc'
+      - '**.md'
+      - '**.nix'
+      - 'flake.lock'
+  workflow_dispatch:
+
+jobs:
+  lint:
+    uses: ./.github/workflows/lint.yml
+
+  build:
+    uses: ./.github/workflows/build.yml
+
+  test:
+    # needs: [build]
+    uses: ./.github/workflows/test.yml
