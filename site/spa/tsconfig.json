@@ -3,7 +3,6 @@
   "include": [
     "index.tsx",
     "build-site.mts",
-    "inject-resources.mts",
     "../../*.d.ts"
   ],
   "compilerOptions": {
