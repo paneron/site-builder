@@ -85,8 +85,8 @@ jobs:
             exit 1
           fi
 
-          # Debug what files are in dist/
-          ls -la dist >&2
+          # # Debug what files are in dist/
+          # ls -la dist >&2 || :
 
           # Verify total files and shasum of `pack` and `publish` are the same
           pack_filename=$(npm pack | tail -n1)
